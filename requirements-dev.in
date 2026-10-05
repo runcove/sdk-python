@@ -1,0 +1,17 @@
+# The Python SDK's toolchain, pinned exact (openapi-python-client and its formatter pinned
+# together: sdk/python/generator-config.yaml's post-hooks run this ruff). The lock is the pin;
+# regenerate it with the command in requirements-dev.lock's header, resolved against pypi.org
+# (`--default-index https://pypi.org/simple`, with no other index configured) and with
+# `--exclude-newer` a few days back, so no file younger than the usual install cooldown is pinned.
+openapi-python-client==0.29.1
+ruff==0.16.9
+unasync==0.6.0
+ruamel.yaml==0.19.1
+mypy==2.3.1
+pytest==8.4.2
+anyio==4.15.1
+hatchling==1.32.4
+build==1.6.1
+httpx>=0.27,<0.29
+attrs==26.1.0
+typing-extensions==4.16.0

@@ -1,0 +1,446 @@
+"""``client.admin``: every ``/api/admin`` operation -- the fleet, the host, projects, quotas, users,
+every VM and every checkpoint.
+
+Each method needs an administrator and the ``admin:*`` scope its docstring names (bare ``admin``
+satisfies them all). An API key reaches them only if it is an admin key, minted with
+``cove key create --admin`` (``admin_key: true``, short-lived), whose owner is in the server's
+``[auth] admins``; an ordinary or pre-upgrade key holding the scope gets 403 ``admin_required``
+(:class:`~cove_sdk.PermissionDeniedError`). Every listener serves them (over a bearer key, only
+to an admin key of an ``[auth] admins`` user), except :meth:`Admin.drain_host`, which the
+Warpgate-fronted listener never serves.
+
+Five of them refuse every API key, an admin key included, with 401 ``sudo_required``.
+:meth:`Admin.update_vm_agents`, :meth:`Admin.bulk_stop_vms`, :meth:`Admin.bulk_delete_vms` and
+:meth:`Admin.delete_checkpoint` need a recent interactive sign-in, so they run only with a ticket
+or a session, never a key. :meth:`Admin.drain_host` is never served on the Warpgate-fronted
+listener either, so in practice it runs on the host's Unix socket.
+"""
+
+from __future__ import annotations
+
+import builtins
+from collections.abc import AsyncIterator, Mapping
+from typing import Any, BinaryIO, cast
+
+from ..._args import build_body, opt
+from ..._generated.api.admin import (
+    bulk_delete_vms,
+    bulk_stop_vms,
+    create_project_member,
+    create_quota_bypass,
+    delete_any_checkpoint,
+    delete_project_member,
+    delete_team_quota_override,
+    delete_user_quota_override,
+    drain_host,
+    get_host_state,
+    get_quota_defaults,
+    get_team_quota_override,
+    get_user,
+    get_user_quota_override,
+    list_all_users,
+    list_all_vms,
+    list_any_checkpoints,
+    list_project_members,
+    revoke_user_sessions,
+    update_auto_pause_timeouts,
+    update_team_quota_override,
+    update_user_quota_override,
+    update_vm_agents,
+)
+from ..._generated.models import (
+    AdminBulkVmRequest,
+    AdminBulkVmResponse,
+    AdminCheckpointSummary,
+    AdminCheckpointSummaryPage,
+    AdminDrainResponse,
+    AdminForceCreateResponse,
+    AdminHostStateResponse,
+    AdminProjectMemberRequest,
+    AdminQuotaDefaultsResponse,
+    AdminQuotaOverrideRequest,
+    AdminQuotaOverrideResponse,
+    AdminRetimeoutRequest,
+    AdminRetimeoutResponse,
+    AdminTeamQuotaOverrideRequest,
+    AdminTeamQuotaOverrideResponse,
+    AdminUserSummary,
+    AdminVmSummary,
+    AdminVmSummaryPage,
+    ProjectMember,
+    RevokeSessionsResponse,
+    UpdateAgentsResponse,
+)
+from ..._generated.types import File
+from ..._operations import operation
+from .._pagination import paginate
+from .._transport import CLIENT_DEFAULT, AsyncCoveTransport, CallTimeout
+
+
+class Admin:
+    """``client.admin`` — administrator operations. Every one needs an administrator."""
+
+    def __init__(self, transport: AsyncCoveTransport) -> None:
+        self._t = transport
+
+    # -- the fleet and the host --------------------------------------------------------------
+
+    @operation("updateAutoPauseTimeouts")
+    async def update_auto_pause_timeouts(
+        self,
+        body: AdminRetimeoutRequest | Mapping[str, Any] | None = None,
+        *,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+        **fields: Any,
+    ) -> AdminRetimeoutResponse:
+        """Move auto-pausing VMs to a new idle timeout (``from_secs``, ``to_secs``, ``dry_run``).
+
+        ``by_current_value`` maps each current timeout, in seconds written as a string, to how
+        many VMs have it. It comes back as the generated mapping model
+        (``AdminRetimeoutResponseByCurrentValue``); its ``.to_dict()`` is that map as a plain
+        ``dict[str, int]``. Scope ``admin:fleet:write``.
+        """
+        req = build_body(AdminRetimeoutRequest, body, fields)
+        out = await self._t.call(update_auto_pause_timeouts, body=req, timeout=timeout)
+        return cast(AdminRetimeoutResponse, out)
+
+    @operation("drainHost")
+    async def drain_host(
+        self,
+        *,
+        budget_secs: int | None = None,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+    ) -> AdminDrainResponse:
+        """Stop every running and paused VM on the host, every tenant's, within ``budget_secs``.
+
+        Disks survive; there is no dry run. Scope ``admin:fleet:write``.
+
+        Never served on the Warpgate-fronted listener, and it refuses every API key, an admin key
+        included, with 401 ``sudo_required``: in practice a drain runs on the host's Unix socket.
+        """
+        out = await self._t.call(
+            drain_host, budget_secs=opt(budget_secs), timeout=timeout
+        )
+        return cast(AdminDrainResponse, out)
+
+    @operation("getHostState")
+    async def host_state(
+        self, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> AdminHostStateResponse:
+        """The host's gauges: pending expiries, audit-write failures, snapshot images, orphans.
+
+        Scope ``admin:host:read``.
+        """
+        out = await self._t.call(get_host_state, timeout=timeout)
+        return cast(AdminHostStateResponse, out)
+
+    @operation("updateVmAgents")
+    async def update_vm_agents(
+        self, binary: bytes, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> UpdateAgentsResponse:
+        """Push a new guest-agent binary to every running VM; ``binary`` is sent as is.
+
+        Scope ``admin:agent-push``.
+
+        Refuses every API key, an admin key included, with 401 ``sudo_required``: it needs a
+        ticket or a session.
+        """
+        # The generated call hands File.payload to httpx as the request content. Raw bytes serve
+        # both clients; a BytesIO is a sync stream, which an async httpx client refuses to send.
+        payload = File(
+            payload=cast(BinaryIO, bytes(binary)), mime_type="application/octet-stream"
+        )
+        out = await self._t.call(update_vm_agents, body=payload, timeout=timeout)
+        return cast(UpdateAgentsResponse, out)
+
+    @operation("bulkDeleteVms")
+    async def bulk_delete_vms(
+        self,
+        body: AdminBulkVmRequest | Mapping[str, Any] | None = None,
+        *,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+        **fields: Any,
+    ) -> AdminBulkVmResponse:
+        """Delete VMs by ``scope`` (``{"type": "all"}``, ``{"type": "user", "username": ...}`` or
+        ``{"type": "vms", "vm_names": [...]}``), with ``dry_run`` and ``include_pool``.
+
+        Scope ``admin:fleet:delete``.
+
+        Refuses every API key, an admin key included, with 401 ``sudo_required``: it needs a
+        ticket or a session.
+        """
+        req = build_body(AdminBulkVmRequest, body, fields)
+        out = await self._t.call(bulk_delete_vms, body=req, timeout=timeout)
+        return cast(AdminBulkVmResponse, out)
+
+    @operation("bulkStopVms")
+    async def bulk_stop_vms(
+        self,
+        body: AdminBulkVmRequest | Mapping[str, Any] | None = None,
+        *,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+        **fields: Any,
+    ) -> AdminBulkVmResponse:
+        """Stop VMs by ``scope``, as :meth:`bulk_delete_vms`. Scope ``admin:fleet:write``.
+
+        Refuses every API key, an admin key included, with 401 ``sudo_required``: it needs a
+        ticket or a session.
+        """
+        req = build_body(AdminBulkVmRequest, body, fields)
+        out = await self._t.call(bulk_stop_vms, body=req, timeout=timeout)
+        return cast(AdminBulkVmResponse, out)
+
+    # -- projects ----------------------------------------------------------------------------
+
+    @operation("listProjectMembers")
+    async def list_project_members(
+        self, project_id: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> builtins.list[ProjectMember]:
+        """Who belongs to project ``project_id``. Scope ``admin:projects:read``."""
+        out = await self._t.call(
+            list_project_members, path={"project_id": project_id}, timeout=timeout
+        )
+        return cast(builtins.list[ProjectMember], out)
+
+    @operation("createProjectMember")
+    async def add_project_member(
+        self, project_id: str, username: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> None:
+        """Add ``username`` to project ``project_id``. Scope ``admin:projects:write``."""
+        req = AdminProjectMemberRequest(project_id=project_id, username=username)
+        await self._t.call(
+            create_project_member,
+            path={"project_id": project_id},
+            body=req,
+            timeout=timeout,
+        )
+
+    @operation("deleteProjectMember")
+    async def remove_project_member(
+        self, project_id: str, username: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> None:
+        """Remove ``username`` from project ``project_id``; idempotent. Scope ``admin:projects:write``.
+        """
+        await self._t.call(
+            delete_project_member,
+            path={"project_id": project_id, "username": username},
+            timeout=timeout,
+        )
+
+    # -- quotas ------------------------------------------------------------------------------
+
+    @operation("getQuotaDefaults")
+    async def quota_defaults(
+        self, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> AdminQuotaDefaultsResponse:
+        """The per-user quota every user has without an override. Scope ``admin:quotas:read``."""
+        out = await self._t.call(get_quota_defaults, timeout=timeout)
+        return cast(AdminQuotaDefaultsResponse, out)
+
+    @operation("getUserQuotaOverride")
+    async def get_user_quota(
+        self, username: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> AdminQuotaOverrideResponse:
+        """``username``'s quota override. Scope ``admin:quotas:read``."""
+        out = await self._t.call(
+            get_user_quota_override, path={"username": username}, timeout=timeout
+        )
+        return cast(AdminQuotaOverrideResponse, out)
+
+    @operation("updateUserQuotaOverride")
+    async def set_user_quota(
+        self,
+        username: str,
+        body: AdminQuotaOverrideRequest | Mapping[str, Any] | None = None,
+        *,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+        **fields: Any,
+    ) -> None:
+        """Set ``username``'s override (``vcpus_max``, ``ram_mb_max``, ``vm_count_max``,
+        ``disk_gb_max``). Scope ``admin:quotas:write``.
+        """
+        req = build_body(AdminQuotaOverrideRequest, body, fields)
+        await self._t.call(
+            update_user_quota_override,
+            path={"username": username},
+            body=req,
+            timeout=timeout,
+        )
+
+    @operation("deleteUserQuotaOverride")
+    async def delete_user_quota(
+        self, username: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> None:
+        """Drop ``username``'s override, back to the defaults. Scope ``admin:quotas:write``."""
+        await self._t.call(
+            delete_user_quota_override, path={"username": username}, timeout=timeout
+        )
+
+    @operation("createQuotaBypass")
+    async def grant_quota_bypass(
+        self, username: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> AdminForceCreateResponse:
+        """Let ``username``'s next create exceed their quota, once. Scope ``admin:quotas:write``."""
+        out = await self._t.call(
+            create_quota_bypass, path={"username": username}, timeout=timeout
+        )
+        return cast(AdminForceCreateResponse, out)
+
+    @operation("getTeamQuotaOverride")
+    async def get_team_quota(
+        self, team_id: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> AdminTeamQuotaOverrideResponse:
+        """Team ``team_id``'s quota override. Scope ``admin:quotas:read``."""
+        out = await self._t.call(
+            get_team_quota_override, path={"team_id": team_id}, timeout=timeout
+        )
+        return cast(AdminTeamQuotaOverrideResponse, out)
+
+    @operation("updateTeamQuotaOverride")
+    async def set_team_quota(
+        self,
+        team_id: str,
+        body: AdminTeamQuotaOverrideRequest | Mapping[str, Any] | None = None,
+        *,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+        **fields: Any,
+    ) -> None:
+        """Set team ``team_id``'s override (the fields of :meth:`set_user_quota`). Scope ``admin:quotas:write``.
+        """
+        req = build_body(AdminTeamQuotaOverrideRequest, body, fields)
+        await self._t.call(
+            update_team_quota_override,
+            path={"team_id": team_id},
+            body=req,
+            timeout=timeout,
+        )
+
+    @operation("deleteTeamQuotaOverride")
+    async def delete_team_quota(
+        self, team_id: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> None:
+        """Drop team ``team_id``'s override. Scope ``admin:quotas:write``."""
+        await self._t.call(
+            delete_team_quota_override, path={"team_id": team_id}, timeout=timeout
+        )
+
+    # -- users -------------------------------------------------------------------------------
+
+    @operation("listAllUsers")
+    async def list_users(
+        self, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> builtins.list[AdminUserSummary]:
+        """Every user the host knows, with their usage. Scope ``admin:users:read``."""
+        out = await self._t.call(list_all_users, timeout=timeout)
+        return cast(builtins.list[AdminUserSummary], out)
+
+    @operation("getUser")
+    async def get_user(
+        self, username: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> AdminUserSummary:
+        """One user, with their usage. Scope ``admin:users:read``."""
+        out = await self._t.call(get_user, path={"username": username}, timeout=timeout)
+        return cast(AdminUserSummary, out)
+
+    @operation("revokeUserSessions")
+    async def revoke_user_sessions(
+        self, username: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> RevokeSessionsResponse:
+        """End every session ``username`` holds. Scope ``admin:sessions:write``."""
+        out = await self._t.call(
+            revoke_user_sessions, path={"username": username}, timeout=timeout
+        )
+        return cast(RevokeSessionsResponse, out)
+
+    # -- every VM and every checkpoint -------------------------------------------------------
+
+    @operation("listAllVms")
+    async def list_vms(
+        self,
+        *,
+        user: str | None = None,
+        limit: int | None = None,
+        cursor: str | None = None,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+    ) -> AdminVmSummaryPage:
+        """One page of every user's VMs, or ``user``'s. Scope ``admin:vms:read``."""
+        page = await self._t.call(
+            list_all_vms,
+            user=opt(user),
+            limit=opt(limit),
+            cursor=opt(cursor),
+            timeout=timeout,
+        )
+        return cast(AdminVmSummaryPage, page)
+
+    async def iter_vms(
+        self,
+        *,
+        user: str | None = None,
+        limit: int | None = None,
+        cursor: str | None = None,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+    ) -> AsyncIterator[AdminVmSummary]:
+        """Every VM :meth:`list_vms` lists, following ``next_cursor``."""
+
+        async def fetch(c: str | None) -> AdminVmSummaryPage:
+            return await self.list_vms(
+                user=user, limit=limit, cursor=c, timeout=timeout
+            )
+
+        async for vm in paginate(fetch, "vms", cursor=cursor):
+            yield vm
+
+    @operation("listAnyCheckpoints")
+    async def list_checkpoints(
+        self,
+        *,
+        user: str | None = None,
+        orphaned: bool | None = None,
+        limit: int | None = None,
+        cursor: str | None = None,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+    ) -> AdminCheckpointSummaryPage:
+        """One page of every user's checkpoints, or ``user``'s, or only the ``orphaned`` ones.
+
+        Scope ``admin:checkpoints:read``.
+        """
+        page = await self._t.call(
+            list_any_checkpoints,
+            user=opt(user),
+            orphaned=opt(orphaned),
+            limit=opt(limit),
+            cursor=opt(cursor),
+            timeout=timeout,
+        )
+        return cast(AdminCheckpointSummaryPage, page)
+
+    async def iter_checkpoints(
+        self,
+        *,
+        user: str | None = None,
+        orphaned: bool | None = None,
+        limit: int | None = None,
+        cursor: str | None = None,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+    ) -> AsyncIterator[AdminCheckpointSummary]:
+        """Every checkpoint :meth:`list_checkpoints` lists, following ``next_cursor``."""
+
+        async def fetch(c: str | None) -> AdminCheckpointSummaryPage:
+            return await self.list_checkpoints(
+                user=user, orphaned=orphaned, limit=limit, cursor=c, timeout=timeout
+            )
+
+        async for cp in paginate(fetch, "checkpoints", cursor=cursor):
+            yield cp
+
+    @operation("deleteAnyCheckpoint")
+    async def delete_checkpoint(
+        self, id: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> None:
+        """Delete any user's checkpoint. Scope ``admin:checkpoints:write``.
+
+        Refuses every API key, an admin key included, with 401 ``sudo_required``: it needs a
+        ticket or a session.
+        """
+        await self._t.call(delete_any_checkpoint, path={"id": id}, timeout=timeout)

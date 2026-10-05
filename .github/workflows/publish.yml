@@ -1,0 +1,142 @@
+name: Publish
+
+# Publishes a release of this repository to PyPI, as the files the release carries: nothing
+# is built here. Before anything reaches the registry, .github/scripts/verify-release.sh
+# checks that the release's sha256.sum is signed by the Cove release key and names its
+# source release, that the wheel and the sdist match their lines in sha256.sum, and that
+# both are this project at the release's version; it then copies them, bytes unchanged,
+# under their standard file names into verified-dist/. PyPI trusts this workflow through
+# trusted publishing (OIDC), so no PyPI token is stored, and the files get attestations.
+#
+# Runs when a release is published, or by hand for an existing release:
+#   gh workflow run publish.yml --ref vX.Y.Z -f tag=vX.Y.Z
+# A version PyPI already has is skipped, green, with a notice.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish (vX.Y.Z)
+        required: true
+        type: string
+
+# Nothing in this workflow writes to the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Verify and publish to PyPI
+    runs-on: ubuntu-24.04
+    environment: pypi
+    permissions:
+      contents: read # the checkout and the release download
+      id-token: write # trusted publishing: the OIDC token PyPI exchanges for a short-lived upload credential
+    env:
+      # The public half of the Cove release minisign key, the key `just publish` signs every
+      # release's sha256.sum with. Rotating it means changing it here, in both SDK
+      # repositories' workflows.
+      MINISIGN_PUBKEY: RWTqA4R40UFRpbNGc8ZQiOg8HEXsVDqQgkMume81uaGP4hfF7LHcoUlF
+      # minisign 0.12 from github.com/jedisct1/minisign releases, checked by this sha256.
+      MINISIGN_VERSION: "0.12"
+      MINISIGN_SHA256: 9a599b48ba6eb7b1e80f12f36b94ceca7c00b7a5173c95c3efc88d9822957e73
+      PACKAGE_NAME: runcove-sdk
+      WHEEL: cove-sdk-python.whl
+      SDIST: cove-sdk-python.tar.gz
+    steps:
+      - name: Resolve the release tag
+        id: tag
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          RUN_REF: ${{ github.ref }}
+        run: |
+          tag="${RELEASE_TAG:-$INPUT_TAG}"
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::the release tag is not vX.Y.Z"
+            exit 1
+          fi
+          # The run must be on the release's own tag (a dispatch: "Use workflow from" = the tag),
+          # the ref the environment's v* deployment rule admits.
+          if [ "$RUN_REF" != "refs/tags/$tag" ]; then
+            echo "::error::this run is on $RUN_REF, not refs/tags/$tag; dispatch it from the tag"
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      # Only for .github/scripts/verify-release.sh: nothing from the checkout is built.
+      - name: Check out the release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ steps.tag.outputs.tag }}
+          persist-credentials: false
+
+      - name: Download the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/release"
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir "$RUNNER_TEMP/release" \
+            --pattern "$WHEEL" --pattern "$SDIST" --pattern sha256.sum --pattern sha256.sum.minisig
+
+      - name: Install minisign
+        run: |
+          mkdir -p "$RUNNER_TEMP/minisign" "$RUNNER_TEMP/bin"
+          cd "$RUNNER_TEMP/minisign"
+          curl -fsSL -o minisign.tar.gz \
+            "https://github.com/jedisct1/minisign/releases/download/${MINISIGN_VERSION}/minisign-${MINISIGN_VERSION}-linux.tar.gz"
+          echo "${MINISIGN_SHA256}  minisign.tar.gz" | sha256sum --strict -c -
+          tar -xzf minisign.tar.gz minisign-linux/x86_64/minisign
+          install -m 0755 minisign-linux/x86_64/minisign "$RUNNER_TEMP/bin/minisign"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Verify the release
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          bash .github/scripts/verify-release.sh --dir "$RUNNER_TEMP/release" --tag "$TAG" \
+            --asset "$WHEEL" --asset "$SDIST" --registry pypi --name "$PACKAGE_NAME" \
+            --pubkey "$MINISIGN_PUBKEY" --out "$GITHUB_WORKSPACE/verified-dist"
+
+      # Skip only when PyPI already holds BOTH verified files for this version. A version with
+      # one file (an upload cut short) goes on to the upload, whose skip-existing then sends only
+      # the missing one. Any answer but 200 or 404 fails the run.
+      - name: Skip a version PyPI already has
+        id: registry
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          version="${TAG#v}"
+          json="$RUNNER_TEMP/pypi-version.json"
+          code="$(curl -sS -o "$json" -w '%{http_code}' "https://pypi.org/pypi/${PACKAGE_NAME}/${version}/json")"
+          case "$code" in
+            200)
+              have="$(jq -r '.urls[].filename' "$json")"
+              missing=0
+              for f in verified-dist/*; do
+                grep -qxF -- "${f##*/}" <<<"$have" || missing=$((missing + 1))
+              done
+              if [ "$missing" -eq 0 ]; then
+                echo "::notice::${PACKAGE_NAME} ${version} is already on PyPI with both files; nothing to publish"
+                echo "published=true" >> "$GITHUB_OUTPUT"
+              else
+                echo "::notice::${PACKAGE_NAME} ${version} is on PyPI without ${missing} of its files; uploading them"
+                echo "published=false" >> "$GITHUB_OUTPUT"
+              fi ;;
+            404) echo "published=false" >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::PyPI answered HTTP ${code} for ${PACKAGE_NAME} ${version}"; exit 1 ;;
+          esac
+
+      - name: Publish to PyPI
+        if: steps.registry.outputs.published != 'true'
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: verified-dist/
+          skip-existing: true

@@ -1,0 +1,121 @@
+"""meta.me()'s permissions, has_scope() and meta.sessions() (mirrored to the sync client by unasync)."""
+
+from typing import Any
+
+import pytest
+from mockapi import Api
+
+from cove_sdk import has_scope
+from cove_sdk._async._transport import AsyncCoveTransport
+from cove_sdk._async.resources.meta import Meta
+from cove_sdk._generated.models import (
+    ProfileSummary,
+    SelfPermissionsType0,
+    SelfPermissionsType1,
+    Session,
+)
+from cove_sdk.auth import BearerAuth
+from cove_sdk.errors import CoveError
+
+PROFILE = {
+    "active_cli_ticket_count": 0,
+    "key_count": 1,
+    "keys_managed": False,
+    "ldap_linked": False,
+    "roles": ["user"],
+    "username": "alice",
+}
+
+
+def _t(api: Api) -> AsyncCoveTransport:
+    return AsyncCoveTransport(
+        "https://h", auth=BearerAuth("cvk_t"), transport=api.transport()
+    )
+
+
+async def _me(**fields: Any) -> ProfileSummary:
+    api = Api().on("GET", "/api/me", (200, {**PROFILE, **fields}))
+    return await Meta(_t(api)).me()
+
+
+async def test_component_me_key_permissions_answer_from_the_key_list() -> None:
+    me = await _me(permissions={"kind": "key", "scopes": ["vms:read"]}, is_admin=False)
+    assert isinstance(me.permissions, SelfPermissionsType0)
+    assert me.permissions.scopes == ["vms:read"]
+    assert has_scope(me, "vms:read") is True
+    # nothing implies anything: vms:read is not vms:write
+    assert has_scope(me, "vms:write") is False
+
+
+async def test_component_me_session_is_not_restricted_by_a_scope_list() -> None:
+    me = await _me(permissions={"kind": "session"}, is_admin=False)
+    assert isinstance(me.permissions, SelfPermissionsType1)
+    assert has_scope(me, "vms:write") is True
+    assert has_scope(me, "keys:manage") is True
+
+
+async def test_component_me_admin_permission_needs_the_admin_check() -> None:
+    # an ordinary key listing `admin` passes no admin check: is_admin says so
+    plain = await _me(permissions={"kind": "key", "scopes": ["admin"]}, is_admin=False)
+    assert has_scope(plain, "admin") is False
+    assert has_scope(plain, "admin:quotas:read") is False
+    # an admin key: bare `admin` is the superset of `admin:*`, and only of those
+    admin = await _me(permissions={"kind": "key", "scopes": ["admin"]}, is_admin=True)
+    assert has_scope(admin, "admin") is True
+    assert has_scope(admin, "admin:quotas:read") is True
+    assert has_scope(admin, "vms:read") is False
+    # a narrow admin permission does not widen
+    narrow = await _me(
+        permissions={"kind": "key", "scopes": ["admin:quotas:read"]}, is_admin=True
+    )
+    assert has_scope(narrow, "admin:quotas:read") is True
+    assert has_scope(narrow, "admin:quotas:write") is False
+    assert has_scope(narrow, "admin") is False
+    # a session holds an admin permission only where the admin check passes
+    session = await _me(permissions={"kind": "session"}, is_admin=False)
+    assert has_scope(session, "admin:fleet:read") is False
+    admin_session = await _me(permissions={"kind": "session"}, is_admin=True)
+    assert has_scope(admin_session, "admin:fleet:read") is True
+
+
+async def test_component_me_without_permissions_is_refused_not_guessed() -> None:
+    me = await _me()  # a server older than the field
+    with pytest.raises(CoveError, match="does not report permissions"):
+        has_scope(me, "vms:read")
+    explicit_null = await _me(permissions=None)
+    with pytest.raises(CoveError, match="does not report permissions"):
+        has_scope(explicit_null, "vms:read")
+
+
+async def test_component_me_unrecognised_permissions_shape_says_upgrade() -> None:
+    # a kind this SDK's contract does not know (a newer server) stays a raw dict after parsing
+    newer = await _me(permissions={"kind": "workload", "audience": "x"}, is_admin=False)
+    assert isinstance(newer.permissions, dict)
+    with pytest.raises(CoveError, match="unrecognised.*upgrade"):
+        has_scope(newer, "vms:read")
+    # a known kind missing its list is not a key's permissions either
+    broken = await _me(permissions={"kind": "key"}, is_admin=False)
+    with pytest.raises(CoveError, match="unrecognised.*upgrade"):
+        has_scope(broken, "vms:read")
+
+
+async def test_component_meta_sessions_lists_the_callers_sessions() -> None:
+    api = Api().on(
+        "GET",
+        "/api/me/sessions",
+        (
+            200,
+            [
+                {
+                    "created_at": "2026-10-01T00:00:00Z",
+                    "id": "s1",
+                    "state": "active",
+                    "target_name": "cove",
+                }
+            ],
+        ),
+    )
+    sessions = await Meta(_t(api)).sessions()
+    assert (api.last.method, api.last.url.path) == ("GET", "/api/me/sessions")
+    assert isinstance(sessions[0], Session)
+    assert (sessions[0].id, sessions[0].target_name) == ("s1", "cove")

@@ -1,0 +1,32 @@
+"""The one cursor loop behind every ``iter_*`` method (mirrored to the sync client by unasync).
+
+TypeScript repeats this loop in each resource (``sdk/typescript/src/resources/vms.ts`` ``iter``);
+here every list page has an items attribute and a ``next_cursor``, so one helper serves them all.
+"""
+
+from __future__ import annotations
+
+from collections.abc import AsyncIterator, Callable
+from typing import Any
+
+
+async def paginate(
+    fetch: Callable[[str | None], Any],
+    items_attr: str,
+    *,
+    cursor: str | None = None,
+) -> AsyncIterator[Any]:
+    """Yield every item of every page, fetching the next page only when the last is consumed.
+
+    ``fetch(cursor)`` returns one page; the walk starts at ``cursor`` (``None`` = the first page)
+    and ends when a page's ``next_cursor`` is ``None``, empty or unset. A per-call timeout given
+    to ``fetch`` applies to each page, not to the walk.
+    """
+    while True:
+        page = await fetch(cursor)
+        for item in getattr(page, items_attr):
+            yield item
+        # `or None` folds "" and the generated UNSET (falsy) into the end of the walk.
+        cursor = getattr(page, "next_cursor", None) or None
+        if cursor is None:
+            return
