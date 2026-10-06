@@ -19,6 +19,21 @@ Issues = "https://github.com/runcove/sdk-python/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cove_sdk"]   # explicit on purpose: a rename must not ship an empty wheel
+exclude = ["AGENTS.md", "CLAUDE.md"]   # belt and braces: `packages` already limits it to cove_sdk
+
+[tool.hatch.build.targets.sdist]
+# An allowlist, so a file added to this directory later (an agent-instructions file under any
+# name, a .claude/ directory, a design note) never ships by default. AGENTS.md, CLAUDE.md (a
+# symlink to it) and the CI workflow are the repository's working files, not part of a package,
+# and the release's content gate refuses the first (internal pointers) and the symlink. The
+# tests stay, as a PyPI sdist conventionally carries them. A new file the sdist should carry is
+# added here. tests/ci/test-sdk-python-dist-members.sh holds this.
+only-include = [
+    "src", "tests", "examples", "scripts",
+    "README.md", "LICENSE", "pyproject.toml", ".gitignore",
+    "generator-config.yaml", "requirements-dev.in", "requirements-dev.lock",
+]
+exclude = ["AGENTS.md", "CLAUDE.md"]
 
 [tool.mypy]
 strict = true
