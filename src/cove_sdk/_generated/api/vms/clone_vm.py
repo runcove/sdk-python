@@ -294,6 +294,11 @@ def _parse_response(
 
         return response_409
 
+    if response.status_code == 422:
+        response_422 = ApiError.from_dict(response.json())
+
+        return response_422
+
     if response.status_code == 426:
         response_426 = CliTooOldBody.from_dict(response.json())
 
@@ -373,6 +378,12 @@ def sync_detailed(
     checkpoint themselves. The response's `fingerprints` are the clone's SSH host-key fingerprints,
     pinned into Warpgate's known-hosts on registration so the first SSH sees no TOFU prompt.
 
+    The clone resumes from the checkpoint's memory, so processes running in `source` carry on in the
+    copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
+    maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
+    lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
+    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags.
+
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with
     **400** `invalid_vm_name` before `source` is looked up.
@@ -446,6 +457,12 @@ def sync(
     checkpoint themselves. The response's `fingerprints` are the clone's SSH host-key fingerprints,
     pinned into Warpgate's known-hosts on registration so the first SSH sees no TOFU prompt.
 
+    The clone resumes from the checkpoint's memory, so processes running in `source` carry on in the
+    copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
+    maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
+    lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
+    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags.
+
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with
     **400** `invalid_vm_name` before `source` is looked up.
@@ -512,6 +529,12 @@ async def asyncio_detailed(
     implicit `pre_clone` checkpoint of `source` and clones from that — callers never have to take a
     checkpoint themselves. The response's `fingerprints` are the clone's SSH host-key fingerprints,
     pinned into Warpgate's known-hosts on registration so the first SSH sees no TOFU prompt.
+
+    The clone resumes from the checkpoint's memory, so processes running in `source` carry on in the
+    copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
+    maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
+    lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
+    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with
@@ -583,6 +606,12 @@ async def asyncio(
     implicit `pre_clone` checkpoint of `source` and clones from that — callers never have to take a
     checkpoint themselves. The response's `fingerprints` are the clone's SSH host-key fingerprints,
     pinned into Warpgate's known-hosts on registration so the first SSH sees no TOFU prompt.
+
+    The clone resumes from the checkpoint's memory, so processes running in `source` carry on in the
+    copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
+    maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
+    lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
+    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with

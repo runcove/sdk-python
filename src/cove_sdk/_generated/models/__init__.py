@@ -50,6 +50,7 @@ from .checkpoint_state import CheckpointState
 from .cli_status_response import CliStatusResponse
 from .cli_too_old_body import CliTooOldBody
 from .clone_request import CloneRequest
+from .clone_request_tags_type_0 import CloneRequestTagsType0
 from .clone_response import CloneResponse
 from .connected_app_access import ConnectedAppAccess
 from .connected_app_summary import ConnectedAppSummary
@@ -296,6 +297,7 @@ __all__ = (
     "CliStatusResponse",
     "CliTooOldBody",
     "CloneRequest",
+    "CloneRequestTagsType0",
     "CloneResponse",
     "ConnectedAppAccess",
     "ConnectedAppSummary",

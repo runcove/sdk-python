@@ -40,7 +40,9 @@ class VmDetail:
             disk_size_gb (int):
             image (str):
             mac_address (str):
-            memory_mb (int):
+            memory_mb (int): Memory in MiB the VM boots with on a cold start. Not what the VM has
+                now: after a resize, or for a clone of a VM that was resized,
+                `current_memory_mb` is the memory the guest holds.
             name (str):
             state (VmState): VM lifecycle state as reported by the Cove REST API and persisted by core.
 
@@ -81,7 +83,8 @@ class VmDetail:
                 the data was migrated forward instead of being read in two spellings
                 indefinitely.
             updated_at (str):
-            vcpus (int):
+            vcpus (int): vCPUs the VM boots with on a cold start. The VM can be running with
+                more after a resize: `current_vcpus` is what it has now.
             vm_id (str):
             agent_capabilities (list[str] | Unset): Capability tokens from the last handshake (`vms.capabilities`).
             agent_handshake_at (None | str | Unset): RFC 3339 time of the last completed agent handshake
@@ -94,21 +97,23 @@ class VmDetail:
             agent_stale (bool | Unset): The last handshake reported a protocol below the host's
                 (`vms.agent_stale`); the reconciler pushes a fresh agent.
             agent_version (None | str | Unset):
-            current_memory_mb (int | Unset):
-            current_vcpus (int | Unset):
+            current_memory_mb (int | Unset): Memory in MiB the VM has now: what `free` inside the guest reports
+                as its total, give or take what the kernel keeps for itself. Quota is
+                charged on this.
+            current_vcpus (int | Unset): vCPUs the VM has now. Quota is charged on this.
             degraded (bool | Unset):
             degraded_reason (None | str | Unset):
             deletes_in_secs (int | None | Unset):
             disk_format (DiskFormat | Unset):
             ip_address (None | str | Unset):
             max_life_expires_in_secs (int | None | Unset):
-            memory_max_mb (int | Unset):
-            memory_min_mb (int | Unset):
+            memory_max_mb (int | Unset): Most memory in MiB a resize can give the VM while it runs.
+            memory_min_mb (int | Unset): Least memory in MiB a resize can take the VM down to.
             tags (VmDetailTags | Unset):
             ttl_policy (TtlPolicy | Unset): Per-VM TTL policy bundle. Both knobs default to "off" (`Never` / `None`);
                 pool defaults and CLI flags merge into this on create.
-            vcpus_max (int | Unset):
-            vcpus_min (int | Unset):
+            vcpus_max (int | Unset): Most vCPUs a resize can give the VM while it runs.
+            vcpus_min (int | Unset): Fewest vCPUs a resize can take the VM down to.
     """
 
     auto_pause_policy: AutoPausePolicyType0 | AutoPausePolicyType1
