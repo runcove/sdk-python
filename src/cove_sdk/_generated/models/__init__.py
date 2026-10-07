@@ -112,6 +112,7 @@ from .error_code import ErrorCode
 from .exec_exit import ExecExit
 from .exec_output_dto import ExecOutputDto
 from .exec_request_dto import ExecRequestDto
+from .exec_request_dto_env_type_0 import ExecRequestDtoEnvType0
 from .exec_with_secrets_request import ExecWithSecretsRequest
 from .file_uploaded import FileUploaded
 from .get_openapi_document_response_200 import GetOpenapiDocumentResponse200
@@ -359,6 +360,7 @@ __all__ = (
     "ExecExit",
     "ExecOutputDto",
     "ExecRequestDto",
+    "ExecRequestDtoEnvType0",
     "ExecWithSecretsRequest",
     "FileUploaded",
     "GetOpenapiDocumentResponse200",

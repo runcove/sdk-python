@@ -120,6 +120,18 @@ def sync_detailed(
     ends early for any other reason kills the command the same way: the client disconnected, or the API
     key that opened it was revoked mid-run.
 
+    **The command's environment.** It runs as root, or as `user`, with a login-like environment: `HOME`,
+    `USER`, `LOGNAME` and `SHELL` of that account, the variables in the VM's `/etc/environment`, a
+    `LANG`, and a `PATH` of the usual profile directories (mise's shims, `~/.local/bin`,
+    `/usr/local/sbin`, `/usr/local/bin`, then the system directories). It starts in the account's home
+    directory unless `cwd` says otherwise. No profile file runs unless `login` is `true`, which runs the
+    command through the account's login shell. `env` is applied last, so it wins. The command runs at
+    default priority (nice 0, default OOM score), not with the guest agent's own. `cwd`, `env`, `user`
+    and `login` need a guest agent that speaks protocol 9 or later: on a VM whose agent is older the
+    stream ends with an `error` event naming both versions. Cove updates an outdated agent when it
+    connects to it, so a retry shortly after usually succeeds. A `cwd` that does not exist or an unknown
+    `user` also ends the stream with an `error` event.
+
     **The buffered, secrets-injected form has moved to `POST /api/vms/{name}/exec-with-secrets`
     (`execVmWithSecrets`).** Until the split, this one route answered with either an SSE stream or a
     JSON body depending on whether the request body carried a `selector` field — the exact shape that
@@ -190,6 +202,18 @@ def sync(
     ends early for any other reason kills the command the same way: the client disconnected, or the API
     key that opened it was revoked mid-run.
 
+    **The command's environment.** It runs as root, or as `user`, with a login-like environment: `HOME`,
+    `USER`, `LOGNAME` and `SHELL` of that account, the variables in the VM's `/etc/environment`, a
+    `LANG`, and a `PATH` of the usual profile directories (mise's shims, `~/.local/bin`,
+    `/usr/local/sbin`, `/usr/local/bin`, then the system directories). It starts in the account's home
+    directory unless `cwd` says otherwise. No profile file runs unless `login` is `true`, which runs the
+    command through the account's login shell. `env` is applied last, so it wins. The command runs at
+    default priority (nice 0, default OOM score), not with the guest agent's own. `cwd`, `env`, `user`
+    and `login` need a guest agent that speaks protocol 9 or later: on a VM whose agent is older the
+    stream ends with an `error` event naming both versions. Cove updates an outdated agent when it
+    connects to it, so a retry shortly after usually succeeds. A `cwd` that does not exist or an unknown
+    `user` also ends the stream with an `error` event.
+
     **The buffered, secrets-injected form has moved to `POST /api/vms/{name}/exec-with-secrets`
     (`execVmWithSecrets`).** Until the split, this one route answered with either an SSE stream or a
     JSON body depending on whether the request body carried a `selector` field — the exact shape that
@@ -254,6 +278,18 @@ async def asyncio_detailed(
     enforce, so a long-running command should not see the stream cut by a quiet middlebox. A stream that
     ends early for any other reason kills the command the same way: the client disconnected, or the API
     key that opened it was revoked mid-run.
+
+    **The command's environment.** It runs as root, or as `user`, with a login-like environment: `HOME`,
+    `USER`, `LOGNAME` and `SHELL` of that account, the variables in the VM's `/etc/environment`, a
+    `LANG`, and a `PATH` of the usual profile directories (mise's shims, `~/.local/bin`,
+    `/usr/local/sbin`, `/usr/local/bin`, then the system directories). It starts in the account's home
+    directory unless `cwd` says otherwise. No profile file runs unless `login` is `true`, which runs the
+    command through the account's login shell. `env` is applied last, so it wins. The command runs at
+    default priority (nice 0, default OOM score), not with the guest agent's own. `cwd`, `env`, `user`
+    and `login` need a guest agent that speaks protocol 9 or later: on a VM whose agent is older the
+    stream ends with an `error` event naming both versions. Cove updates an outdated agent when it
+    connects to it, so a retry shortly after usually succeeds. A `cwd` that does not exist or an unknown
+    `user` also ends the stream with an `error` event.
 
     **The buffered, secrets-injected form has moved to `POST /api/vms/{name}/exec-with-secrets`
     (`execVmWithSecrets`).** Until the split, this one route answered with either an SSE stream or a
@@ -322,6 +358,18 @@ async def asyncio(
     enforce, so a long-running command should not see the stream cut by a quiet middlebox. A stream that
     ends early for any other reason kills the command the same way: the client disconnected, or the API
     key that opened it was revoked mid-run.
+
+    **The command's environment.** It runs as root, or as `user`, with a login-like environment: `HOME`,
+    `USER`, `LOGNAME` and `SHELL` of that account, the variables in the VM's `/etc/environment`, a
+    `LANG`, and a `PATH` of the usual profile directories (mise's shims, `~/.local/bin`,
+    `/usr/local/sbin`, `/usr/local/bin`, then the system directories). It starts in the account's home
+    directory unless `cwd` says otherwise. No profile file runs unless `login` is `true`, which runs the
+    command through the account's login shell. `env` is applied last, so it wins. The command runs at
+    default priority (nice 0, default OOM score), not with the guest agent's own. `cwd`, `env`, `user`
+    and `login` need a guest agent that speaks protocol 9 or later: on a VM whose agent is older the
+    stream ends with an `error` event naming both versions. Cove updates an outdated agent when it
+    connects to it, so a retry shortly after usually succeeds. A `cwd` that does not exist or an unknown
+    `user` also ends the stream with an `error` event.
 
     **The buffered, secrets-injected form has moved to `POST /api/vms/{name}/exec-with-secrets`
     (`execVmWithSecrets`).** Until the split, this one route answered with either an SSE stream or a

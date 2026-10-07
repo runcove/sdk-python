@@ -524,6 +524,10 @@ class Vms:
         *,
         command: Sequence[str],
         timeout_secs: int | None = None,
+        cwd: str | None = None,
+        env: Mapping[str, str] | None = None,
+        user: str | None = None,
+        login: bool | None = None,
         timeout: TimeoutArg = None,
     ) -> ExecStream:
         """Run ``command`` in the guest, streaming its output. Scope ``vms:exec``.
@@ -535,10 +539,26 @@ class Vms:
         everything that stayed in its process group, and the stream ends with ``ExecExit`` code
         124 and ``timed_out`` true. ``timeout`` is this client's: by default only the connect
         phase is bounded, and a number bounds the idle time between chunks.
+
+        The command runs as root in a login-like environment (``HOME=/root``, starting in
+        ``/root``). ``cwd`` sets the working directory (relative to the account's home),
+        ``env`` adds variables that win over the defaults (at most 128), ``user`` runs it as
+        another account in the VM's ``/etc/passwd``, and ``login`` runs it through that
+        account's login shell so its profile files apply. A VM whose guest agent predates
+        protocol 9 refuses an exec that sets any of them (``ExecError``); one that sets none
+        is sent exactly as before.
         """
         body: dict[str, object] = {"command": builtins.list(command)}
         if timeout_secs is not None:
             body["timeout_secs"] = timeout_secs
+        if cwd is not None:
+            body["cwd"] = cwd
+        if env is not None:
+            body["env"] = dict(env)
+        if user is not None:
+            body["user"] = user
+        if login:
+            body["login"] = True  # False is the default: leave it out of a plain exec
         return ExecStream(
             self._t,
             api_path("/api/vms/{name}/exec", name=name),
@@ -552,6 +572,10 @@ class Vms:
         *,
         command: Sequence[str],
         timeout_secs: int | None = None,
+        cwd: str | None = None,
+        env: Mapping[str, str] | None = None,
+        user: str | None = None,
+        login: bool | None = None,
         timeout: TimeoutArg = None,
     ) -> ExecResult:
         """Run ``command`` through :meth:`exec` and gather its output. Scope ``vms:exec``.
@@ -564,7 +588,14 @@ class Vms:
         stdout: builtins.list[str] = []
         stderr: builtins.list[str] = []
         with self.exec(
-            name, command=command, timeout_secs=timeout_secs, timeout=timeout
+            name,
+            command=command,
+            timeout_secs=timeout_secs,
+            cwd=cwd,
+            env=env,
+            user=user,
+            login=login,
+            timeout=timeout,
         ) as stream:
             for event in stream:
                 if isinstance(event, ExecStdout):

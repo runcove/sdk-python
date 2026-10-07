@@ -56,6 +56,46 @@ def test_component_exec_sends_timeout_secs_and_streams() -> None:
     assert json.loads(seen[0].content) == {"command": ["ls"], "timeout_secs": 5}
 
 
+def test_component_exec_and_exec_collect_send_cwd_env_user_login() -> None:
+    seen, vms = _vms(OUTPUT, OUTPUT)
+    opts: dict[str, object] = {
+        "cwd": "/srv/app",
+        "env": {"GH_TOKEN": "t0k", "LANG": "C.UTF-8"},
+        "user": "builder",
+        "login": True,
+    }
+    with vms.exec(
+        "v",
+        command=["gh", "--version"],
+        timeout_secs=10,
+        cwd="/srv/app",
+        env={"GH_TOKEN": "t0k", "LANG": "C.UTF-8"},
+        user="builder",
+        login=True,
+    ) as stream:
+        _ = [e for e in stream]
+    assert vms.exec_collect(
+        "v",
+        command=["gh", "--version"],
+        cwd="/srv/app",
+        env={"GH_TOKEN": "t0k", "LANG": "C.UTF-8"},
+        user="builder",
+        login=True,
+    ) == ExecResult("ab", "", 0)
+    assert json.loads(seen[0].content) == {
+        "command": ["gh", "--version"],
+        "timeout_secs": 10,
+        **opts,
+    }
+    assert json.loads(seen[1].content) == {"command": ["gh", "--version"], **opts}
+
+
+def test_component_exec_login_false_is_left_out() -> None:
+    seen, vms = _vms(OUTPUT)
+    vms.exec_collect("v", command=["true"], login=False)
+    assert json.loads(seen[0].content) == {"command": ["true"]}
+
+
 TIMED_OUT = (
     b"event: stdout\ndata: started\ndata: \n\n"
     b'event: exit\ndata: {"code":124,"timed_out":true}\n\n'
