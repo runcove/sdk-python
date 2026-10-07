@@ -642,7 +642,7 @@ def mock_transport() -> httpx.MockTransport:
                     return invalid_state(name, vm, "clone from a checkpoint of another VM")
                 if c_or_none.disk_only:
                     return error(
-                        409, "invalid_state_transition", "disk-only checkpoints cannot be cloned; use restore"
+                        409, "invalid_state_transition", "a disk-only checkpoint cannot be cloned; stop the VM and wake it from this checkpoint"
                     )
                 source = c_or_none
             else:
