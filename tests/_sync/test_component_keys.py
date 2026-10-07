@@ -292,3 +292,11 @@ def test_component_keys_non_service_calls_send_no_probe() -> None:
     keys.list(service=False)
     assert "/api/whoami" not in [r.url.path for r in api.seen]
     assert len(api.seen) == 7
+
+
+def test_component_keys_revoke_by_token_posts_the_token() -> None:
+    # The server answers 202 with no body whatever the token was; the call returns None on it.
+    api = Api().on("POST", "/api/api-keys/revoke", 202)
+    assert Keys(_t(api)).revoke_by_token("cvk_leaked") is None
+    assert (api.last.method, api.last.url.path) == ("POST", "/api/api-keys/revoke")
+    assert api.last_json() == {"token": "cvk_leaked"}

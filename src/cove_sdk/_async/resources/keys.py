@@ -11,9 +11,15 @@ from ..._generated.api.api_keys import (
     create_api_key,
     list_api_keys,
     revoke_api_key,
+    revoke_api_key_by_token,
     rotate_api_key,
 )
-from ..._generated.models import CreatedKey, CreateKeyRequest, KeySummary
+from ..._generated.models import (
+    CreatedKey,
+    CreateKeyRequest,
+    KeySummary,
+    RevokeKeyByTokenRequest,
+)
 from ..._operations import operation
 from ...errors import CoveError, _parse_api_version
 from .._transport import CLIENT_DEFAULT, AsyncCoveTransport, CallTimeout, api_path
@@ -138,6 +144,23 @@ class Keys:
         console, exec) end within the server's 15 s re-check interval.
         """
         await self._t.call(revoke_api_key, path={"id": id}, timeout=timeout)
+
+    @operation("revokeApiKeyByToken")
+    async def revoke_by_token(
+        self, token: str, *, timeout: CallTimeout = CLIENT_DEFAULT
+    ) -> None:
+        """Revoke an API key by presenting it: holding the key is the proof.
+
+        Any key works, yours or one you found, and the call needs no scope (on the bearer
+        listener, no credential at all). Returns alike whether the key was live (it is revoked,
+        as by its owner), already revoked, unknown or not a key, so it tells you nothing about
+        it. Never log ``token``.
+        """
+        await self._t.call(
+            revoke_api_key_by_token,
+            body=RevokeKeyByTokenRequest(token=token),
+            timeout=timeout,
+        )
 
     @operation("rotateApiKey")
     async def rotate(

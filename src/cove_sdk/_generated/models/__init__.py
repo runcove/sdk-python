@@ -200,6 +200,7 @@ from .reservation_kind import ReservationKind
 from .reservation_ref import ReservationRef
 from .resize_request import ResizeRequest
 from .resize_result import ResizeResult
+from .revoke_key_by_token_request import RevokeKeyByTokenRequest
 from .revoke_sessions_response import RevokeSessionsResponse
 from .revoke_share_outcome import RevokeShareOutcome
 from .rotate_summary import RotateSummary
@@ -467,6 +468,7 @@ __all__ = (
     "ReservationRef",
     "ResizeRequest",
     "ResizeResult",
+    "RevokeKeyByTokenRequest",
     "RevokeSessionsResponse",
     "RevokeShareOutcome",
     "RotateSummary",

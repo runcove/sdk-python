@@ -48,6 +48,12 @@ class AdminHostStateResponse:
           embedded_agent_version (None | str | Unset): Version of the guest agent this daemon embeds for hot-patching, or
               `None` when the build embeds none (`embedded_agent_version`). The admin
               Guest Agents page compares each VM's reported version against it.
+          key_presentations_ignored_total (int | Unset): Presentations to `POST /api/api-keys/revoke` this process
+              answered
+              that revoked nothing (not a key, no matching key, already revoked).
+              They write no audit row, so this counter is where they show. Not
+              `required` in the schema: a daemon that predates it omits it, and the
+              generated SDKs must still decode that daemon's answer.
           snapshot_last_reap (None | SnapshotReapSummary | Unset):
     """
 
@@ -58,6 +64,7 @@ class AdminHostStateResponse:
     snapshot_images: list[SnapshotImageUsage]
     ttl_pending_count: int
     embedded_agent_version: None | str | Unset = UNSET
+    key_presentations_ignored_total: int | Unset = UNSET
     snapshot_last_reap: None | SnapshotReapSummary | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -88,6 +95,8 @@ class AdminHostStateResponse:
         else:
             embedded_agent_version = self.embedded_agent_version
 
+        key_presentations_ignored_total = self.key_presentations_ignored_total
+
         snapshot_last_reap: dict[str, Any] | None | Unset
         if isinstance(self.snapshot_last_reap, Unset):
             snapshot_last_reap = UNSET
@@ -110,6 +119,10 @@ class AdminHostStateResponse:
         )
         if embedded_agent_version is not UNSET:
             field_dict["embedded_agent_version"] = embedded_agent_version
+        if key_presentations_ignored_total is not UNSET:
+            field_dict["key_presentations_ignored_total"] = (
+                key_presentations_ignored_total
+            )
         if snapshot_last_reap is not UNSET:
             field_dict["snapshot_last_reap"] = snapshot_last_reap
 
@@ -157,6 +170,10 @@ class AdminHostStateResponse:
             d.pop("embedded_agent_version", UNSET)
         )
 
+        key_presentations_ignored_total = d.pop(
+            "key_presentations_ignored_total", UNSET
+        )
+
         def _parse_snapshot_last_reap(
             data: object,
         ) -> None | SnapshotReapSummary | Unset:
@@ -186,6 +203,7 @@ class AdminHostStateResponse:
             snapshot_images=snapshot_images,
             ttl_pending_count=ttl_pending_count,
             embedded_agent_version=embedded_agent_version,
+            key_presentations_ignored_total=key_presentations_ignored_total,
             snapshot_last_reap=snapshot_last_reap,
         )
 

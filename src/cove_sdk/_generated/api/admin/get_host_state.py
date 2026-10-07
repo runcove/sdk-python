@@ -92,6 +92,10 @@ def sync_detailed(
     `null` when the build embeds none (the daemon cannot hot-patch then; `POST /api/admin/update-agents`
     can still push an uploaded binary). A VM whose agent reports another version is not running the
     host's agent.
+    - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
+    that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
+    write no audit row (only a revocation does), so this is where they show. A sudden climb means
+    someone is sending junk to the anonymous route.
 
     Counters that say `this process` reset when the daemon restarts.
 
@@ -138,6 +142,10 @@ def sync(
     `null` when the build embeds none (the daemon cannot hot-patch then; `POST /api/admin/update-agents`
     can still push an uploaded binary). A VM whose agent reports another version is not running the
     host's agent.
+    - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
+    that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
+    write no audit row (only a revocation does), so this is where they show. A sudden climb means
+    someone is sending junk to the anonymous route.
 
     Counters that say `this process` reset when the daemon restarts.
 
@@ -180,6 +188,10 @@ async def asyncio_detailed(
     `null` when the build embeds none (the daemon cannot hot-patch then; `POST /api/admin/update-agents`
     can still push an uploaded binary). A VM whose agent reports another version is not running the
     host's agent.
+    - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
+    that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
+    write no audit row (only a revocation does), so this is where they show. A sudden climb means
+    someone is sending junk to the anonymous route.
 
     Counters that say `this process` reset when the daemon restarts.
 
@@ -224,6 +236,10 @@ async def asyncio(
     `null` when the build embeds none (the daemon cannot hot-patch then; `POST /api/admin/update-agents`
     can still push an uploaded binary). A VM whose agent reports another version is not running the
     host's agent.
+    - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
+    that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
+    write no audit row (only a revocation does), so this is where they show. A sudden climb means
+    someone is sending junk to the anonymous route.
 
     Counters that say `this process` reset when the daemon restarts.
 
