@@ -27,9 +27,9 @@ To match a Cove server, take `<version>` from `https://<cove-host>/public/sdk/in
 
 ### From your Cove server
 
-A Cove server installed from a release also serves the SDK its release carries under `/public/sdk/`,
+A Cove server can also serve an SDK version, the one its operator installed on it, under `/public/sdk/`,
 on its Warpgate-fronted URL (the external bearer listener does not serve `/public/sdk`). Use this when
-you want exactly the SDK your server shipped with. The routes are unauthenticated. Install from the
+you want exactly the SDK version your server's operator chose. The routes are unauthenticated. Install from the
 server's PEP 503 index, or straight from the wheel's URL:
 
 ```sh
