@@ -8,6 +8,7 @@ from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.api_error import ApiError
 from ...models.cli_too_old_body import CliTooOldBody
+from ...models.scope_denied_body import ScopeDeniedBody
 from ...models.team_member_entry import TeamMemberEntry
 from ...types import Response
 
@@ -28,7 +29,7 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ApiError | CliTooOldBody | list[TeamMemberEntry] | None:
+) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[TeamMemberEntry] | None:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
@@ -45,7 +46,7 @@ def _parse_response(
         return response_401
 
     if response.status_code == 403:
-        response_403 = ApiError.from_dict(response.json())
+        response_403 = ScopeDeniedBody.from_dict(response.json())
 
         return response_403
 
@@ -72,7 +73,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ApiError | CliTooOldBody | list[TeamMemberEntry]]:
+) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[TeamMemberEntry]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -85,12 +86,13 @@ def sync_detailed(
     name: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[ApiError | CliTooOldBody | list[TeamMemberEntry]]:
+) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[TeamMemberEntry]]:
     """List a team's members
 
-     Admin or team member only. `added_by` is sent only to an administrator (a session, or an admin key,
-    of a user in `[auth] admins`); for a member it is absent, since it would name who the administrators
-    are. Served on every listener, including the external API listener.
+     Admin or team member only; anyone else gets the same 404 as for a team that does not exist.
+    `added_by` is sent only to an administrator (a session, or an admin key, of a user in `[auth]
+    admins`); for a member it is absent, since it would name who the administrators are. Served on every
+    listener, including the external API listener.
 
     Args:
         name (str):
@@ -100,7 +102,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | CliTooOldBody | list[TeamMemberEntry]]
+        Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[TeamMemberEntry]]
     """
 
     kwargs = _get_kwargs(
@@ -118,12 +120,13 @@ def sync(
     name: str,
     *,
     client: AuthenticatedClient | Client,
-) -> ApiError | CliTooOldBody | list[TeamMemberEntry] | None:
+) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[TeamMemberEntry] | None:
     """List a team's members
 
-     Admin or team member only. `added_by` is sent only to an administrator (a session, or an admin key,
-    of a user in `[auth] admins`); for a member it is absent, since it would name who the administrators
-    are. Served on every listener, including the external API listener.
+     Admin or team member only; anyone else gets the same 404 as for a team that does not exist.
+    `added_by` is sent only to an administrator (a session, or an admin key, of a user in `[auth]
+    admins`); for a member it is absent, since it would name who the administrators are. Served on every
+    listener, including the external API listener.
 
     Args:
         name (str):
@@ -133,7 +136,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | CliTooOldBody | list[TeamMemberEntry]
+        ApiError | CliTooOldBody | ScopeDeniedBody | list[TeamMemberEntry]
     """
 
     return sync_detailed(
@@ -146,12 +149,13 @@ async def asyncio_detailed(
     name: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[ApiError | CliTooOldBody | list[TeamMemberEntry]]:
+) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[TeamMemberEntry]]:
     """List a team's members
 
-     Admin or team member only. `added_by` is sent only to an administrator (a session, or an admin key,
-    of a user in `[auth] admins`); for a member it is absent, since it would name who the administrators
-    are. Served on every listener, including the external API listener.
+     Admin or team member only; anyone else gets the same 404 as for a team that does not exist.
+    `added_by` is sent only to an administrator (a session, or an admin key, of a user in `[auth]
+    admins`); for a member it is absent, since it would name who the administrators are. Served on every
+    listener, including the external API listener.
 
     Args:
         name (str):
@@ -161,7 +165,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | CliTooOldBody | list[TeamMemberEntry]]
+        Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[TeamMemberEntry]]
     """
 
     kwargs = _get_kwargs(
@@ -177,12 +181,13 @@ async def asyncio(
     name: str,
     *,
     client: AuthenticatedClient | Client,
-) -> ApiError | CliTooOldBody | list[TeamMemberEntry] | None:
+) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[TeamMemberEntry] | None:
     """List a team's members
 
-     Admin or team member only. `added_by` is sent only to an administrator (a session, or an admin key,
-    of a user in `[auth] admins`); for a member it is absent, since it would name who the administrators
-    are. Served on every listener, including the external API listener.
+     Admin or team member only; anyone else gets the same 404 as for a team that does not exist.
+    `added_by` is sent only to an administrator (a session, or an admin key, of a user in `[auth]
+    admins`); for a member it is absent, since it would name who the administrators are. Served on every
+    listener, including the external API listener.
 
     Args:
         name (str):
@@ -192,7 +197,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | CliTooOldBody | list[TeamMemberEntry]
+        ApiError | CliTooOldBody | ScopeDeniedBody | list[TeamMemberEntry]
     """
 
     return (

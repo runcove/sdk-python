@@ -9,9 +9,9 @@ satisfies them all). An API key reaches them only if it is an admin key, minted 
 to an admin key of an ``[auth] admins`` user), except :meth:`Admin.drain_host`, which the
 Warpgate-fronted listener never serves.
 
-Five of them refuse every API key, an admin key included, with 401 ``sudo_required``.
-:meth:`Admin.update_vm_agents`, :meth:`Admin.bulk_stop_vms`, :meth:`Admin.bulk_delete_vms` and
-:meth:`Admin.delete_checkpoint` need a recent interactive sign-in, so they run only with a ticket
+Six of them refuse every API key, an admin key included, with 401 ``sudo_required``.
+:meth:`Admin.update_vm_agents`, :meth:`Admin.bulk_stop_vms`, :meth:`Admin.bulk_delete_vms`,
+:meth:`Admin.delete_checkpoint` and :meth:`Admin.offboard_user` need a recent interactive sign-in, so they run only with a ticket
 or a session, never a key. :meth:`Admin.drain_host` is never served on the Warpgate-fronted
 listener either, so in practice it runs on the host's Unix socket.
 """
@@ -42,6 +42,7 @@ from ..._generated.api.admin import (
     list_all_vms,
     list_any_checkpoints,
     list_project_members,
+    offboard_user,
     revoke_user_sessions,
     update_auto_pause_timeouts,
     update_team_quota_override,
@@ -67,6 +68,8 @@ from ..._generated.models import (
     AdminUserSummary,
     AdminVmSummary,
     AdminVmSummaryPage,
+    OffboardUserReport,
+    OffboardUserRequest,
     ProjectMember,
     RevokeSessionsResponse,
     UpdateAgentsResponse,
@@ -351,6 +354,49 @@ class Admin:
             revoke_user_sessions, path={"username": username}, timeout=timeout
         )
         return cast(RevokeSessionsResponse, out)
+
+    @operation("offboardUser")
+    async def offboard_user(
+        self,
+        username: str,
+        *,
+        dry_run: bool = False,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+    ) -> OffboardUserReport:
+        """Offboard ``username`` and report each item. Scope ``admin:sessions:write``.
+
+        In one transaction: their CLI sessions, connected apps, bound service keys, every direct
+        share to them on any VM, own personal and admin API keys and webhooks. Then, item by
+        item: first Cove's own Warpgate role for them is deleted (``warpgate_role``), unbinding
+        their VMs' targets (the targets stay; no other role is touched); next their Warpgate
+        user is deleted (``warpgate_user``), taking their Warpgate roles, user API tokens,
+        passwords, one-time codes and certificates with it (``outcome`` ``not_found`` when
+        Warpgate has no such role or user, not a failure); then, belt and braces,
+        their SSH keys at Warpgate (``ssh_keys_deleted``), every Warpgate ticket in their
+        name (``tickets_deleted``) and every live Warpgate session of theirs
+        (``sessions_closed``), pass after pass until one finds nothing new (three at most); then
+        the credential sweep runs once more, to end what a still-open session created
+        meanwhile; then every team they belong to, every secret in their own scope and every VM
+        they own (stopped, never deleted). The report is a 200 even when items failed. A failed
+        item is an entry with ``ok`` false and an ``error``, a VM, a ``warpgate_role`` or a
+        ``warpgate_user`` with ``outcome`` ``failed``, any
+        entry of ``cli_sessions_failed`` (a CLI session Warpgate could not delete; it has no
+        ``ok``), or a set ``second_sweep_error`` (the sweep after the sessions closed failed):
+        run the call again. ``dry_run=True`` returns the same report and changes nothing; the
+        body always carries an explicit ``dry_run`` (the server refuses any other body but an
+        empty one). 404 only for a user Cove knows nothing of (never signed in, and no
+        membership, share, binding, key, webhook or VM names them).
+
+        Refuses every API key, an admin key included, with 401 ``sudo_required``: it needs a
+        ticket or a session.
+        """
+        out = await self._t.call(
+            offboard_user,
+            path={"username": username},
+            body=OffboardUserRequest(dry_run=dry_run),
+            timeout=timeout,
+        )
+        return cast(OffboardUserReport, out)
 
     # -- every VM and every checkpoint -------------------------------------------------------
 

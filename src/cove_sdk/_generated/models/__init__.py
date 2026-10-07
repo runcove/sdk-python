@@ -147,6 +147,25 @@ from .key_summary import KeySummary
 from .ksm_stats import KsmStats
 from .new_ssh_key import NewSshKey
 from .oci_cache_entry import OciCacheEntry
+from .offboard_api_key import OffboardApiKey
+from .offboard_cli_session import OffboardCliSession
+from .offboard_connected_app import OffboardConnectedApp
+from .offboard_secret import OffboardSecret
+from .offboard_service_key import OffboardServiceKey
+from .offboard_session import OffboardSession
+from .offboard_share import OffboardShare
+from .offboard_ssh_key import OffboardSshKey
+from .offboard_team import OffboardTeam
+from .offboard_ticket import OffboardTicket
+from .offboard_user_report import OffboardUserReport
+from .offboard_user_request import OffboardUserRequest
+from .offboard_vm import OffboardVm
+from .offboard_vm_outcome import OffboardVmOutcome
+from .offboard_warpgate_role import OffboardWarpgateRole
+from .offboard_warpgate_role_outcome import OffboardWarpgateRoleOutcome
+from .offboard_warpgate_user import OffboardWarpgateUser
+from .offboard_warpgate_user_outcome import OffboardWarpgateUserOutcome
+from .offboard_webhook import OffboardWebhook
 from .pending_action_type_0 import PendingActionType0
 from .pending_action_type_0_type import PendingActionType0Type
 from .pending_action_type_1 import PendingActionType1
@@ -395,6 +414,25 @@ __all__ = (
     "KsmStats",
     "NewSshKey",
     "OciCacheEntry",
+    "OffboardApiKey",
+    "OffboardCliSession",
+    "OffboardConnectedApp",
+    "OffboardSecret",
+    "OffboardServiceKey",
+    "OffboardSession",
+    "OffboardShare",
+    "OffboardSshKey",
+    "OffboardTeam",
+    "OffboardTicket",
+    "OffboardUserReport",
+    "OffboardUserRequest",
+    "OffboardVm",
+    "OffboardVmOutcome",
+    "OffboardWarpgateRole",
+    "OffboardWarpgateRoleOutcome",
+    "OffboardWarpgateUser",
+    "OffboardWarpgateUserOutcome",
+    "OffboardWebhook",
     "PendingActionType0",
     "PendingActionType0Type",
     "PendingActionType1",

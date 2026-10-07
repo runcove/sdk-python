@@ -1,0 +1,73 @@
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any, TypeVar
+
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
+from typing_extensions import Self
+
+T = TypeVar("T", bound="OffboardCliSession")
+
+
+@_attrs_define
+class OffboardCliSession:
+    """A CLI session (Warpgate ticket) of the user's that Warpgate could not
+    delete: it still works, so it is a failed item. Re-running the offboarding
+    retries it.
+
+        Attributes:
+            error (str): Why Warpgate did not delete it.
+            id (str): Warpgate's ticket id.
+    """
+
+    error: str
+    id: str
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        error = self.error
+
+        id = self.id
+
+        field_dict: dict[str, Any] = {}
+        field_dict.update(self.additional_properties)
+        field_dict.update(
+            {
+                "error": error,
+                "id": id,
+            }
+        )
+
+        return field_dict
+
+    @classmethod
+    def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        d = dict(src_dict)
+        error = d.pop("error")
+
+        id = d.pop("id")
+
+        offboard_cli_session = cls(
+            error=error,
+            id=id,
+        )
+
+        offboard_cli_session.additional_properties = d
+        return offboard_cli_session
+
+    @property
+    def additional_keys(self) -> list[str]:
+        return list(self.additional_properties.keys())
+
+    def __getitem__(self, key: str) -> Any:
+        return self.additional_properties[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.additional_properties[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self.additional_properties[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.additional_properties

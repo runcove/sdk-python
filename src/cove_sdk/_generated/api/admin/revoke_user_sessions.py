@@ -85,13 +85,14 @@ def sync_detailed(
 
     Revoking zero sessions is a success, not an error — a username with no active sessions (including
     one that has never signed in) answers 200 with `{"revoked": 0}`. It does not touch the person's own
-    API keys; revoke those individually. It also revokes the person's connected apps (MCP clients such
-    as claude.ai they signed in through) and every service key bound to that person, ends those
-    bindings, removes those service keys from every project they belonged to, and withdraws every share
-    to that person on those service keys' VMs, all in one transaction, and then drops each share's
-    bastion access; `revoked` still counts CLI sessions only. A team share on those VMs is not theirs to
-    lose: it stays while they remain in the team. The service keys' VMs stay until an admin deletes
-    them.
+    API keys; revoke those individually; for a full offboarding (own API keys, webhooks, teams, secrets
+    and VMs too) use `POST /api/admin/users/{username}/offboard`. It also revokes the person's connected
+    apps (MCP clients such as claude.ai they signed in through) and every service key bound to that
+    person, ends those bindings, removes those service keys from every project they belonged to, and
+    withdraws every share to that person on those service keys' VMs, all in one transaction, and then
+    drops each share's bastion access; `revoked` still counts CLI sessions only. A team share on those
+    VMs is not theirs to lose: it stays while they remain in the team. The service keys' VMs stay until
+    an admin deletes them.
 
     Cleanup at the bastion is best-effort: a session Cove cannot confirm dead upstream is still marked
     revoked locally and still counted, and a share's bastion access Cove cannot drop (the bastion
@@ -134,13 +135,14 @@ def sync(
 
     Revoking zero sessions is a success, not an error — a username with no active sessions (including
     one that has never signed in) answers 200 with `{"revoked": 0}`. It does not touch the person's own
-    API keys; revoke those individually. It also revokes the person's connected apps (MCP clients such
-    as claude.ai they signed in through) and every service key bound to that person, ends those
-    bindings, removes those service keys from every project they belonged to, and withdraws every share
-    to that person on those service keys' VMs, all in one transaction, and then drops each share's
-    bastion access; `revoked` still counts CLI sessions only. A team share on those VMs is not theirs to
-    lose: it stays while they remain in the team. The service keys' VMs stay until an admin deletes
-    them.
+    API keys; revoke those individually; for a full offboarding (own API keys, webhooks, teams, secrets
+    and VMs too) use `POST /api/admin/users/{username}/offboard`. It also revokes the person's connected
+    apps (MCP clients such as claude.ai they signed in through) and every service key bound to that
+    person, ends those bindings, removes those service keys from every project they belonged to, and
+    withdraws every share to that person on those service keys' VMs, all in one transaction, and then
+    drops each share's bastion access; `revoked` still counts CLI sessions only. A team share on those
+    VMs is not theirs to lose: it stays while they remain in the team. The service keys' VMs stay until
+    an admin deletes them.
 
     Cleanup at the bastion is best-effort: a session Cove cannot confirm dead upstream is still marked
     revoked locally and still counted, and a share's bastion access Cove cannot drop (the bastion
@@ -178,13 +180,14 @@ async def asyncio_detailed(
 
     Revoking zero sessions is a success, not an error — a username with no active sessions (including
     one that has never signed in) answers 200 with `{"revoked": 0}`. It does not touch the person's own
-    API keys; revoke those individually. It also revokes the person's connected apps (MCP clients such
-    as claude.ai they signed in through) and every service key bound to that person, ends those
-    bindings, removes those service keys from every project they belonged to, and withdraws every share
-    to that person on those service keys' VMs, all in one transaction, and then drops each share's
-    bastion access; `revoked` still counts CLI sessions only. A team share on those VMs is not theirs to
-    lose: it stays while they remain in the team. The service keys' VMs stay until an admin deletes
-    them.
+    API keys; revoke those individually; for a full offboarding (own API keys, webhooks, teams, secrets
+    and VMs too) use `POST /api/admin/users/{username}/offboard`. It also revokes the person's connected
+    apps (MCP clients such as claude.ai they signed in through) and every service key bound to that
+    person, ends those bindings, removes those service keys from every project they belonged to, and
+    withdraws every share to that person on those service keys' VMs, all in one transaction, and then
+    drops each share's bastion access; `revoked` still counts CLI sessions only. A team share on those
+    VMs is not theirs to lose: it stays while they remain in the team. The service keys' VMs stay until
+    an admin deletes them.
 
     Cleanup at the bastion is best-effort: a session Cove cannot confirm dead upstream is still marked
     revoked locally and still counted, and a share's bastion access Cove cannot drop (the bastion
@@ -225,13 +228,14 @@ async def asyncio(
 
     Revoking zero sessions is a success, not an error — a username with no active sessions (including
     one that has never signed in) answers 200 with `{"revoked": 0}`. It does not touch the person's own
-    API keys; revoke those individually. It also revokes the person's connected apps (MCP clients such
-    as claude.ai they signed in through) and every service key bound to that person, ends those
-    bindings, removes those service keys from every project they belonged to, and withdraws every share
-    to that person on those service keys' VMs, all in one transaction, and then drops each share's
-    bastion access; `revoked` still counts CLI sessions only. A team share on those VMs is not theirs to
-    lose: it stays while they remain in the team. The service keys' VMs stay until an admin deletes
-    them.
+    API keys; revoke those individually; for a full offboarding (own API keys, webhooks, teams, secrets
+    and VMs too) use `POST /api/admin/users/{username}/offboard`. It also revokes the person's connected
+    apps (MCP clients such as claude.ai they signed in through) and every service key bound to that
+    person, ends those bindings, removes those service keys from every project they belonged to, and
+    withdraws every share to that person on those service keys' VMs, all in one transaction, and then
+    drops each share's bastion access; `revoked` still counts CLI sessions only. A team share on those
+    VMs is not theirs to lose: it stays while they remain in the team. The service keys' VMs stay until
+    an admin deletes them.
 
     Cleanup at the bastion is best-effort: a session Cove cannot confirm dead upstream is still marked
     revoked locally and still counted, and a share's bastion access Cove cannot drop (the bastion

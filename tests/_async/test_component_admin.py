@@ -22,6 +22,9 @@ from cove_sdk._generated.models import (
     AdminUserSummary,
     AdminVmSummary,
     AdminVmSummaryPage,
+    OffboardUserReport,
+    OffboardVmOutcome,
+    OffboardWarpgateRoleOutcome,
     ProjectMember,
     RevokeSessionsResponse,
     UpdateAgentsResponse,
@@ -295,12 +298,34 @@ async def test_component_admin_quota_round_trips() -> None:
         await admin.get_team_quota("..")
 
 
+OFFBOARD_REPORT = {
+    "username": "alice",
+    "dry_run": True,
+    "cli_sessions_revoked": 1,
+    "api_keys_revoked": [{"id": "k", "prefix": "cvk_k", "name": "ci"}],
+    "connected_apps_revoked": [],
+    "service_keys": [],
+    "shares_withdrawn": [],
+    "webhooks_disabled": [],
+    "warpgate_role": {"name": "cove-alice-0123456789ab", "id": "r", "outcome": "deleted"},
+    "cli_sessions_failed": [],
+    "ssh_keys_deleted": [],
+    "tickets_deleted": [{"id": "t", "target": "cove-shell", "ok": True}],
+    "sessions_closed": [],
+    "teams_left": [{"team": "eng", "ok": True}],
+    "secrets_deleted": [],
+    "secrets_kept": "team secrets stay",
+    "vms_stopped": [{"vm": "v", "outcome": "already_stopped"}],
+}
+
+
 async def test_component_admin_users_round_trips() -> None:
     api = (
         Api()
         .on("GET", "/api/admin/users", (200, [USER]))
         .on("GET", "/api/admin/users/alice", (200, USER))
         .on("POST", "/api/admin/users/alice/revoke-sessions", (200, {"revoked": 2}))
+        .on("POST", "/api/admin/users/alice/offboard", (200, OFFBOARD_REPORT))
     )
     api.routes[("GET", "/api/admin/users/bob")] = [
         httpx.Response(404, text="no such user", headers=HEADERS)
@@ -313,6 +338,12 @@ async def test_component_admin_users_round_trips() -> None:
     revoked = await admin.revoke_user_sessions("alice")
     assert isinstance(revoked, RevokeSessionsResponse) and revoked.revoked == 2
     assert api.last.method == "POST"
+    report = await admin.offboard_user("alice", dry_run=True)
+    assert isinstance(report, OffboardUserReport) and report.dry_run
+    assert report.vms_stopped[0].outcome == OffboardVmOutcome.ALREADY_STOPPED
+    assert report.tickets_deleted[0].id == "t"
+    assert report.warpgate_role.outcome == OffboardWarpgateRoleOutcome.DELETED
+    assert (api.last.method, api.last_json()) == ("POST", {"dry_run": True})
     with pytest.raises(NotFoundError) as caught:
         await admin.get_user("bob")  # the contract's text/plain 404
     assert "no such user" in str(caught.value)
