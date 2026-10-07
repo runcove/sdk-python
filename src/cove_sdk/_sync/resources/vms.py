@@ -226,7 +226,13 @@ class Vms:
         timeout: CallTimeout = CLIENT_DEFAULT,
         **fields: Any,
     ) -> None:
-        """Wake a hibernated VM, from ``checkpoint_id`` or the latest checkpoint. Scope ``vms:write``."""
+        """Wake a VM from ``checkpoint_id`` or the latest checkpoint. Scope ``vms:write``.
+
+        A hibernated VM wakes from a checkpoint with memory; a stopped VM wakes from a disk-only
+        one, whose disk replaces the VM's. Without ``checkpoint_id``, a stopped VM whose latest
+        checkpoint is disk-only is refused with 409 ``disk_rollback_not_named`` and nothing
+        changes: call ``start`` to boot the current disk, or pass the checkpoint's id to roll back.
+        """
         req = build_body(WakeRequest, body, fields)
         self._t.call(wake_vm, path={"name": name}, body=req, timeout=timeout)
 

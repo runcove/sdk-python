@@ -239,6 +239,8 @@ def test_component_fake_server_applies_the_wake_state_rule_and_the_checkpoint_st
         client.vms.stop("vm-a")
         client.vms.wait_for_state("vm-a", "stopped", timeout=5, interval=0.001)
         refused(lambda: client.vms.wake("vm-a", checkpoint_id=full.id), *state_409)
+        # The newest checkpoint is disk-only, so a wake that does not name it is refused.
+        refused(lambda: client.vms.wake("vm-a"), 409, "disk_rollback_not_named")
         client.vms.wake("vm-a", checkpoint_id=disk_only.id)
         # A checkpoint that does not exist is a 404; one taken of another VM is a 409.
         missing = "00000000-0000-7000-8000-000000000000"

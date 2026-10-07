@@ -20,7 +20,10 @@ class WakeRequest:
 
         Attributes:
             checkpoint_id (None | str | Unset): Specific checkpoint id to wake from. `None` → latest
-                available for the VM. Stringified UUID v7; the server parses it.
+                available for the VM, except on a `Stopped` VM whose latest is
+                disk-only: that is refused (`disk_rollback_not_named`), so a disk
+                rollback always names its checkpoint. Stringified UUID v7; the
+                server parses it.
     """
 
     checkpoint_id: None | str | Unset = UNSET

@@ -13,6 +13,7 @@ class ErrorCode(StrEnum):
     CREDENTIAL_MISSING = "credential_missing"
     CRYPTO_ERROR = "crypto_error"
     DATABASE_UNAVAILABLE = "database_unavailable"
+    DISK_ROLLBACK_NOT_NAMED = "disk_rollback_not_named"
     FEATURE_DISABLED = "feature_disabled"
     FILE_NOT_FOUND = "file_not_found"
     FILE_NOT_REGULAR = "file_not_regular"

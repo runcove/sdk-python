@@ -697,6 +697,15 @@ def mock_transport() -> httpx.MockTransport:
                 ckpt = own[-1]
             else:
                 return error(409, "invalid_state_transition", f"no available checkpoint to wake {name} from")
+            # Without an id, a stopped VM whose newest checkpoint is disk-only is refused: waking
+            # it would roll the disk back without the checkpoint being named.
+            if not wanted_id and ckpt.disk_only and vm.state == "stopped":
+                return error(
+                    409,
+                    "disk_rollback_not_named",
+                    f"{name} is stopped and its latest checkpoint {ckpt.id} is disk-only: start the VM "
+                    f"(`start_vm`) to boot its current disk, or pass checkpoint_id {ckpt.id} to roll back",
+                )
             # A disk-only checkpoint replaces a stopped VM's disk and boots it; a full one wakes
             # a hibernated VM with its memory.
             if vm.state != ("stopped" if ckpt.disk_only else "hibernated"):

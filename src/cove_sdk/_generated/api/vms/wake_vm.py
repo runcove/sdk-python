@@ -102,12 +102,20 @@ def sync_detailed(
 ) -> Response[Any | ApiError | CliTooOldBody | ScopeDeniedBody]:
     """Wake a VM from a checkpoint
 
-     Re-spawns the VM's Cloud Hypervisor process from a checkpoint's disk + memory state. Omit
-    `checkpoint_id` to wake using the latest checkpoint available for the VM.
+     Brings a VM back from a checkpoint. A `Hibernated` VM wakes from a checkpoint with memory: its Cloud
+    Hypervisor process is re-spawned from the checkpoint's disk + memory state, with every process where
+    it was. A `Stopped` VM wakes from a disk-only checkpoint: its disk is replaced by the checkpoint's,
+    losing every write made since, and it boots.
+
+    Omit `checkpoint_id` to wake using the latest checkpoint available for the VM. The one exception is
+    a `Stopped` VM whose latest checkpoint is disk-only: that wake would roll the disk back without the
+    checkpoint being named, so it is refused with 409 `disk_rollback_not_named` and nothing changes.
+    Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
+    that `checkpoint_id` to roll back on purpose.
 
     Named `wakeVm` — the public surface reserves `restore` for a future checkpoint-rollback operation
-    that does not exist yet; this operation only un-hibernates a VM. `POST /api/vms/{name}/restore` has
-    been removed, not aliased — it answers 404. Call `POST /api/vms/{name}/wake` instead.
+    that does not exist yet. `POST /api/vms/{name}/restore` has been removed, not aliased — it answers
+    404. Call `POST /api/vms/{name}/wake` instead.
 
     Args:
         name (str):
@@ -143,12 +151,20 @@ def sync(
 ) -> Any | ApiError | CliTooOldBody | ScopeDeniedBody | None:
     """Wake a VM from a checkpoint
 
-     Re-spawns the VM's Cloud Hypervisor process from a checkpoint's disk + memory state. Omit
-    `checkpoint_id` to wake using the latest checkpoint available for the VM.
+     Brings a VM back from a checkpoint. A `Hibernated` VM wakes from a checkpoint with memory: its Cloud
+    Hypervisor process is re-spawned from the checkpoint's disk + memory state, with every process where
+    it was. A `Stopped` VM wakes from a disk-only checkpoint: its disk is replaced by the checkpoint's,
+    losing every write made since, and it boots.
+
+    Omit `checkpoint_id` to wake using the latest checkpoint available for the VM. The one exception is
+    a `Stopped` VM whose latest checkpoint is disk-only: that wake would roll the disk back without the
+    checkpoint being named, so it is refused with 409 `disk_rollback_not_named` and nothing changes.
+    Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
+    that `checkpoint_id` to roll back on purpose.
 
     Named `wakeVm` — the public surface reserves `restore` for a future checkpoint-rollback operation
-    that does not exist yet; this operation only un-hibernates a VM. `POST /api/vms/{name}/restore` has
-    been removed, not aliased — it answers 404. Call `POST /api/vms/{name}/wake` instead.
+    that does not exist yet. `POST /api/vms/{name}/restore` has been removed, not aliased — it answers
+    404. Call `POST /api/vms/{name}/wake` instead.
 
     Args:
         name (str):
@@ -179,12 +195,20 @@ async def asyncio_detailed(
 ) -> Response[Any | ApiError | CliTooOldBody | ScopeDeniedBody]:
     """Wake a VM from a checkpoint
 
-     Re-spawns the VM's Cloud Hypervisor process from a checkpoint's disk + memory state. Omit
-    `checkpoint_id` to wake using the latest checkpoint available for the VM.
+     Brings a VM back from a checkpoint. A `Hibernated` VM wakes from a checkpoint with memory: its Cloud
+    Hypervisor process is re-spawned from the checkpoint's disk + memory state, with every process where
+    it was. A `Stopped` VM wakes from a disk-only checkpoint: its disk is replaced by the checkpoint's,
+    losing every write made since, and it boots.
+
+    Omit `checkpoint_id` to wake using the latest checkpoint available for the VM. The one exception is
+    a `Stopped` VM whose latest checkpoint is disk-only: that wake would roll the disk back without the
+    checkpoint being named, so it is refused with 409 `disk_rollback_not_named` and nothing changes.
+    Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
+    that `checkpoint_id` to roll back on purpose.
 
     Named `wakeVm` — the public surface reserves `restore` for a future checkpoint-rollback operation
-    that does not exist yet; this operation only un-hibernates a VM. `POST /api/vms/{name}/restore` has
-    been removed, not aliased — it answers 404. Call `POST /api/vms/{name}/wake` instead.
+    that does not exist yet. `POST /api/vms/{name}/restore` has been removed, not aliased — it answers
+    404. Call `POST /api/vms/{name}/wake` instead.
 
     Args:
         name (str):
@@ -218,12 +242,20 @@ async def asyncio(
 ) -> Any | ApiError | CliTooOldBody | ScopeDeniedBody | None:
     """Wake a VM from a checkpoint
 
-     Re-spawns the VM's Cloud Hypervisor process from a checkpoint's disk + memory state. Omit
-    `checkpoint_id` to wake using the latest checkpoint available for the VM.
+     Brings a VM back from a checkpoint. A `Hibernated` VM wakes from a checkpoint with memory: its Cloud
+    Hypervisor process is re-spawned from the checkpoint's disk + memory state, with every process where
+    it was. A `Stopped` VM wakes from a disk-only checkpoint: its disk is replaced by the checkpoint's,
+    losing every write made since, and it boots.
+
+    Omit `checkpoint_id` to wake using the latest checkpoint available for the VM. The one exception is
+    a `Stopped` VM whose latest checkpoint is disk-only: that wake would roll the disk back without the
+    checkpoint being named, so it is refused with 409 `disk_rollback_not_named` and nothing changes.
+    Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
+    that `checkpoint_id` to roll back on purpose.
 
     Named `wakeVm` — the public surface reserves `restore` for a future checkpoint-rollback operation
-    that does not exist yet; this operation only un-hibernates a VM. `POST /api/vms/{name}/restore` has
-    been removed, not aliased — it answers 404. Call `POST /api/vms/{name}/wake` instead.
+    that does not exist yet. `POST /api/vms/{name}/restore` has been removed, not aliased — it answers
+    404. Call `POST /api/vms/{name}/wake` instead.
 
     Args:
         name (str):
