@@ -61,6 +61,11 @@ def _parse_response(
 
         return response_426
 
+    if response.status_code == 429:
+        response_429 = ApiError.from_dict(response.json())
+
+        return response_429
+
     if response.status_code == 503:
         response_503 = ApiError.from_dict(response.json())
 
