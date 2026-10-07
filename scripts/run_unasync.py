@@ -33,6 +33,7 @@ REPLACEMENTS = {
     "asyncio": "sync",
     "async_sleep": "sync_sleep",
     "async_read_chunk": "sync_read_chunk",
+    "async_run_blocking": "sync_run_blocking",
     "_async": "_sync",
     "set_async_httpx_client": "set_httpx_client",
     "get_async_httpx_client": "get_httpx_client",

@@ -24,6 +24,7 @@ from .resources.keys import Keys
 from .resources.meta import Meta
 from .resources.policies import Policies
 from .resources.secrets import Secrets
+from .resources.spotlight import Spotlight
 from .resources.tags import Tags
 from .resources.teams import Teams
 from .resources.vms import Vms
@@ -78,6 +79,9 @@ class CoveClient:
     admin: Admin
     """Administrator operations: the fleet, the host, projects, quotas, users, every VM and every
     checkpoint."""
+    spotlight: Spotlight
+    """Mirror a local git worktree onto a VM directory, switch it, and restore the base tree, over
+    the file and exec API; the binding lives in the VM's ``spotlight.*`` tags."""
 
     def __init__(
         self,
@@ -112,6 +116,7 @@ class CoveClient:
         self.events = Events(self._transport)
         self.teams = Teams(self._transport)
         self.admin = Admin(self._transport)
+        self.spotlight = Spotlight(self.vms, self.tags)
 
     @property
     def base_url(self) -> str:

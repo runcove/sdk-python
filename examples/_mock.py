@@ -28,17 +28,23 @@ needs a running or paused one; a disk-only checkpoint wakes only a stopped VM an
 cloned; a full one wakes only a hibernated VM. A checkpoint keeps a copy of the guest's files,
 so waking from it or cloning it brings them back, and one a live clone was made from cannot be
 deleted (409). Tags filter the VM list, ports must be in the
-server's default allowed list, and a port's URL has the server's shape.
+server's default allowed list, and a port's URL has the server's shape. It serves a VM's tags too
+(the same tags the list filters on), and runs ``client.spotlight``'s apply script in effect: it
+extracts the uploaded tarball and mirrors it onto the destination with delete semantics and the
+protect entries the script was given, so a wrong destination or protect list fails the spotlight
+example.
 ``sdk/typescript/examples/_mock.ts`` is the same fake for the TypeScript examples.
 """
 
 from __future__ import annotations
 
 import base64
+import io
 import json
 import random
 import re
 import string
+import tarfile
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -79,20 +85,24 @@ class _Repo:
 
 @dataclass
 class _Guest:
-    """One fake guest: its file system, the web servers running in it (port to directory), and its
-    git work trees (by directory)."""
+    """One fake guest: its file system (with each upload's raw bytes), the web servers running in it
+    (port to directory), and its git work trees (by directory)."""
 
     files: dict[str, str] = field(default_factory=dict)
-    dirs: set[str] = field(default_factory=lambda: {"/root"})
+    dirs: set[str] = field(default_factory=lambda: {"/root", "/tmp"})
     serving: dict[int, str] = field(default_factory=dict)
     repos: dict[str, _Repo] = field(default_factory=dict)
+    # Each uploaded file's raw bytes, beside its text in ``files`` (a tarball is not text).
+    blobs: dict[str, bytes] = field(default_factory=dict)
 
     def copy(self, with_memory: bool) -> _Guest:
         """A copy, for a checkpoint. A disk-only one keeps no running server."""
         repos = {
             d: _Repo(dict(r.head), None if r.index is None else dict(r.index)) for d, r in self.repos.items()
         }
-        return _Guest(dict(self.files), set(self.dirs), dict(self.serving) if with_memory else {}, repos)
+        return _Guest(
+            dict(self.files), set(self.dirs), dict(self.serving) if with_memory else {}, repos, dict(self.blobs)
+        )
 
 
 @dataclass
@@ -153,6 +163,60 @@ def _add_dirs(dirs: set[str], directory: str) -> None:
         directory = directory.rpartition("/")[0]
 
 
+def _is_protected(rel: str, protect: list[str]) -> bool:
+    """Is ``rel`` (a path under the destination) kept by one of ``protect``, rsync protect patterns:
+    a bare name matches at any depth, a trailing ``/`` matches a directory only, a leading ``/``
+    anchors; everything below a match is kept too."""
+    parts = rel.split("/")
+    for entry in protect:
+        dir_only, anchored = entry.endswith("/"), entry.startswith("/")
+        pat = entry.strip("/").split("/")
+        for end in range(len(pat), len(parts) + 1):
+            if anchored and end != len(pat):
+                break
+            # A file is not a directory: a dir-only pattern matches only a component above it.
+            if dir_only and end == len(parts):
+                break
+            if parts[end - len(pat) : end] == pat:
+                return True
+    return False
+
+
+def _spotlight_apply(args: list[str], guest: _Guest) -> GuestResult:
+    """``client.spotlight``'s apply script, ``sh -c SCRIPT sh TARBALL STAGE DEST [PROTECT...]``, in
+    effect. A symlink lands as a file holding its target: the fake guest has no links."""
+    files, dirs, blobs = guest.files, guest.dirs, guest.blobs
+    tgz, stage, dest, *protect = args
+    if not re.fullmatch(r"/.+", dest):
+        return _fail(f"spotlight: dest must be an absolute path other than /, got: {dest}\n", 2)
+    if "//" in dest or dest.endswith("/") or any(c in (".", "..") for c in dest.split("/")):
+        return _fail(f"spotlight: dest must not end in / or hold an empty, . or .. component, got: {dest}\n", 2)
+    if not stage.startswith(f"{dest}.cove-stage-"):
+        return _fail(f"the fake guest expects the stage beside dest, got {stage}\n", 2)
+    if tgz not in blobs:
+        return _fail(f"tar: {tgz}: Cannot open: No such file or directory\n", 2)
+    tree: dict[str, tuple[str, int]] = {}
+    with tarfile.open(fileobj=io.BytesIO(blobs[tgz]), mode="r:gz") as tar:
+        for member in tar:
+            if member.isfile():
+                data = tar.extractfile(member)
+                assert data is not None
+                tree[member.name] = (data.read().decode(errors="replace"), member.size)
+            elif member.issym():
+                tree[member.name] = (member.linkname, 0)
+    for path in list(files):
+        rel = path[len(dest) + 1 :]
+        if path.startswith(f"{dest}/") and rel not in tree and not _is_protected(rel, protect):
+            del files[path]
+    # Protect only keeps paths from deletion: the tree's own files are all written.
+    for rel, (text, _) in tree.items():
+        files[f"{dest}/{rel}"] = text
+        _add_dirs(dirs, f"{dest}/{rel}".rpartition("/")[0])
+    del files[tgz], blobs[tgz]
+    summary = {"files": len(tree), "bytes": sum(size for _, size in tree.values())}
+    return _ok(json.dumps(summary, separators=(",", ":")) + "\n")
+
+
 def _run_shell(
     script: str, args: list[str], guest: _Guest, deadline: float, env: dict[str, str] | None = None
 ) -> GuestResult:
@@ -162,6 +226,8 @@ def _run_shell(
     ``timeout_secs``: a ``sleep`` past it times the command out. ``env`` is the environment the
     shell starts with: a login shell's holds what ``/run/cove/login-env.sh`` exports, a plain ``sh
     -c``'s nothing."""
+    if script.startswith("# cove spotlight apply v2"):
+        return _spotlight_apply(args, guest)
     env = env or {}
     files, dirs = guest.files, guest.dirs
     if "cat /root/in/*.csv" in script and "> /root/out/totals.csv" in script:
@@ -548,7 +614,8 @@ def mock_transport() -> httpx.MockTransport:
                 directory = path.rpartition("/")[0] or "/"
                 if directory not in guest.dirs:
                     return error(404, "file_not_found", f"{directory}: no such directory")
-                guest.files[path] = request.content.decode()
+                guest.files[path] = request.content.decode(errors="replace")
+                guest.blobs[path] = request.content
                 return json_response(
                     200,
                     {"path": path, "size": len(request.content), "mode": 0o644, "sha256": "0" * 64},
@@ -558,6 +625,16 @@ def mock_transport() -> httpx.MockTransport:
             data = guest.files[path].encode()
             headers = {**_HEADERS, "content-length": str(len(data)), "x-cove-file-mode": "0644"}
             return httpx.Response(200, content=b"" if method == "HEAD" else data, headers=headers)
+        if action == "tags":
+            # The VM's own tags, the ones the list filters on and its detail shows.
+            if method == "GET" and not key:
+                rows = [{"key": k, "value": v, "set_by": "mock", "set_at": _AT} for k, v in sorted(vm.tags.items())]
+                return json_response(200, rows)
+            if method == "PUT":
+                vm.tags[key] = json.loads(request.content)["value"]
+            if method == "DELETE":
+                vm.tags.pop(key, None)
+            return json_response(204)
         if method == "GET" and action == "":
             # A new VM is creating for two polls, then running; a stopping VM is stopped by the next.
             vm.polls += 1

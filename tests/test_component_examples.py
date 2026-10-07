@@ -16,6 +16,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+from spotlight_repo import git, make_repo
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
 
@@ -128,6 +129,20 @@ USE_CASES = {
         "deleted demo-vm-2",
         "task contributing-typo: no changes",
     ],
+    "spotlight.py": [
+        "created demo-vm",
+        "demo-vm is running",
+        "spotlight on: main -> demo-vm:/srv/app (2 files)",
+        "app.txt: version: base",
+        "switched to feature",
+        "app.txt: version: feature",
+        "node_modules/marker: installed",
+        "status: feature on /srv/app",
+        "spotlight off: base tree restored on /srv/app",
+        "app.txt after off: version: base",
+        "status: nothing bound",
+        "deleted demo-vm",
+    ],
 }
 
 
@@ -135,7 +150,8 @@ def run_mock(script: str) -> subprocess.CompletedProcess[str]:
     path = EXAMPLES / script
     assert path.is_file(), f"missing example {path}"
     # A credential in the caller's environment must not matter under --mock.
-    env = {k: v for k, v in os.environ.items() if not k.startswith("COVE_")}
+    # Nor may a hook's GIT_DIR and friends, which would point the examples' git at the real repository.
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("COVE_", "GIT_"))}
     return subprocess.run(
         [sys.executable, "-W", "error", str(path), "--mock"],
         capture_output=True,
@@ -267,3 +283,33 @@ def test_component_fake_server_gives_the_agent_its_key_only_through_the_secrets_
             client.vms.exec_collect("agent-vm", command=["echo", "sk-ant-test-key"])
         assert refused.value.status == 400 and "ANTHROPIC_API_KEY" in refused.value.message
         assert client.vms.exec_collect("agent-vm", command=agent("bash")).exit_code == 0
+
+
+def _snapshot(root: Path) -> dict[str, bytes | None]:
+    """Every path under ``root`` with its bytes, so a stray write shows as a difference."""
+    return {str(p): p.read_bytes() if p.is_file() else None for p in sorted(root.rglob("*"))}
+
+
+def test_component_spotlight_git_leaves_a_decoy_repository_alone_under_hook_variables(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    decoy = tmp_path / "decoy.git"
+    decoy.mkdir()
+    git(decoy, "init", "-q", "--bare")
+    before = _snapshot(decoy)
+    # What a git hook exports; all of them point at the decoy, never at a real repository.
+    hook = {
+        "GIT_DIR": decoy,
+        "GIT_WORK_TREE": decoy,
+        "GIT_INDEX_FILE": decoy / "index",
+        "GIT_OBJECT_DIRECTORY": decoy / "objects",
+        "GIT_ALTERNATE_OBJECT_DIRECTORIES": decoy / "objects",
+        "GIT_COMMON_DIR": decoy,
+    }
+    for name, path in hook.items():
+        monkeypatch.setenv(name, str(path))
+    repo = make_repo(tmp_path / "repo")
+    assert git(repo, "log", "-1", "--format=%s") == "base"
+    proc = run_mock("spotlight.py")
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert _snapshot(decoy) == before

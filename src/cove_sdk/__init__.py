@@ -10,6 +10,8 @@ from . import types
 from ._async._client import AsyncCoveClient
 from ._async.resources.keys import SERVICE_KEYS_MIN_API_VERSION
 from ._meta import API_VERSION
+from ._spotlight import DEFAULT_PROTECT as SPOTLIGHT_DEFAULT_PROTECT
+from ._spotlight import SpotlightOffResult, SpotlightOnResult, SpotlightStatus
 from ._sync._client import CoveClient
 from .auth import BearerAuth, CoveAuth, TicketAuth
 from .errors import (
@@ -86,7 +88,11 @@ __all__ = [
     "PermissionDeniedError",
     "RateLimitError",
     "SERVICE_KEYS_MIN_API_VERSION",
+    "SPOTLIGHT_DEFAULT_PROTECT",
     "ServerError",
+    "SpotlightOffResult",
+    "SpotlightOnResult",
+    "SpotlightStatus",
     "StreamLagged",
     "TicketAuth",
     "UnavailableError",
