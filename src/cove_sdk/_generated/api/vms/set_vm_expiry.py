@@ -62,6 +62,11 @@ def _parse_response(
 
         return response_404
 
+    if response.status_code == 422:
+        response_422 = ApiError.from_dict(response.json())
+
+        return response_422
+
     if response.status_code == 426:
         response_426 = CliTooOldBody.from_dict(response.json())
 
@@ -107,7 +112,11 @@ def sync_detailed(
 
     Args:
         name (str):
-        body (UpdateTtlPolicyRequest): POST /vms/{name}/ttl-policy request body.
+        body (UpdateTtlPolicyRequest): POST /vms/{name}/expiry request body. Carries exactly one
+            of `policy`
+            (replace the whole policy) and `expires_in` (set only the expiry, counted
+            from now). A server older than `expires_in` refuses a body without
+            `policy` rather than misreading it.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -147,7 +156,11 @@ def sync(
 
     Args:
         name (str):
-        body (UpdateTtlPolicyRequest): POST /vms/{name}/ttl-policy request body.
+        body (UpdateTtlPolicyRequest): POST /vms/{name}/expiry request body. Carries exactly one
+            of `policy`
+            (replace the whole policy) and `expires_in` (set only the expiry, counted
+            from now). A server older than `expires_in` refuses a body without
+            `policy` rather than misreading it.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -182,7 +195,11 @@ async def asyncio_detailed(
 
     Args:
         name (str):
-        body (UpdateTtlPolicyRequest): POST /vms/{name}/ttl-policy request body.
+        body (UpdateTtlPolicyRequest): POST /vms/{name}/expiry request body. Carries exactly one
+            of `policy`
+            (replace the whole policy) and `expires_in` (set only the expiry, counted
+            from now). A server older than `expires_in` refuses a body without
+            `policy` rather than misreading it.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -220,7 +237,11 @@ async def asyncio(
 
     Args:
         name (str):
-        body (UpdateTtlPolicyRequest): POST /vms/{name}/ttl-policy request body.
+        body (UpdateTtlPolicyRequest): POST /vms/{name}/expiry request body. Carries exactly one
+            of `policy`
+            (replace the whole policy) and `expires_in` (set only the expiry, counted
+            from now). A server older than `expires_in` refuses a body without
+            `policy` rather than misreading it.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

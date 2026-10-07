@@ -1,61 +1,63 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
-from ..models.delete_after_stop_type_2_type import DeleteAfterStopType2Type
+from ..types import UNSET, Unset
 
-T = TypeVar("T", bound="DeleteAfterStopType2")
+T = TypeVar("T", bound="ExpiresIn")
 
 
 @_attrs_define
-class DeleteAfterStopType2:
-    """Wait `secs` after `stopped_at` before deleting. Service-layer
-    validation enforces 60 to 315360000 (ten years).
+class ExpiresIn:
+    """An expiry counted from now (`setVmExpiry`'s `expires_in`).
 
-        Attributes:
-            secs (int):
-            type_ (DeleteAfterStopType2Type):
+    Attributes:
+        secs (int | None | Unset): Seconds from now until Cove deletes the VM and its disk: 3600 (one
+            hour) to 315360000 (ten years). `null` removes the expiry.
     """
 
-    secs: int
-    type_: DeleteAfterStopType2Type
+    secs: int | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        secs = self.secs
-
-        type_ = self.type_.value
+        secs: int | None | Unset
+        if isinstance(self.secs, Unset):
+            secs = UNSET
+        else:
+            secs = self.secs
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update(
-            {
-                "secs": secs,
-                "type": type_,
-            }
-        )
+        field_dict.update({})
+        if secs is not UNSET:
+            field_dict["secs"] = secs
 
         return field_dict
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
-        secs = d.pop("secs")
 
-        type_ = DeleteAfterStopType2Type(d.pop("type"))
+        def _parse_secs(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
 
-        delete_after_stop_type_2 = cls(
+        secs = _parse_secs(d.pop("secs", UNSET))
+
+        expires_in = cls(
             secs=secs,
-            type_=type_,
         )
 
-        delete_after_stop_type_2.additional_properties = d
-        return delete_after_stop_type_2
+        expires_in.additional_properties = d
+        return expires_in
 
     @property
     def additional_keys(self) -> list[str]:

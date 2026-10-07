@@ -114,6 +114,7 @@ from .exec_output_dto import ExecOutputDto
 from .exec_request_dto import ExecRequestDto
 from .exec_request_dto_env_type_0 import ExecRequestDtoEnvType0
 from .exec_with_secrets_request import ExecWithSecretsRequest
+from .expires_in import ExpiresIn
 from .file_uploaded import FileUploaded
 from .get_openapi_document_response_200 import GetOpenapiDocumentResponse200
 from .grant_share_outcome import GrantShareOutcome
@@ -382,6 +383,7 @@ __all__ = (
     "ExecRequestDto",
     "ExecRequestDtoEnvType0",
     "ExecWithSecretsRequest",
+    "ExpiresIn",
     "FileUploaded",
     "GetOpenapiDocumentResponse200",
     "GrantShareOutcome",

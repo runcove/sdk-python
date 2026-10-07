@@ -24,8 +24,9 @@ class TtlPolicy:
     pool defaults and CLI flags merge into this on create.
 
         Attributes:
-            max_lifetime_secs (int | None | Unset): Wall-clock cap from `vms.created_at` (default: `None`).
-                Service-layer validation enforces `>= 3600` when `Some`.
+            max_lifetime_secs (int | None | Unset): Wall-clock cap counted from the VM's creation, or its claim for a VM
+                Cove had ready in advance (default: `None`). Service-layer validation
+                enforces 3600 (one hour) to 315360000 (ten years) when `Some`.
             on_stop (DeleteAfterStopType0 | DeleteAfterStopType1 | DeleteAfterStopType2 | Unset): Wire/in-memory
                 representation of the "delete after VM enters Stopped" knob.
                 Persisted by core as a single `INTEGER` (`vms.delete_after_stop_secs`) using
