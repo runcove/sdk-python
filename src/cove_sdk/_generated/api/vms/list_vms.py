@@ -17,7 +17,7 @@ def _get_kwargs(
     state: str | Unset = UNSET,
     limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
-    tag: str | Unset = UNSET,
+    tag: list[str] | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -28,7 +28,11 @@ def _get_kwargs(
 
     params["cursor"] = cursor
 
-    params["tag"] = tag
+    json_tag: list[str] | Unset = UNSET
+    if not isinstance(tag, Unset):
+        json_tag = tag
+
+    params["tag"] = json_tag
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -97,7 +101,7 @@ def sync_detailed(
     state: str | Unset = UNSET,
     limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
-    tag: str | Unset = UNSET,
+    tag: list[str] | Unset = UNSET,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | VmSummaryPage]:
     """List VMs visible to the caller
 
@@ -118,7 +122,7 @@ def sync_detailed(
         state (str | Unset):
         limit (int | Unset):
         cursor (str | Unset):
-        tag (str | Unset):
+        tag (list[str] | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -148,7 +152,7 @@ def sync(
     state: str | Unset = UNSET,
     limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
-    tag: str | Unset = UNSET,
+    tag: list[str] | Unset = UNSET,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | VmSummaryPage | None:
     """List VMs visible to the caller
 
@@ -169,7 +173,7 @@ def sync(
         state (str | Unset):
         limit (int | Unset):
         cursor (str | Unset):
-        tag (str | Unset):
+        tag (list[str] | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -194,7 +198,7 @@ async def asyncio_detailed(
     state: str | Unset = UNSET,
     limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
-    tag: str | Unset = UNSET,
+    tag: list[str] | Unset = UNSET,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | VmSummaryPage]:
     """List VMs visible to the caller
 
@@ -215,7 +219,7 @@ async def asyncio_detailed(
         state (str | Unset):
         limit (int | Unset):
         cursor (str | Unset):
-        tag (str | Unset):
+        tag (list[str] | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -243,7 +247,7 @@ async def asyncio(
     state: str | Unset = UNSET,
     limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
-    tag: str | Unset = UNSET,
+    tag: list[str] | Unset = UNSET,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | VmSummaryPage | None:
     """List VMs visible to the caller
 
@@ -264,7 +268,7 @@ async def asyncio(
         state (str | Unset):
         limit (int | Unset):
         cursor (str | Unset):
-        tag (str | Unset):
+        tag (list[str] | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

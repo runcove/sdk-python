@@ -78,6 +78,16 @@ def test_component_vms_list_sends_only_the_given_query() -> None:
     assert isinstance(page, VmSummaryPage) and page.vms[0].name == "a"
 
 
+def test_component_vms_list_repeats_tag_for_each_filter() -> None:
+    api = Api().on(
+        "GET", "/api/vms", (200, {"vms": [_summary("a")], "next_cursor": None})
+    )
+    _vms(api).list(tag=["env=prod", "team=a"])
+    assert api.last.url.params.get_list("tag") == ["env=prod", "team=a"]
+    _vms(api).list(tag="env=prod")
+    assert api.last.url.params.get_list("tag") == ["env=prod"]
+
+
 def test_component_vms_iter_walks_every_page() -> None:
     api = Api().on(
         "GET",

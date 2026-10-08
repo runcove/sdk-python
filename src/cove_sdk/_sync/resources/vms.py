@@ -122,7 +122,7 @@ class Vms:
         self,
         *,
         state: str | None = None,
-        tag: str | None = None,
+        tag: str | Sequence[str] | None = None,
         limit: int | None = None,
         cursor: str | None = None,
         timeout: CallTimeout = CLIENT_DEFAULT,
@@ -131,14 +131,22 @@ class Vms:
 
         One page is not every VM: use :meth:`iter` for "all my VMs". ``state`` is a
         ``VmState`` value (``"running"``, ``"stopped"``, ...). ``tag`` is ``key=value`` with a
-        non-empty key. ``limit`` is at least 1. A filter value the server cannot apply is refused
+        non-empty key, or a list of them: only VMs carrying every one are listed. ``limit`` is at
+        least 1. A filter value the server cannot apply is refused
         with a 400 ``validation_failed`` naming the parameter, never ignored; so is a query key
         other than ``state``, ``tag``, ``limit`` and ``cursor``.
         """
+        tags = (
+            [tag]
+            if isinstance(tag, str)
+            else None
+            if tag is None
+            else builtins.list(tag)
+        )
         page = self._t.call(
             list_vms,
             state=opt(state),
-            tag=opt(tag),
+            tag=opt(tags),
             limit=opt(limit),
             cursor=opt(cursor),
             timeout=timeout,
@@ -149,7 +157,7 @@ class Vms:
         self,
         *,
         state: str | None = None,
-        tag: str | None = None,
+        tag: str | Sequence[str] | None = None,
         limit: int | None = None,
         cursor: str | None = None,
         timeout: CallTimeout = CLIENT_DEFAULT,
