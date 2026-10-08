@@ -23,6 +23,7 @@ from cove_sdk._generated.models import (
     AdminUserSummary,
     AdminVmSummary,
     AdminVmSummaryPage,
+    EnableUserResponse,
     OffboardUserReport,
     OffboardVmOutcome,
     OffboardWarpgateRoleOutcome,
@@ -329,6 +330,19 @@ def test_component_admin_users_round_trips() -> None:
         .on("GET", "/api/admin/users/alice", (200, USER))
         .on("POST", "/api/admin/users/alice/revoke-sessions", (200, {"revoked": 2}))
         .on("POST", "/api/admin/users/alice/offboard", (200, OFFBOARD_REPORT))
+        .on(
+            "POST",
+            "/api/admin/users/alice/enable",
+            (
+                200,
+                {
+                    "username": "alice",
+                    "disabled_at": "2026-10-07T00:00:00Z",
+                    "disabled_by": "root",
+                    "reason": "offboarded",
+                },
+            ),
+        )
     )
     api.routes[("GET", "/api/admin/users/bob")] = [
         httpx.Response(404, text="no such user", headers=HEADERS)
@@ -347,6 +361,9 @@ def test_component_admin_users_round_trips() -> None:
     assert report.tickets_deleted[0].id == "t"
     assert report.warpgate_role.outcome == OffboardWarpgateRoleOutcome.DELETED
     assert (api.last.method, api.last_json()) == ("POST", {"dry_run": True})
+    enabled = admin.enable_user("alice")
+    assert isinstance(enabled, EnableUserResponse) and enabled.disabled_by == "root"
+    assert api.last.method == "POST"
     with pytest.raises(NotFoundError) as caught:
         admin.get_user("bob")  # the contract's text/plain 404
     assert "no such user" in str(caught.value)

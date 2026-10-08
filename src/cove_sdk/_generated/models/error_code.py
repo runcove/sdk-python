@@ -48,6 +48,7 @@ class ErrorCode(StrEnum):
     TOO_MANY_TAGS = "too_many_tags"
     UNAVAILABLE = "unavailable"
     UNKNOWN_IMAGE = "unknown_image"
+    USER_DISABLED = "user_disabled"
     USER_NOT_PROVISIONED = "user_not_provisioned"
     VALIDATION_FAILED = "validation_failed"
     VM_ACCESS_DENIED = "vm_access_denied"

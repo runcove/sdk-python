@@ -10,9 +10,10 @@ satisfies them all). An API key reaches them only if it is an admin key, minted 
 to an admin key of an ``[auth] admins`` user), except :meth:`Admin.drain_host`, which the
 Warpgate-fronted listener never serves.
 
-Six of them refuse every API key, an admin key included, with 401 ``sudo_required``.
+Seven of them refuse every API key, an admin key included, with 401 ``sudo_required``.
 :meth:`Admin.update_vm_agents`, :meth:`Admin.bulk_stop_vms`, :meth:`Admin.bulk_delete_vms`,
-:meth:`Admin.delete_checkpoint` and :meth:`Admin.offboard_user` need a recent interactive sign-in, so they run only with a ticket
+:meth:`Admin.delete_checkpoint`, :meth:`Admin.offboard_user` and :meth:`Admin.enable_user` need a
+recent interactive sign-in, so they run only with a ticket
 or a session, never a key. :meth:`Admin.drain_host` is never served on the Warpgate-fronted
 listener either, so in practice it runs on the host's Unix socket.
 """
@@ -42,6 +43,7 @@ from ..._generated.api.admin import (
     list_all_users,
     list_all_vms,
     list_any_checkpoints,
+    enable_user,
     list_project_members,
     offboard_user,
     revoke_user_sessions,
@@ -69,6 +71,7 @@ from ..._generated.models import (
     AdminUserSummary,
     AdminVmSummary,
     AdminVmSummaryPage,
+    EnableUserResponse,
     OffboardUserReport,
     OffboardUserRequest,
     ProjectMember,
@@ -398,6 +401,31 @@ class Admin:
             timeout=timeout,
         )
         return cast(OffboardUserReport, out)
+
+    @operation("enableUser")
+    def enable_user(
+        self,
+        username: str,
+        *,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+    ) -> EnableUserResponse:
+        """Let ``username`` back in after an offboarding shut them out. Scope ``admin:sessions:write``.
+
+        While shut out, every request of theirs is refused with 403 ``user_disabled``, and
+        nothing that would hand them a credential or a way in is created, whoever asks. Answers
+        the shut-out that was cleared (``disabled_at``, ``disabled_by``, ``reason``); nothing
+        offboarding ended comes back. The name is matched regardless of ASCII case. Writes a
+        ``user.enabled`` audit row. 404 when the person is not disabled.
+
+        Refuses every API key, an admin key included, with 401 ``sudo_required``: it needs a
+        ticket or a session.
+        """
+        out = self._t.call(
+            enable_user,
+            path={"username": username},
+            timeout=timeout,
+        )
+        return cast(EnableUserResponse, out)
 
     # -- every VM and every checkpoint -------------------------------------------------------
 

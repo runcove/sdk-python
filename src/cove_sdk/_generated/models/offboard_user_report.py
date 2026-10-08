@@ -59,11 +59,20 @@ class OffboardUserReport:
                 user, one result each (deleting the user normally takes them with
                 it, so this is usually empty). Empty when Cove runs without Warpgate.
             teams_left (list[OffboardTeam]): The teams the user was removed from, one result each.
-            tickets_deleted (list[OffboardTicket]): The Warpgate tickets in the user's name, deleted after the keys, one
-                result each. Empty when Cove runs without Warpgate.
+            tickets_deleted (list[OffboardTicket]): The Warpgate tickets in the user's name, and every port invite the
+                user minted on any VM (on a VM someone else owns it is a ticket in
+                the owner's name; its `vm.invite.created` audit row names the user),
+                deleted after the keys, one result each. Empty when Cove runs without
+                Warpgate.
             username (str): Whose account this is.
             vms_stopped (list[OffboardVm]): The VMs the user owns, one result each.
             webhooks_disabled (list[OffboardWebhook]): The user's webhook subscriptions, disabled (`owner-offboarded`).
+            disabled (bool | Unset): True when the person is now shut out of Cove (in a dry run: would
+                be): every request they make, and anything that would hand them a
+                credential or a way in, is refused with 403 `user_disabled` until an
+                administrator enables them again (`POST
+                /api/admin/users/{username}/enable`). False from a server that
+                predates this.
             second_sweep_error (None | str | Unset): Set when the credential sweep that runs again after the Warpgate
                 sessions are closed failed: anything a still-open session created in
                 between may still be live, so run the offboarding again. A failed
@@ -88,6 +97,7 @@ class OffboardUserReport:
     username: str
     vms_stopped: list[OffboardVm]
     webhooks_disabled: list[OffboardWebhook]
+    disabled: bool | Unset = UNSET
     second_sweep_error: None | str | Unset = UNSET
     warpgate_role: None | OffboardWarpgateRole | Unset = UNSET
     warpgate_user: None | OffboardWarpgateUser | Unset = UNSET
@@ -165,6 +175,8 @@ class OffboardUserReport:
             webhooks_disabled_item = webhooks_disabled_item_data.to_dict()
             webhooks_disabled.append(webhooks_disabled_item)
 
+        disabled = self.disabled
+
         second_sweep_error: None | str | Unset
         if isinstance(self.second_sweep_error, Unset):
             second_sweep_error = UNSET
@@ -209,6 +221,8 @@ class OffboardUserReport:
                 "webhooks_disabled": webhooks_disabled,
             }
         )
+        if disabled is not UNSET:
+            field_dict["disabled"] = disabled
         if second_sweep_error is not UNSET:
             field_dict["second_sweep_error"] = second_sweep_error
         if warpgate_role is not UNSET:
@@ -340,6 +354,8 @@ class OffboardUserReport:
 
             webhooks_disabled.append(webhooks_disabled_item)
 
+        disabled = d.pop("disabled", UNSET)
+
         def _parse_second_sweep_error(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -402,6 +418,7 @@ class OffboardUserReport:
             username=username,
             vms_stopped=vms_stopped,
             webhooks_disabled=webhooks_disabled,
+            disabled=disabled,
             second_sweep_error=second_sweep_error,
             warpgate_role=warpgate_role,
             warpgate_user=warpgate_user,

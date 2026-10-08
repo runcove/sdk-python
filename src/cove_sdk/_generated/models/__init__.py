@@ -108,6 +108,7 @@ from .deny_reason_type_16_code import DenyReasonType16Code
 from .disk_capacity import DiskCapacity
 from .disk_format import DiskFormat
 from .drain_target import DrainTarget
+from .enable_user_response import EnableUserResponse
 from .error_code import ErrorCode
 from .exec_exit import ExecExit
 from .exec_output_dto import ExecOutputDto
@@ -378,6 +379,7 @@ __all__ = (
     "DiskCapacity",
     "DiskFormat",
     "DrainTarget",
+    "EnableUserResponse",
     "ErrorCode",
     "ExecExit",
     "ExecOutputDto",

@@ -16,8 +16,9 @@ T = TypeVar("T", bound="OffboardTicket")
 class OffboardTicket:
     """One Warpgate ticket in the user's name, deleted: a connect ticket, a
     port invite on one of their VMs, a CLI ticket Cove did not record, or one
-    they requested at Warpgate. A ticket signs in without the identity
-    provider, so offboarding deletes every one.
+    they requested at Warpgate; or a port invite they minted on a VM someone
+    else owns, which is in the owner's name. A ticket signs in without the
+    identity provider, so offboarding deletes every one.
 
         Attributes:
             id (str): Warpgate's ticket id; `*` when the tickets could not be listed, or

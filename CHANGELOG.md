@@ -17,6 +17,8 @@ tags, and Cove server releases no longer carry the SDK.
 
 ### Added
 
+- **`client.admin.enable_user(username)` lets a person an offboarding shut out back in** (`POST /api/admin/users/{username}/enable`). Until then every request of theirs is refused with 403 `user_disabled` (the new `ErrorCode.USER_DISABLED`), and nothing that would hand them a credential is created. It returns the cleared shut-out (`EnableUserResponse`: `disabled_at`, `disabled_by`, `reason`) and, like `offboard_user`, refuses every API key with 401 `sudo_required`. `AdminUserSummary` gains `disabled_at` and `OffboardUserReport` gains `disabled`.
+
 - **`client.keys.revoke_by_token(token)` revokes an API key by presenting it** (`POST /api/api-keys/revoke`): any key you hold, yours or one you found, no scope needed. Returns alike whether or not the key was live.
 
 - **A clone request can set the clone's idle-pause policy, expiry policy and tags.** `CloneRequest` gains optional `auto_pause_policy`, `ttl_policy` and `tags`; a clone that leaves them out keeps its source's (its expiry clock starts when the clone is created). The clone endpoint's documented errors now include a bad tag (400), more than 50 tags (409, `too_many_tags`) and an out-of-bounds policy (422).

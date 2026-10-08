@@ -40,6 +40,10 @@ class AdminUserSummary:
                 boilerplate down at the seven `ProfileSummary { … }` sites; the real
                 values flow from cove-service.
             username (str):
+            disabled_at (None | str | Unset): When offboarding shut this person out (RFC 3339, UTC): every request
+                of theirs is refused 403 `user_disabled` until an administrator
+                enables them again. Absent when they are not disabled, and from a
+                server that predates this.
             display_name (None | str | Unset):
     """
 
@@ -47,6 +51,7 @@ class AdminUserSummary:
     last_seen_at: str
     usage: UserQuota
     username: str
+    disabled_at: None | str | Unset = UNSET
     display_name: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -58,6 +63,12 @@ class AdminUserSummary:
         usage = self.usage.to_dict()
 
         username = self.username
+
+        disabled_at: None | str | Unset
+        if isinstance(self.disabled_at, Unset):
+            disabled_at = UNSET
+        else:
+            disabled_at = self.disabled_at
 
         display_name: None | str | Unset
         if isinstance(self.display_name, Unset):
@@ -75,6 +86,8 @@ class AdminUserSummary:
                 "username": username,
             }
         )
+        if disabled_at is not UNSET:
+            field_dict["disabled_at"] = disabled_at
         if display_name is not UNSET:
             field_dict["display_name"] = display_name
 
@@ -93,6 +106,15 @@ class AdminUserSummary:
 
         username = d.pop("username")
 
+        def _parse_disabled_at(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        disabled_at = _parse_disabled_at(d.pop("disabled_at", UNSET))
+
         def _parse_display_name(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -107,6 +129,7 @@ class AdminUserSummary:
             last_seen_at=last_seen_at,
             usage=usage,
             username=username,
+            disabled_at=disabled_at,
             display_name=display_name,
         )
 
