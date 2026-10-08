@@ -103,7 +103,12 @@ def sync_detailed(
 ) -> Response[Any | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody]:
     """Revoke an API key
 
-     A non-owned key returns 404, identically to a missing one (existence non-leak).
+     Revokes the key at once: requests with it are refused, and streams already open with it end within
+    the server's 15 s re-check interval. You can revoke your own personal keys. An administrator can
+    revoke anyone's key, personal, team or service, when signed in or through an admin key (`cove key
+    create --admin`); an ordinary key of an administrator cannot. The audit record (`keys.revoked`, or
+    `keys.team_revoked` for a team key) names who revoked it and, for a personal key, its owner. A key
+    you may not revoke returns 404, identically to a missing one (existence non-leak).
 
     Args:
         id (str):
@@ -134,7 +139,12 @@ def sync(
 ) -> Any | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | None:
     """Revoke an API key
 
-     A non-owned key returns 404, identically to a missing one (existence non-leak).
+     Revokes the key at once: requests with it are refused, and streams already open with it end within
+    the server's 15 s re-check interval. You can revoke your own personal keys. An administrator can
+    revoke anyone's key, personal, team or service, when signed in or through an admin key (`cove key
+    create --admin`); an ordinary key of an administrator cannot. The audit record (`keys.revoked`, or
+    `keys.team_revoked` for a team key) names who revoked it and, for a personal key, its owner. A key
+    you may not revoke returns 404, identically to a missing one (existence non-leak).
 
     Args:
         id (str):
@@ -160,7 +170,12 @@ async def asyncio_detailed(
 ) -> Response[Any | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody]:
     """Revoke an API key
 
-     A non-owned key returns 404, identically to a missing one (existence non-leak).
+     Revokes the key at once: requests with it are refused, and streams already open with it end within
+    the server's 15 s re-check interval. You can revoke your own personal keys. An administrator can
+    revoke anyone's key, personal, team or service, when signed in or through an admin key (`cove key
+    create --admin`); an ordinary key of an administrator cannot. The audit record (`keys.revoked`, or
+    `keys.team_revoked` for a team key) names who revoked it and, for a personal key, its owner. A key
+    you may not revoke returns 404, identically to a missing one (existence non-leak).
 
     Args:
         id (str):
@@ -189,7 +204,12 @@ async def asyncio(
 ) -> Any | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | None:
     """Revoke an API key
 
-     A non-owned key returns 404, identically to a missing one (existence non-leak).
+     Revokes the key at once: requests with it are refused, and streams already open with it end within
+    the server's 15 s re-check interval. You can revoke your own personal keys. An administrator can
+    revoke anyone's key, personal, team or service, when signed in or through an admin key (`cove key
+    create --admin`); an ordinary key of an administrator cannot. The audit record (`keys.revoked`, or
+    `keys.team_revoked` for a team key) names who revoked it and, for a personal key, its owner. A key
+    you may not revoke returns 404, identically to a missing one (existence non-leak).
 
     Args:
         id (str):

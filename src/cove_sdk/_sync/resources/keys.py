@@ -139,6 +139,7 @@ class Keys:
     def revoke(self, id: str, *, timeout: CallTimeout = CLIENT_DEFAULT) -> None:
         """Revoke key ``id``. Scope ``keys:manage``.
 
+        Your own key, or anyone's as an administrator (signed in or through an admin key).
         Requests with the key are refused 401 at once; streams already open with it (events,
         console, exec) end within the server's 15 s re-check interval.
         """

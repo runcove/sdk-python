@@ -54,6 +54,11 @@ def _parse_response(
 
         return response_429
 
+    if response.status_code == 503:
+        response_503 = ApiError.from_dict(response.json())
+
+        return response_503
+
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -94,10 +99,13 @@ def sync_detailed(
     VMs is not theirs to lose: it stays while they remain in the team. The service keys' VMs stay until
     an admin deletes them.
 
-    Cleanup at the bastion is best-effort: a session Cove cannot confirm dead upstream is still marked
-    revoked locally and still counted, and a share's bastion access Cove cannot drop (the bastion
-    unreachable) is retried in the background; either failure is logged rather than returned, and Cove's
-    own revocations commit regardless.
+    A CLI session ends only once the bastion confirms it deleted it. A session the bastion refuses to
+    delete, or cannot be reached to delete, stays valid, is not marked revoked and is not counted, and
+    the call then answers 503 `unavailable`, saying how many survived, even though Cove's own
+    revocations (connected apps, service keys, shares) have already committed. Repeat the call once the
+    bastion is reachable: it retries only the sessions left, and a 200 means none survived. A share's
+    bastion access Cove cannot drop is different: it is retried in the background and logged, not
+    returned.
 
     Args:
         username (str):
@@ -144,10 +152,13 @@ def sync(
     VMs is not theirs to lose: it stays while they remain in the team. The service keys' VMs stay until
     an admin deletes them.
 
-    Cleanup at the bastion is best-effort: a session Cove cannot confirm dead upstream is still marked
-    revoked locally and still counted, and a share's bastion access Cove cannot drop (the bastion
-    unreachable) is retried in the background; either failure is logged rather than returned, and Cove's
-    own revocations commit regardless.
+    A CLI session ends only once the bastion confirms it deleted it. A session the bastion refuses to
+    delete, or cannot be reached to delete, stays valid, is not marked revoked and is not counted, and
+    the call then answers 503 `unavailable`, saying how many survived, even though Cove's own
+    revocations (connected apps, service keys, shares) have already committed. Repeat the call once the
+    bastion is reachable: it retries only the sessions left, and a 200 means none survived. A share's
+    bastion access Cove cannot drop is different: it is retried in the background and logged, not
+    returned.
 
     Args:
         username (str):
@@ -189,10 +200,13 @@ async def asyncio_detailed(
     VMs is not theirs to lose: it stays while they remain in the team. The service keys' VMs stay until
     an admin deletes them.
 
-    Cleanup at the bastion is best-effort: a session Cove cannot confirm dead upstream is still marked
-    revoked locally and still counted, and a share's bastion access Cove cannot drop (the bastion
-    unreachable) is retried in the background; either failure is logged rather than returned, and Cove's
-    own revocations commit regardless.
+    A CLI session ends only once the bastion confirms it deleted it. A session the bastion refuses to
+    delete, or cannot be reached to delete, stays valid, is not marked revoked and is not counted, and
+    the call then answers 503 `unavailable`, saying how many survived, even though Cove's own
+    revocations (connected apps, service keys, shares) have already committed. Repeat the call once the
+    bastion is reachable: it retries only the sessions left, and a 200 means none survived. A share's
+    bastion access Cove cannot drop is different: it is retried in the background and logged, not
+    returned.
 
     Args:
         username (str):
@@ -237,10 +251,13 @@ async def asyncio(
     VMs is not theirs to lose: it stays while they remain in the team. The service keys' VMs stay until
     an admin deletes them.
 
-    Cleanup at the bastion is best-effort: a session Cove cannot confirm dead upstream is still marked
-    revoked locally and still counted, and a share's bastion access Cove cannot drop (the bastion
-    unreachable) is retried in the background; either failure is logged rather than returned, and Cove's
-    own revocations commit regardless.
+    A CLI session ends only once the bastion confirms it deleted it. A session the bastion refuses to
+    delete, or cannot be reached to delete, stays valid, is not marked revoked and is not counted, and
+    the call then answers 503 `unavailable`, saying how many survived, even though Cove's own
+    revocations (connected apps, service keys, shares) have already committed. Repeat the call once the
+    bastion is reachable: it retries only the sessions left, and a 200 means none survived. A share's
+    bastion access Cove cannot drop is different: it is retried in the background and logged, not
+    returned.
 
     Args:
         username (str):

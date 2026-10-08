@@ -346,7 +346,11 @@ class Admin:
     def revoke_user_sessions(
         self, username: str, *, timeout: CallTimeout = CLIENT_DEFAULT
     ) -> RevokeSessionsResponse:
-        """End every session ``username`` holds. Scope ``admin:sessions:write``."""
+        """End every session ``username`` holds. Scope ``admin:sessions:write``.
+
+        Answers 503 ``unavailable`` when the bastion kept any CLI session: those stay valid,
+        everything else was revoked, and calling again retries only the sessions left.
+        """
         out = self._t.call(
             revoke_user_sessions, path={"username": username}, timeout=timeout
         )
