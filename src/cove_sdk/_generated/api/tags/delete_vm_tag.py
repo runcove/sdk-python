@@ -8,6 +8,7 @@ from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.api_error import ApiError
 from ...models.cli_too_old_body import CliTooOldBody
+from ...models.removal_response import RemovalResponse
 from ...models.scope_denied_body import ScopeDeniedBody
 from ...types import Response
 
@@ -30,7 +31,12 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | ApiError | CliTooOldBody | ScopeDeniedBody | None:
+) -> Any | ApiError | CliTooOldBody | RemovalResponse | ScopeDeniedBody | None:
+    if response.status_code == 200:
+        response_200 = RemovalResponse.from_dict(response.json())
+
+        return response_200
+
     if response.status_code == 204:
         response_204 = cast(Any, None)
         return response_204
@@ -73,7 +79,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | ApiError | CliTooOldBody | ScopeDeniedBody]:
+) -> Response[Any | ApiError | CliTooOldBody | RemovalResponse | ScopeDeniedBody]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -87,10 +93,12 @@ def sync_detailed(
     key: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[Any | ApiError | CliTooOldBody | ScopeDeniedBody]:
+) -> Response[Any | ApiError | CliTooOldBody | RemovalResponse | ScopeDeniedBody]:
     """Delete a tag
 
-     Idempotent — returns 204 whether or not the key was present.
+     Idempotent, and says what it did: **200** `{"existed": true}` when the key was set, `{"existed":
+    false}` when it was not (a typo, or a repeat). Since API version 7: a client sending `X-Cove-Api-
+    Version` below 7 gets an empty **204** either way, as before.
 
     Args:
         name (str):
@@ -101,7 +109,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | ApiError | CliTooOldBody | ScopeDeniedBody]
+        Response[Any | ApiError | CliTooOldBody | RemovalResponse | ScopeDeniedBody]
     """
 
     kwargs = _get_kwargs(
@@ -121,10 +129,12 @@ def sync(
     key: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Any | ApiError | CliTooOldBody | ScopeDeniedBody | None:
+) -> Any | ApiError | CliTooOldBody | RemovalResponse | ScopeDeniedBody | None:
     """Delete a tag
 
-     Idempotent — returns 204 whether or not the key was present.
+     Idempotent, and says what it did: **200** `{"existed": true}` when the key was set, `{"existed":
+    false}` when it was not (a typo, or a repeat). Since API version 7: a client sending `X-Cove-Api-
+    Version` below 7 gets an empty **204** either way, as before.
 
     Args:
         name (str):
@@ -135,7 +145,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | ApiError | CliTooOldBody | ScopeDeniedBody
+        Any | ApiError | CliTooOldBody | RemovalResponse | ScopeDeniedBody
     """
 
     return sync_detailed(
@@ -150,10 +160,12 @@ async def asyncio_detailed(
     key: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[Any | ApiError | CliTooOldBody | ScopeDeniedBody]:
+) -> Response[Any | ApiError | CliTooOldBody | RemovalResponse | ScopeDeniedBody]:
     """Delete a tag
 
-     Idempotent — returns 204 whether or not the key was present.
+     Idempotent, and says what it did: **200** `{"existed": true}` when the key was set, `{"existed":
+    false}` when it was not (a typo, or a repeat). Since API version 7: a client sending `X-Cove-Api-
+    Version` below 7 gets an empty **204** either way, as before.
 
     Args:
         name (str):
@@ -164,7 +176,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | ApiError | CliTooOldBody | ScopeDeniedBody]
+        Response[Any | ApiError | CliTooOldBody | RemovalResponse | ScopeDeniedBody]
     """
 
     kwargs = _get_kwargs(
@@ -182,10 +194,12 @@ async def asyncio(
     key: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Any | ApiError | CliTooOldBody | ScopeDeniedBody | None:
+) -> Any | ApiError | CliTooOldBody | RemovalResponse | ScopeDeniedBody | None:
     """Delete a tag
 
-     Idempotent — returns 204 whether or not the key was present.
+     Idempotent, and says what it did: **200** `{"existed": true}` when the key was set, `{"existed":
+    false}` when it was not (a typo, or a repeat). Since API version 7: a client sending `X-Cove-Api-
+    Version` below 7 gets an empty **204** either way, as before.
 
     Args:
         name (str):
@@ -196,7 +210,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | ApiError | CliTooOldBody | ScopeDeniedBody
+        Any | ApiError | CliTooOldBody | RemovalResponse | ScopeDeniedBody
     """
 
     return (

@@ -243,6 +243,13 @@ def test_component_host_round_trips() -> None:
 # -- tags ----------------------------------------------------------------------------------------
 
 
+def test_component_tags_delete_says_whether_the_key_existed() -> None:
+    # API version 7: a tag delete answers whether the key was set.
+    api = Api().on("DELETE", "/api/vms/v/tags/typo", (200, {"existed": False}))
+    out = Tags(_t(api)).delete("v", "typo")
+    assert out is not None and out.existed is False
+
+
 def test_component_tags_round_trips() -> None:
     entry = {
         "key": "env",

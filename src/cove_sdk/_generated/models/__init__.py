@@ -194,6 +194,7 @@ from .put_primary_port_body import PutPrimaryPortBody
 from .quota_usage_count import QuotaUsageCount
 from .quota_usage_size import QuotaUsageSize
 from .ram_capacity import RamCapacity
+from .removal_response import RemovalResponse
 from .remove_member_outcome import RemoveMemberOutcome
 from .rename_body import RenameBody
 from .replay_webhook_delivery_response import ReplayWebhookDeliveryResponse
@@ -463,6 +464,7 @@ __all__ = (
     "QuotaUsageCount",
     "QuotaUsageSize",
     "RamCapacity",
+    "RemovalResponse",
     "RemoveMemberOutcome",
     "RenameBody",
     "ReplayWebhookDeliveryResponse",

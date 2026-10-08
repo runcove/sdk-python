@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 from urllib.parse import quote
 
 import httpx
@@ -10,6 +10,7 @@ from ...models.add_port_request import AddPortRequest
 from ...models.api_error import ApiError
 from ...models.cli_too_old_body import CliTooOldBody
 from ...models.port_not_allowed_body import PortNotAllowedBody
+from ...models.proxy_port_info import ProxyPortInfo
 from ...models.scope_denied_body import ScopeDeniedBody
 from ...types import Response
 
@@ -38,9 +39,22 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Any | ApiError | CliTooOldBody | PortNotAllowedBody | ScopeDeniedBody | None:
+) -> (
+    ApiError
+    | CliTooOldBody
+    | PortNotAllowedBody
+    | ProxyPortInfo
+    | ScopeDeniedBody
+    | None
+):
+    if response.status_code == 200:
+        response_200 = ProxyPortInfo.from_dict(response.json())
+
+        return response_200
+
     if response.status_code == 201:
-        response_201 = cast(Any, None)
+        response_201 = ProxyPortInfo.from_dict(response.json())
+
         return response_201
 
     if response.status_code == 400:
@@ -86,7 +100,9 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Any | ApiError | CliTooOldBody | PortNotAllowedBody | ScopeDeniedBody]:
+) -> Response[
+    ApiError | CliTooOldBody | PortNotAllowedBody | ProxyPortInfo | ScopeDeniedBody
+]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -100,12 +116,19 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: AddPortRequest,
-) -> Response[Any | ApiError | CliTooOldBody | PortNotAllowedBody | ScopeDeniedBody]:
+) -> Response[
+    ApiError | CliTooOldBody | PortNotAllowedBody | ProxyPortInfo | ScopeDeniedBody
+]:
     """Expose a guest port through the HTTPS proxy
 
      Registers a guest port for the HTTPS proxy. The port must be within `[service.proxy].allowed_ports`;
     the resulting proxy target is not public until `PUT .../ports/{port}/public` is also called on the
     primary port.
+
+    Idempotent: publishing a port that is already published (a retry, or the primary port Cove publishes
+    when it creates the VM) changes nothing and answers **200** with the port as it stands; a new port
+    answers **201**. Both carry the port and its URL. Since API version 7: a client sending `X-Cove-Api-
+    Version` below 7 gets both statuses with an empty body.
 
     Returns **422** `port_not_allowed` when the port is outside the configured allowlist — the body is
     an `ApiError` envelope with two extra fields not modeled in the schema: `port` (the offending port)
@@ -121,7 +144,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | ApiError | CliTooOldBody | PortNotAllowedBody | ScopeDeniedBody]
+        Response[ApiError | CliTooOldBody | PortNotAllowedBody | ProxyPortInfo | ScopeDeniedBody]
     """
 
     kwargs = _get_kwargs(
@@ -141,12 +164,24 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     body: AddPortRequest,
-) -> Any | ApiError | CliTooOldBody | PortNotAllowedBody | ScopeDeniedBody | None:
+) -> (
+    ApiError
+    | CliTooOldBody
+    | PortNotAllowedBody
+    | ProxyPortInfo
+    | ScopeDeniedBody
+    | None
+):
     """Expose a guest port through the HTTPS proxy
 
      Registers a guest port for the HTTPS proxy. The port must be within `[service.proxy].allowed_ports`;
     the resulting proxy target is not public until `PUT .../ports/{port}/public` is also called on the
     primary port.
+
+    Idempotent: publishing a port that is already published (a retry, or the primary port Cove publishes
+    when it creates the VM) changes nothing and answers **200** with the port as it stands; a new port
+    answers **201**. Both carry the port and its URL. Since API version 7: a client sending `X-Cove-Api-
+    Version` below 7 gets both statuses with an empty body.
 
     Returns **422** `port_not_allowed` when the port is outside the configured allowlist — the body is
     an `ApiError` envelope with two extra fields not modeled in the schema: `port` (the offending port)
@@ -162,7 +197,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | ApiError | CliTooOldBody | PortNotAllowedBody | ScopeDeniedBody
+        ApiError | CliTooOldBody | PortNotAllowedBody | ProxyPortInfo | ScopeDeniedBody
     """
 
     return sync_detailed(
@@ -177,12 +212,19 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: AddPortRequest,
-) -> Response[Any | ApiError | CliTooOldBody | PortNotAllowedBody | ScopeDeniedBody]:
+) -> Response[
+    ApiError | CliTooOldBody | PortNotAllowedBody | ProxyPortInfo | ScopeDeniedBody
+]:
     """Expose a guest port through the HTTPS proxy
 
      Registers a guest port for the HTTPS proxy. The port must be within `[service.proxy].allowed_ports`;
     the resulting proxy target is not public until `PUT .../ports/{port}/public` is also called on the
     primary port.
+
+    Idempotent: publishing a port that is already published (a retry, or the primary port Cove publishes
+    when it creates the VM) changes nothing and answers **200** with the port as it stands; a new port
+    answers **201**. Both carry the port and its URL. Since API version 7: a client sending `X-Cove-Api-
+    Version` below 7 gets both statuses with an empty body.
 
     Returns **422** `port_not_allowed` when the port is outside the configured allowlist — the body is
     an `ApiError` envelope with two extra fields not modeled in the schema: `port` (the offending port)
@@ -198,7 +240,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | ApiError | CliTooOldBody | PortNotAllowedBody | ScopeDeniedBody]
+        Response[ApiError | CliTooOldBody | PortNotAllowedBody | ProxyPortInfo | ScopeDeniedBody]
     """
 
     kwargs = _get_kwargs(
@@ -216,12 +258,24 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     body: AddPortRequest,
-) -> Any | ApiError | CliTooOldBody | PortNotAllowedBody | ScopeDeniedBody | None:
+) -> (
+    ApiError
+    | CliTooOldBody
+    | PortNotAllowedBody
+    | ProxyPortInfo
+    | ScopeDeniedBody
+    | None
+):
     """Expose a guest port through the HTTPS proxy
 
      Registers a guest port for the HTTPS proxy. The port must be within `[service.proxy].allowed_ports`;
     the resulting proxy target is not public until `PUT .../ports/{port}/public` is also called on the
     primary port.
+
+    Idempotent: publishing a port that is already published (a retry, or the primary port Cove publishes
+    when it creates the VM) changes nothing and answers **200** with the port as it stands; a new port
+    answers **201**. Both carry the port and its URL. Since API version 7: a client sending `X-Cove-Api-
+    Version` below 7 gets both statuses with an empty body.
 
     Returns **422** `port_not_allowed` when the port is outside the configured allowlist — the body is
     an `ApiError` envelope with two extra fields not modeled in the schema: `port` (the offending port)
@@ -237,7 +291,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | ApiError | CliTooOldBody | PortNotAllowedBody | ScopeDeniedBody
+        ApiError | CliTooOldBody | PortNotAllowedBody | ProxyPortInfo | ScopeDeniedBody
     """
 
     return (

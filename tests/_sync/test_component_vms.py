@@ -225,6 +225,25 @@ def test_component_vms_wake_resize_clone_connect() -> None:
     assert info.ticket_secret == "t"
 
 
+def test_component_vms_port_publish_and_unpublish_say_what_they_did() -> None:
+    # API version 7: a publish answers with the port (201 new, 200 already
+    # published), an unpublish with whether the port was published.
+    api = (
+        Api()
+        .on("POST", "/api/vms/v/ports", (200, PORT))
+        .on("DELETE", "/api/vms/v/ports/8080", (200, {"existed": False}))
+    )
+    vms = _vms(api)
+    again = vms.add_port("v", 8080)
+    assert (
+        isinstance(again, ProxyPortInfo)
+        and again.is_primary
+        and again.url == "https://p"
+    )
+    gone = vms.remove_port("v", 8080)
+    assert gone is not None and gone.existed is False
+
+
 def test_component_vms_ports_and_invites() -> None:
     api = (
         Api()
@@ -244,6 +263,7 @@ def test_component_vms_ports_and_invites() -> None:
     vms = _vms(api)
     url = vms.get_url("v")
     assert isinstance(url, ProxyUrlInfo) and url.ports[0].port == 8080
+    # A server older than API version 7 answers with an empty 201: None.
     assert vms.add_port("v", 8080) is None
     assert api.last_json() == {"port": 8080}
     assert vms.remove_port("v", 8080) is None

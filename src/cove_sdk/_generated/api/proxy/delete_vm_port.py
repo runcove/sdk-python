@@ -9,6 +9,7 @@ from ...client import AuthenticatedClient, Client
 from ...models.api_error import ApiError
 from ...models.cli_too_old_body import CliTooOldBody
 from ...models.primary_port_not_removable_body import PrimaryPortNotRemovableBody
+from ...models.removal_response import RemovalResponse
 from ...models.scope_denied_body import ScopeDeniedBody
 from ...types import Response
 
@@ -36,9 +37,15 @@ def _parse_response(
     | ApiError
     | CliTooOldBody
     | PrimaryPortNotRemovableBody
+    | RemovalResponse
     | ScopeDeniedBody
     | None
 ):
+    if response.status_code == 200:
+        response_200 = RemovalResponse.from_dict(response.json())
+
+        return response_200
+
     if response.status_code == 204:
         response_204 = cast(Any, None)
         return response_204
@@ -87,7 +94,12 @@ def _parse_response(
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
 ) -> Response[
-    Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | ScopeDeniedBody
+    Any
+    | ApiError
+    | CliTooOldBody
+    | PrimaryPortNotRemovableBody
+    | RemovalResponse
+    | ScopeDeniedBody
 ]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -103,11 +115,20 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[
-    Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | ScopeDeniedBody
+    Any
+    | ApiError
+    | CliTooOldBody
+    | PrimaryPortNotRemovableBody
+    | RemovalResponse
+    | ScopeDeniedBody
 ]:
     """Remove an exposed port
 
      Unregisters a guest port from the HTTPS proxy and revokes any invite links minted for it.
+
+    Idempotent, and says what it did: **200** `{"existed": true}` when the port was published,
+    `{"existed": false}` when it was not (a typo, or a repeat). Since API version 7: a client sending
+    `X-Cove-Api-Version` below 7 gets an empty **204** either way, as before.
 
     Returns **422** `cannot_remove_primary_port` when `port` is the VM's current primary port — switch
     the primary port first (`PUT .../primary-port`). The body is an `ApiError` envelope with an extra
@@ -123,7 +144,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | ScopeDeniedBody]
+        Response[Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | RemovalResponse | ScopeDeniedBody]
     """
 
     kwargs = _get_kwargs(
@@ -148,12 +169,17 @@ def sync(
     | ApiError
     | CliTooOldBody
     | PrimaryPortNotRemovableBody
+    | RemovalResponse
     | ScopeDeniedBody
     | None
 ):
     """Remove an exposed port
 
      Unregisters a guest port from the HTTPS proxy and revokes any invite links minted for it.
+
+    Idempotent, and says what it did: **200** `{"existed": true}` when the port was published,
+    `{"existed": false}` when it was not (a typo, or a repeat). Since API version 7: a client sending
+    `X-Cove-Api-Version` below 7 gets an empty **204** either way, as before.
 
     Returns **422** `cannot_remove_primary_port` when `port` is the VM's current primary port — switch
     the primary port first (`PUT .../primary-port`). The body is an `ApiError` envelope with an extra
@@ -169,7 +195,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | ScopeDeniedBody
+        Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | RemovalResponse | ScopeDeniedBody
     """
 
     return sync_detailed(
@@ -185,11 +211,20 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[
-    Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | ScopeDeniedBody
+    Any
+    | ApiError
+    | CliTooOldBody
+    | PrimaryPortNotRemovableBody
+    | RemovalResponse
+    | ScopeDeniedBody
 ]:
     """Remove an exposed port
 
      Unregisters a guest port from the HTTPS proxy and revokes any invite links minted for it.
+
+    Idempotent, and says what it did: **200** `{"existed": true}` when the port was published,
+    `{"existed": false}` when it was not (a typo, or a repeat). Since API version 7: a client sending
+    `X-Cove-Api-Version` below 7 gets an empty **204** either way, as before.
 
     Returns **422** `cannot_remove_primary_port` when `port` is the VM's current primary port — switch
     the primary port first (`PUT .../primary-port`). The body is an `ApiError` envelope with an extra
@@ -205,7 +240,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | ScopeDeniedBody]
+        Response[Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | RemovalResponse | ScopeDeniedBody]
     """
 
     kwargs = _get_kwargs(
@@ -228,12 +263,17 @@ async def asyncio(
     | ApiError
     | CliTooOldBody
     | PrimaryPortNotRemovableBody
+    | RemovalResponse
     | ScopeDeniedBody
     | None
 ):
     """Remove an exposed port
 
      Unregisters a guest port from the HTTPS proxy and revokes any invite links minted for it.
+
+    Idempotent, and says what it did: **200** `{"existed": true}` when the port was published,
+    `{"existed": false}` when it was not (a typo, or a repeat). Since API version 7: a client sending
+    `X-Cove-Api-Version` below 7 gets an empty **204** either way, as before.
 
     Returns **422** `cannot_remove_primary_port` when `port` is the VM's current primary port — switch
     the primary port first (`PUT .../primary-port`). The body is an `ApiError` envelope with an extra
@@ -249,7 +289,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | ScopeDeniedBody
+        Any | ApiError | CliTooOldBody | PrimaryPortNotRemovableBody | RemovalResponse | ScopeDeniedBody
     """
 
     return (

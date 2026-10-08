@@ -65,6 +65,7 @@ from ..._generated.models import (
     ProxyInvite,
     ProxyPortInfo,
     ProxyUrlInfo,
+    RemovalResponse,
     ResizeRequest,
     ResizeResult,
     RevokeShareOutcome,
@@ -83,7 +84,7 @@ from ..._generated.models import (
     WakeRequest,
 )
 from ..._operations import operation
-from ...errors import CoveError, CoveTimeoutError
+from ...errors import CoveDecodeError, CoveError, CoveTimeoutError
 from ...streams import (
     ExecError,
     ExecExit,
@@ -324,21 +325,38 @@ class Vms:
     @operation("createVmPort")
     async def add_port(
         self, name: str, port: int, *, timeout: CallTimeout = CLIENT_DEFAULT
-    ) -> None:
-        """Expose guest ``port`` through the HTTPS proxy. Scope ``ports:write``."""
+    ) -> ProxyPortInfo | None:
+        """Expose guest ``port`` through the HTTPS proxy. Scope ``ports:write``.
+
+        Idempotent: a port that is already published (a retry, or the primary port) is
+        returned as it stands, unchanged. Returns the port and its URL; ``None`` from a
+        server older than API version 7, which answers without a body.
+        """
         req = build_body(AddPortRequest, None, {"port": port})
-        await self._t.call(
-            create_vm_port, path={"name": name}, body=req, timeout=timeout
-        )
+        try:
+            info = await self._t.call(
+                create_vm_port, path={"name": name}, body=req, timeout=timeout
+            )
+        except CoveDecodeError as exc:
+            # A server older than API version 7 answers a publish with an empty 201 or 200.
+            if not exc.body.strip():
+                return None
+            raise
+        return cast(ProxyPortInfo | None, info)
 
     @operation("deleteVmPort")
     async def remove_port(
         self, name: str, port: int, *, timeout: CallTimeout = CLIENT_DEFAULT
-    ) -> None:
-        """Stop exposing ``port``. Scope ``ports:write``."""
-        await self._t.call(
+    ) -> RemovalResponse | None:
+        """Stop exposing ``port``. Scope ``ports:write``.
+
+        Idempotent: ``existed`` is ``False`` when the port was not published. ``None``
+        from a server older than API version 7, which does not say.
+        """
+        out = await self._t.call(
             delete_vm_port, path={"name": name, "port": port}, timeout=timeout
         )
+        return cast(RemovalResponse | None, out)
 
     @operation("setVmPortPublic")
     async def set_port_public(

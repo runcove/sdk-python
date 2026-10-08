@@ -24,6 +24,7 @@ tags, and Cove server releases no longer carry the SDK.
 
 ### Changed
 
+- **`vms.add_port` returns the port (`ProxyPortInfo`), whether it was new (201) or already published (200: idempotent), and `vms.remove_port` / `tags.delete` return `RemovalResponse` (`existed`).** Each returns `None` from a server older than API version 7. `API_VERSION` is 7.
 - **`vms.list` and `vms.iter` take `tag` as one `key=value` string or a sequence of them, and send each as its own `tag` parameter; only VMs carrying every one are listed.** The generated `list_vms` now types `tag` as `list[str]`, as the contract declares it.
 - **The set-expiry request (`UpdateTtlPolicyRequest`) takes `expires_in`, an expiry counted from now that keeps the VM's `on_stop`, as an alternative to `policy`, which is now optional.** Send exactly one; the server answers 422 otherwise. A new `ExpiresIn` model carries `secs` (3600 to 315360000, or null to remove the expiry). The operation now documents its 422, and the `TtlPolicy` and create and clone texts give the ten-year ceiling.
 - **`admin.revoke_user_sessions` can fail with 503 `unavailable`** when the bastion kept one of the person's CLI sessions; those sessions stay valid and calling again retries only them. It used to answer success with them still valid. `keys.revoke`'s docs say an administrator can revoke anyone's key.

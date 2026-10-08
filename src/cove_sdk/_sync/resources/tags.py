@@ -14,7 +14,13 @@ from ..._generated.api.tags import (
     set_vm_tag,
 )
 from ..._generated.api.vms import set_vm_team, unset_vm_team
-from ..._generated.models import SetTagRequest, SetVmTeamRequest, TagEntry, TagSummary
+from ..._generated.models import (
+    RemovalResponse,
+    SetTagRequest,
+    SetVmTeamRequest,
+    TagEntry,
+    TagSummary,
+)
 from ..._operations import operation
 from .._transport import CLIENT_DEFAULT, SyncCoveTransport, CallTimeout
 
@@ -46,9 +52,16 @@ class Tags:
     @operation("deleteVmTag")
     def delete(
         self, name: str, key: str, *, timeout: CallTimeout = CLIENT_DEFAULT
-    ) -> None:
-        """Remove tag ``key`` from VM ``name``. Scope ``tags:write``."""
-        self._t.call(delete_vm_tag, path={"name": name, "key": key}, timeout=timeout)
+    ) -> RemovalResponse | None:
+        """Remove tag ``key`` from VM ``name``. Scope ``tags:write``.
+
+        Idempotent: ``existed`` is ``False`` when the key was not set. ``None`` from a
+        server older than API version 7, which does not say.
+        """
+        out = self._t.call(
+            delete_vm_tag, path={"name": name, "key": key}, timeout=timeout
+        )
+        return cast(RemovalResponse | None, out)
 
     @operation("listAllTags")
     def list_all(
