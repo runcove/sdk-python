@@ -28,6 +28,7 @@ from ...models.deny_reason_type_14 import DenyReasonType14
 from ...models.deny_reason_type_15 import DenyReasonType15
 from ...models.deny_reason_type_16 import DenyReasonType16
 from ...models.invalid_vm_name_body import InvalidVmNameBody
+from ...models.vm_name_taken_body import VmNameTakenBody
 from ...types import Response
 
 
@@ -74,6 +75,7 @@ def _parse_response(
     | DenyReasonType7
     | DenyReasonType8
     | DenyReasonType9
+    | VmNameTakenBody
     | InvalidVmNameBody
     | CliTooOldBody
     | CloneResponse
@@ -147,13 +149,26 @@ def _parse_response(
             | DenyReasonType7
             | DenyReasonType8
             | DenyReasonType9
+            | VmNameTakenBody
         ):
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                componentsschemas_vm_conflict_response_type_0 = ApiError.from_dict(data)
+                componentsschemas_vm_clone_conflict_response_type_0 = (
+                    VmNameTakenBody.from_dict(data)
+                )
 
-                return componentsschemas_vm_conflict_response_type_0
+                return componentsschemas_vm_clone_conflict_response_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_vm_clone_conflict_response_type_1 = (
+                    ApiError.from_dict(data)
+                )
+
+                return componentsschemas_vm_clone_conflict_response_type_1
             except (TypeError, ValueError, AttributeError, KeyError):
                 pass
             try:
@@ -336,6 +351,7 @@ def _build_response(
     | DenyReasonType7
     | DenyReasonType8
     | DenyReasonType9
+    | VmNameTakenBody
     | InvalidVmNameBody
     | CliTooOldBody
     | CloneResponse
@@ -372,6 +388,7 @@ def sync_detailed(
     | DenyReasonType7
     | DenyReasonType8
     | DenyReasonType9
+    | VmNameTakenBody
     | InvalidVmNameBody
     | CliTooOldBody
     | CloneResponse
@@ -411,7 +428,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | ApiError | InvalidVmNameBody | CliTooOldBody | CloneResponse]
+        Response[ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody | ApiError | InvalidVmNameBody | CliTooOldBody | CloneResponse]
     """
 
     kwargs = _get_kwargs(
@@ -450,6 +467,7 @@ def sync(
     | DenyReasonType7
     | DenyReasonType8
     | DenyReasonType9
+    | VmNameTakenBody
     | InvalidVmNameBody
     | CliTooOldBody
     | CloneResponse
@@ -490,7 +508,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | ApiError | InvalidVmNameBody | CliTooOldBody | CloneResponse
+        ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody | ApiError | InvalidVmNameBody | CliTooOldBody | CloneResponse
     """
 
     return sync_detailed(
@@ -524,6 +542,7 @@ async def asyncio_detailed(
     | DenyReasonType7
     | DenyReasonType8
     | DenyReasonType9
+    | VmNameTakenBody
     | InvalidVmNameBody
     | CliTooOldBody
     | CloneResponse
@@ -563,7 +582,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | ApiError | InvalidVmNameBody | CliTooOldBody | CloneResponse]
+        Response[ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody | ApiError | InvalidVmNameBody | CliTooOldBody | CloneResponse]
     """
 
     kwargs = _get_kwargs(
@@ -600,6 +619,7 @@ async def asyncio(
     | DenyReasonType7
     | DenyReasonType8
     | DenyReasonType9
+    | VmNameTakenBody
     | InvalidVmNameBody
     | CliTooOldBody
     | CloneResponse
@@ -640,7 +660,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | ApiError | InvalidVmNameBody | CliTooOldBody | CloneResponse
+        ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody | ApiError | InvalidVmNameBody | CliTooOldBody | CloneResponse
     """
 
     return (

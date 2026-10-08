@@ -246,6 +246,7 @@ SelfPermissions: _t.TypeAlias = _t.Union[
 ]
 SensitiveOpUnauthorizedResponse: _t.TypeAlias = _t.Union[ApiError, SudoRequiredBody]
 VmBadRequestResponse: _t.TypeAlias = _t.Union[ApiError, InvalidVmNameBody]
+VmCloneConflictResponse: _t.TypeAlias = _t.Union[VmNameTakenBody, ApiError, DenyReason]
 VmConflictResponse: _t.TypeAlias = _t.Union[ApiError, DenyReason]
 VmCreateConflictResponse: _t.TypeAlias = _t.Union[VmNameTakenBody, DenyReason]
 
@@ -420,6 +421,7 @@ __all__ = [
     "UserQuota",
     "UserStatus",
     "VmBadRequestResponse",
+    "VmCloneConflictResponse",
     "VmConflictResponse",
     "VmConsole",
     "VmCountResult",

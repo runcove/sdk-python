@@ -718,7 +718,11 @@ def mock_transport() -> httpx.MockTransport:
                 return invalid_state(name, vm, "clone")
             target = body["new_vm_name"]
             if target in vms:
-                return error(409, "invalid_state_transition", f"new VM name already taken: {target}")
+                # The server's body: create's `vm_name_taken`, which carries the name.
+                return json_response(
+                    409,
+                    {"code": "vm_name_taken", "message": f'name "{target}" is already taken', "name": target},
+                )
             # A clone without a checkpoint id is made from an implicit checkpoint of the source now.
             if body.get("source_checkpoint_id"):
                 c_or_none = checkpoints.get(body["source_checkpoint_id"])

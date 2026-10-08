@@ -11,7 +11,7 @@ def test_unit_types_all_has_no_anonymous_branch_names() -> None:
 
 
 def test_unit_tagged_unions_are_exported_under_their_schema_names() -> None:
-    # the spec's seven tagged unions, plus VmCreateConflictResponse — one of the four other
+    # the spec's seven tagged unions, plus VmCreateConflictResponse — one of the other
     # oneOf schemas — as a control that gen_types.py handles oneOf generically
     for name in (
         "AdminBulkScope",

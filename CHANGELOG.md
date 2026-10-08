@@ -11,6 +11,10 @@ tags, and Cove server releases no longer carry the SDK.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`vms.clone` types a taken `new_vm_name` as `VmNameTakenBody`, the body `vms.create` answers, and `cove_sdk.types` exports `VmCloneConflictResponse`, the clone's 409 union.** The server now answers a taken clone name with `vm_name_taken` (it was `invalid_state_transition`), with `retry_after_secs` while the name is in its post-delete cooldown.
+
 ### Added
 
 - **`client.keys.revoke_by_token(token)` revokes an API key by presenting it** (`POST /api/api-keys/revoke`): any key you hold, yours or one you found, no scope needed. Returns alike whether or not the key was live.
