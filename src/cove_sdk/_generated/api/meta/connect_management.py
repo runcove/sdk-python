@@ -91,7 +91,8 @@ def sync_detailed(
     Lobby's cove-shell REPL target) rather than a specific VM. Open to every authenticated user: the
     REPL it connects to is itself per-user-scoped, so the ticket grants no privilege beyond the caller's
     existing scope. Every attempt — reached or not — is recorded via
-    `LifecycleEventKind::ManagementConnectAttempted`.
+    `LifecycleEventKind::ManagementConnectAttempted`. Like a VM connect ticket, the ticket is single-use
+    and expires if it is not spent within five minutes of the mint.
 
     Not served on the external bearer-key listener: this is a browser/SSH-session concept, not an
     orchestrator surface, so it carries no `x-required-scope`.
@@ -123,7 +124,8 @@ def sync(
     Lobby's cove-shell REPL target) rather than a specific VM. Open to every authenticated user: the
     REPL it connects to is itself per-user-scoped, so the ticket grants no privilege beyond the caller's
     existing scope. Every attempt — reached or not — is recorded via
-    `LifecycleEventKind::ManagementConnectAttempted`.
+    `LifecycleEventKind::ManagementConnectAttempted`. Like a VM connect ticket, the ticket is single-use
+    and expires if it is not spent within five minutes of the mint.
 
     Not served on the external bearer-key listener: this is a browser/SSH-session concept, not an
     orchestrator surface, so it carries no `x-required-scope`.
@@ -151,7 +153,8 @@ async def asyncio_detailed(
     Lobby's cove-shell REPL target) rather than a specific VM. Open to every authenticated user: the
     REPL it connects to is itself per-user-scoped, so the ticket grants no privilege beyond the caller's
     existing scope. Every attempt — reached or not — is recorded via
-    `LifecycleEventKind::ManagementConnectAttempted`.
+    `LifecycleEventKind::ManagementConnectAttempted`. Like a VM connect ticket, the ticket is single-use
+    and expires if it is not spent within five minutes of the mint.
 
     Not served on the external bearer-key listener: this is a browser/SSH-session concept, not an
     orchestrator surface, so it carries no `x-required-scope`.
@@ -181,7 +184,8 @@ async def asyncio(
     Lobby's cove-shell REPL target) rather than a specific VM. Open to every authenticated user: the
     REPL it connects to is itself per-user-scoped, so the ticket grants no privilege beyond the caller's
     existing scope. Every attempt — reached or not — is recorded via
-    `LifecycleEventKind::ManagementConnectAttempted`.
+    `LifecycleEventKind::ManagementConnectAttempted`. Like a VM connect ticket, the ticket is single-use
+    and expires if it is not spent within five minutes of the mint.
 
     Not served on the external bearer-key listener: this is a browser/SSH-session concept, not an
     orchestrator surface, so it carries no `x-required-scope`.
