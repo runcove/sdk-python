@@ -10,6 +10,7 @@ from ...models.api_error import ApiError
 from ...models.cli_too_old_body import CliTooOldBody
 from ...models.scope_denied_body import ScopeDeniedBody
 from ...models.set_secret_request import SetSecretRequest
+from ...models.sudo_required_body import SudoRequiredBody
 from ...models.vm_count_result import VmCountResult
 from ...types import Response
 
@@ -40,7 +41,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ApiError | CliTooOldBody | ScopeDeniedBody | VmCountResult | None:
+) -> (
+    ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | VmCountResult | None
+):
     if response.status_code == 200:
         response_200 = VmCountResult.from_dict(response.json())
 
@@ -52,7 +55,27 @@ def _parse_response(
         return response_400
 
     if response.status_code == 401:
-        response_401 = ApiError.from_dict(response.json())
+
+        def _parse_response_401(data: object) -> ApiError | SudoRequiredBody:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_sensitive_op_unauthorized_response_type_0 = (
+                    ApiError.from_dict(data)
+                )
+
+                return componentsschemas_sensitive_op_unauthorized_response_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            if not isinstance(data, dict):
+                raise TypeError()
+            componentsschemas_sensitive_op_unauthorized_response_type_1 = (
+                SudoRequiredBody.from_dict(data)
+            )
+
+            return componentsschemas_sensitive_op_unauthorized_response_type_1
+
+        response_401 = _parse_response_401(response.json())
 
         return response_401
 
@@ -89,7 +112,9 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | VmCountResult]:
+) -> Response[
+    ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | VmCountResult
+]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -104,7 +129,9 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: SetSecretRequest,
-) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | VmCountResult]:
+) -> Response[
+    ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | VmCountResult
+]:
     """Set a project-scoped secret
 
      Insert-or-overwrite on the project scope. Best-effort fans out to every RUNNING VM tagged into the
@@ -120,6 +147,11 @@ def sync_detailed(
     — the refusal must not confirm that the principal exists. Writing your own scope, or one you are a
     member of, needs only `secrets:write`. Interactive sessions (SSH, web, unix socket) carry no scope
     list and are unaffected.
+
+    Needs a fresh login, as a per-VM set does, because a scoped secret reaches every VM in its scope: on
+    the daemon socket and the bastion-fronted listener a caller whose CLI login is older than the re-
+    auth window gets **401** `sudo_required` and signs in again (the CLI does this itself). API keys are
+    exempt, as on the per-VM set.
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`.
 
@@ -138,7 +170,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | CliTooOldBody | ScopeDeniedBody | VmCountResult]
+        Response[ApiError | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | VmCountResult]
     """
 
     kwargs = _get_kwargs(
@@ -160,7 +192,9 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     body: SetSecretRequest,
-) -> ApiError | CliTooOldBody | ScopeDeniedBody | VmCountResult | None:
+) -> (
+    ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | VmCountResult | None
+):
     """Set a project-scoped secret
 
      Insert-or-overwrite on the project scope. Best-effort fans out to every RUNNING VM tagged into the
@@ -176,6 +210,11 @@ def sync(
     — the refusal must not confirm that the principal exists. Writing your own scope, or one you are a
     member of, needs only `secrets:write`. Interactive sessions (SSH, web, unix socket) carry no scope
     list and are unaffected.
+
+    Needs a fresh login, as a per-VM set does, because a scoped secret reaches every VM in its scope: on
+    the daemon socket and the bastion-fronted listener a caller whose CLI login is older than the re-
+    auth window gets **401** `sudo_required` and signs in again (the CLI does this itself). API keys are
+    exempt, as on the per-VM set.
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`.
 
@@ -194,7 +233,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | CliTooOldBody | ScopeDeniedBody | VmCountResult
+        ApiError | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | VmCountResult
     """
 
     return sync_detailed(
@@ -211,7 +250,9 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: SetSecretRequest,
-) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | VmCountResult]:
+) -> Response[
+    ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | VmCountResult
+]:
     """Set a project-scoped secret
 
      Insert-or-overwrite on the project scope. Best-effort fans out to every RUNNING VM tagged into the
@@ -227,6 +268,11 @@ async def asyncio_detailed(
     — the refusal must not confirm that the principal exists. Writing your own scope, or one you are a
     member of, needs only `secrets:write`. Interactive sessions (SSH, web, unix socket) carry no scope
     list and are unaffected.
+
+    Needs a fresh login, as a per-VM set does, because a scoped secret reaches every VM in its scope: on
+    the daemon socket and the bastion-fronted listener a caller whose CLI login is older than the re-
+    auth window gets **401** `sudo_required` and signs in again (the CLI does this itself). API keys are
+    exempt, as on the per-VM set.
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`.
 
@@ -245,7 +291,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | CliTooOldBody | ScopeDeniedBody | VmCountResult]
+        Response[ApiError | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | VmCountResult]
     """
 
     kwargs = _get_kwargs(
@@ -265,7 +311,9 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     body: SetSecretRequest,
-) -> ApiError | CliTooOldBody | ScopeDeniedBody | VmCountResult | None:
+) -> (
+    ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | VmCountResult | None
+):
     """Set a project-scoped secret
 
      Insert-or-overwrite on the project scope. Best-effort fans out to every RUNNING VM tagged into the
@@ -281,6 +329,11 @@ async def asyncio(
     — the refusal must not confirm that the principal exists. Writing your own scope, or one you are a
     member of, needs only `secrets:write`. Interactive sessions (SSH, web, unix socket) carry no scope
     list and are unaffected.
+
+    Needs a fresh login, as a per-VM set does, because a scoped secret reaches every VM in its scope: on
+    the daemon socket and the bastion-fronted listener a caller whose CLI login is older than the re-
+    auth window gets **401** `sudo_required` and signs in again (the CLI does this itself). API keys are
+    exempt, as on the per-VM set.
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`.
 
@@ -299,7 +352,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | CliTooOldBody | ScopeDeniedBody | VmCountResult
+        ApiError | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | VmCountResult
     """
 
     return (

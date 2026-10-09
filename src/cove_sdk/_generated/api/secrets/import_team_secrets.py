@@ -11,6 +11,7 @@ from ...models.cli_too_old_body import CliTooOldBody
 from ...models.import_secrets_request import ImportSecretsRequest
 from ...models.scope_denied_body import ScopeDeniedBody
 from ...models.scoped_import_result import ScopedImportResult
+from ...models.sudo_required_body import SudoRequiredBody
 from ...types import Response
 
 
@@ -38,7 +39,14 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ApiError | CliTooOldBody | ScopeDeniedBody | ScopedImportResult | None:
+) -> (
+    ApiError
+    | SudoRequiredBody
+    | CliTooOldBody
+    | ScopeDeniedBody
+    | ScopedImportResult
+    | None
+):
     if response.status_code == 200:
         response_200 = ScopedImportResult.from_dict(response.json())
 
@@ -50,7 +58,27 @@ def _parse_response(
         return response_400
 
     if response.status_code == 401:
-        response_401 = ApiError.from_dict(response.json())
+
+        def _parse_response_401(data: object) -> ApiError | SudoRequiredBody:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_sensitive_op_unauthorized_response_type_0 = (
+                    ApiError.from_dict(data)
+                )
+
+                return componentsschemas_sensitive_op_unauthorized_response_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            if not isinstance(data, dict):
+                raise TypeError()
+            componentsschemas_sensitive_op_unauthorized_response_type_1 = (
+                SudoRequiredBody.from_dict(data)
+            )
+
+            return componentsschemas_sensitive_op_unauthorized_response_type_1
+
+        response_401 = _parse_response_401(response.json())
 
         return response_401
 
@@ -87,7 +115,9 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | ScopedImportResult]:
+) -> Response[
+    ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | ScopedImportResult
+]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -101,7 +131,9 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: ImportSecretsRequest,
-) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | ScopedImportResult]:
+) -> Response[
+    ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | ScopedImportResult
+]:
     """Bulk-import team-scoped secrets
 
      Best-effort — entries with invalid names are silently skipped rather than failing the whole batch,
@@ -116,6 +148,11 @@ def sync_detailed(
     member of, needs only `secrets:write`. Interactive sessions (SSH, web, unix socket) carry no scope
     list and are unaffected.
 
+    Needs a fresh login, as a per-VM set does, because a scoped secret reaches every VM in its scope: on
+    the daemon socket and the bastion-fronted listener a caller whose CLI login is older than the re-
+    auth window gets **401** `sudo_required` and signs in again (the CLI does this itself). API keys are
+    exempt, as on the per-VM set.
+
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`.
 
     Args:
@@ -129,7 +166,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | CliTooOldBody | ScopeDeniedBody | ScopedImportResult]
+        Response[ApiError | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | ScopedImportResult]
     """
 
     kwargs = _get_kwargs(
@@ -149,7 +186,14 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     body: ImportSecretsRequest,
-) -> ApiError | CliTooOldBody | ScopeDeniedBody | ScopedImportResult | None:
+) -> (
+    ApiError
+    | SudoRequiredBody
+    | CliTooOldBody
+    | ScopeDeniedBody
+    | ScopedImportResult
+    | None
+):
     """Bulk-import team-scoped secrets
 
      Best-effort — entries with invalid names are silently skipped rather than failing the whole batch,
@@ -164,6 +208,11 @@ def sync(
     member of, needs only `secrets:write`. Interactive sessions (SSH, web, unix socket) carry no scope
     list and are unaffected.
 
+    Needs a fresh login, as a per-VM set does, because a scoped secret reaches every VM in its scope: on
+    the daemon socket and the bastion-fronted listener a caller whose CLI login is older than the re-
+    auth window gets **401** `sudo_required` and signs in again (the CLI does this itself). API keys are
+    exempt, as on the per-VM set.
+
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`.
 
     Args:
@@ -177,7 +226,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | CliTooOldBody | ScopeDeniedBody | ScopedImportResult
+        ApiError | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | ScopedImportResult
     """
 
     return sync_detailed(
@@ -192,7 +241,9 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: ImportSecretsRequest,
-) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | ScopedImportResult]:
+) -> Response[
+    ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | ScopedImportResult
+]:
     """Bulk-import team-scoped secrets
 
      Best-effort — entries with invalid names are silently skipped rather than failing the whole batch,
@@ -207,6 +258,11 @@ async def asyncio_detailed(
     member of, needs only `secrets:write`. Interactive sessions (SSH, web, unix socket) carry no scope
     list and are unaffected.
 
+    Needs a fresh login, as a per-VM set does, because a scoped secret reaches every VM in its scope: on
+    the daemon socket and the bastion-fronted listener a caller whose CLI login is older than the re-
+    auth window gets **401** `sudo_required` and signs in again (the CLI does this itself). API keys are
+    exempt, as on the per-VM set.
+
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`.
 
     Args:
@@ -220,7 +276,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | CliTooOldBody | ScopeDeniedBody | ScopedImportResult]
+        Response[ApiError | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | ScopedImportResult]
     """
 
     kwargs = _get_kwargs(
@@ -238,7 +294,14 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     body: ImportSecretsRequest,
-) -> ApiError | CliTooOldBody | ScopeDeniedBody | ScopedImportResult | None:
+) -> (
+    ApiError
+    | SudoRequiredBody
+    | CliTooOldBody
+    | ScopeDeniedBody
+    | ScopedImportResult
+    | None
+):
     """Bulk-import team-scoped secrets
 
      Best-effort — entries with invalid names are silently skipped rather than failing the whole batch,
@@ -253,6 +316,11 @@ async def asyncio(
     member of, needs only `secrets:write`. Interactive sessions (SSH, web, unix socket) carry no scope
     list and are unaffected.
 
+    Needs a fresh login, as a per-VM set does, because a scoped secret reaches every VM in its scope: on
+    the daemon socket and the bastion-fronted listener a caller whose CLI login is older than the re-
+    auth window gets **401** `sudo_required` and signs in again (the CLI does this itself). API keys are
+    exempt, as on the per-VM set.
+
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`.
 
     Args:
@@ -266,7 +334,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | CliTooOldBody | ScopeDeniedBody | ScopedImportResult
+        ApiError | ApiError | SudoRequiredBody | CliTooOldBody | ScopeDeniedBody | ScopedImportResult
     """
 
     return (
