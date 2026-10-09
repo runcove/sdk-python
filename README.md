@@ -23,7 +23,7 @@ Install the package from PyPI. The SDK is pre-1.0, so pin an exact version:
 pip install "runcove-sdk==<version>"
 ```
 
-To match a Cove server, take `<version>` from `https://<cove-host>/public/sdk/index.json`.
+To match a Cove server, take `<version>` from `https://<cove-web-host>/public/sdk/index.json`.
 
 ### From your Cove server
 
@@ -33,12 +33,12 @@ you want exactly the SDK version your server's operator chose. The routes are un
 server's PEP 503 index, or straight from the wheel's URL:
 
 ```sh
-pip install --index-url https://<cove-host>/public/sdk/simple/ \
+pip install --index-url https://<cove-web-host>/public/sdk/simple/ \
     --extra-index-url https://pypi.org/simple "runcove-sdk==<version>"
-pip install https://<cove-host>/public/sdk/<wheel>
+pip install https://<cove-web-host>/public/sdk/<wheel>
 ```
 
-`<version>` and `<wheel>` are the ones `https://<cove-host>/public/sdk/index.json` lists (`kind`
+`<version>` and `<wheel>` are the ones `https://<cove-web-host>/public/sdk/index.json` lists (`kind`
 `wheel` and `sdist`, `package` `runcove-sdk`). A server with nothing staged in `[daemon.sdk_releases]
 dir` answers `index.json` with an empty `artifacts` list: there is then nothing to install from it.
 
@@ -71,11 +71,11 @@ itself and still applies to its PyPI dependencies, or lift the cooldown the same
 
 ```sh
 # Either by the wheel's URL:
-pip install https://<cove-host>/public/sdk/<wheel>
+pip install https://<cove-web-host>/public/sdk/<wheel>
 # or lift the cooldown for runcove-sdk alone, then install its dependencies under it:
 pip install --uploaded-prior-to P0D --no-deps \
-    --index-url https://<cove-host>/public/sdk/simple/ "runcove-sdk==<version>"
-pip install --index-url https://<cove-host>/public/sdk/simple/ \
+    --index-url https://<cove-web-host>/public/sdk/simple/ "runcove-sdk==<version>"
+pip install --index-url https://<cove-web-host>/public/sdk/simple/ \
     --extra-index-url https://pypi.org/simple "runcove-sdk==<version>"
 ```
 
@@ -147,11 +147,11 @@ A Cove deployment has two listeners, and each accepts one kind of credential. Pa
 | Listener | Credential | Client argument |
 |---|---|---|
 | External bearer listener (`[api] bind`, `127.0.0.1:8090` by default) | a `cvk_` API key (`cove key create`) | `token="cvk_..."`, the shorthand for `auth=BearerAuth(...)` |
-| Warpgate-fronted main listener (`https://<cove-host>`) | a Warpgate SSO ticket, the one `cove login` stores (`~/.config/cove/ticket` on Linux, `~/Library/Application Support/cove/ticket` on macOS; `$XDG_CONFIG_HOME/cove/ticket` when `XDG_CONFIG_HOME` is set) | `ticket=...`, the shorthand for `auth=TicketAuth(...)` |
+| Warpgate-fronted main listener (`https://<cove-web-host>`) | a Warpgate SSO ticket, the one `cove login` stores (`~/.config/cove/ticket` on Linux, `~/Library/Application Support/cove/ticket` on macOS; `$XDG_CONFIG_HOME/cove/ticket` when `XDG_CONFIG_HOME` is set) | `ticket=...`, the shorthand for `auth=TicketAuth(...)` |
 
 A bearer key on the Warpgate-fronted listener is refused with 401; so is a ticket on the bearer
 listener. From another machine, either forward the port
-(`ssh -L 8090:127.0.0.1:8090 <cove-host>`, which needs a shell account on the host) and keep the
+(`ssh -L 8090:127.0.0.1:8090 <server-host>`, which needs a shell account on the host) and keep the
 loopback URL, or point `base_url` at the `https://` address an operator has fronted the listener
 with (see the external API page of the Cove docs). Use a bearer key for
 automation: a ticket can hit Warpgate's interactive step-up (401 `sudo_required`) on a sensitive
