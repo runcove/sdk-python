@@ -121,6 +121,10 @@ def sync_detailed(
     - `{"kind": "setup_tag", "tag": "..."}` — only `setup-only` secrets carrying that tag, wiped from
     host and guest after the command finishes whatever its exit status.
 
+    A field the request does not define is refused with 400 `validation_failed` naming it, rather than
+    ignored; `stdin` and `stdin_b64` (which `execVm` takes) are refused with `stdin is not supported
+    with secrets`.
+
     `timeout_secs` (optional, default 30, at most 3600) bounds the command, as on `execVm`; a larger
     value is refused with 400 `validation_failed` and `field: "timeout_secs"`, because other changes to
     the VM's secrets wait until the run finishes. Past it the guest kills the command's whole process
@@ -149,6 +153,11 @@ def sync_detailed(
             `timeout_secs` bounds the command as it does on `ExecRequestDto`: past it
             the guest kills the command's process group and the response is exit 124
             with `timed_out`. The `setup_tag` wipe still runs afterwards.
+
+            A field this operation does not define is refused with 400
+            `validation_failed` naming it, not ignored: a caller that sends an option
+            it lacks (a typo, or an exec option added after this one) would otherwise
+            get the command run without it.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -195,6 +204,10 @@ def sync(
     - `{"kind": "setup_tag", "tag": "..."}` — only `setup-only` secrets carrying that tag, wiped from
     host and guest after the command finishes whatever its exit status.
 
+    A field the request does not define is refused with 400 `validation_failed` naming it, rather than
+    ignored; `stdin` and `stdin_b64` (which `execVm` takes) are refused with `stdin is not supported
+    with secrets`.
+
     `timeout_secs` (optional, default 30, at most 3600) bounds the command, as on `execVm`; a larger
     value is refused with 400 `validation_failed` and `field: "timeout_secs"`, because other changes to
     the VM's secrets wait until the run finishes. Past it the guest kills the command's whole process
@@ -223,6 +236,11 @@ def sync(
             `timeout_secs` bounds the command as it does on `ExecRequestDto`: past it
             the guest kills the command's process group and the response is exit 124
             with `timed_out`. The `setup_tag` wipe still runs afterwards.
+
+            A field this operation does not define is refused with 400
+            `validation_failed` naming it, not ignored: a caller that sends an option
+            it lacks (a typo, or an exec option added after this one) would otherwise
+            get the command run without it.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -264,6 +282,10 @@ async def asyncio_detailed(
     - `{"kind": "setup_tag", "tag": "..."}` — only `setup-only` secrets carrying that tag, wiped from
     host and guest after the command finishes whatever its exit status.
 
+    A field the request does not define is refused with 400 `validation_failed` naming it, rather than
+    ignored; `stdin` and `stdin_b64` (which `execVm` takes) are refused with `stdin is not supported
+    with secrets`.
+
     `timeout_secs` (optional, default 30, at most 3600) bounds the command, as on `execVm`; a larger
     value is refused with 400 `validation_failed` and `field: "timeout_secs"`, because other changes to
     the VM's secrets wait until the run finishes. Past it the guest kills the command's whole process
@@ -292,6 +314,11 @@ async def asyncio_detailed(
             `timeout_secs` bounds the command as it does on `ExecRequestDto`: past it
             the guest kills the command's process group and the response is exit 124
             with `timed_out`. The `setup_tag` wipe still runs afterwards.
+
+            A field this operation does not define is refused with 400
+            `validation_failed` naming it, not ignored: a caller that sends an option
+            it lacks (a typo, or an exec option added after this one) would otherwise
+            get the command run without it.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -336,6 +363,10 @@ async def asyncio(
     - `{"kind": "setup_tag", "tag": "..."}` — only `setup-only` secrets carrying that tag, wiped from
     host and guest after the command finishes whatever its exit status.
 
+    A field the request does not define is refused with 400 `validation_failed` naming it, rather than
+    ignored; `stdin` and `stdin_b64` (which `execVm` takes) are refused with `stdin is not supported
+    with secrets`.
+
     `timeout_secs` (optional, default 30, at most 3600) bounds the command, as on `execVm`; a larger
     value is refused with 400 `validation_failed` and `field: "timeout_secs"`, because other changes to
     the VM's secrets wait until the run finishes. Past it the guest kills the command's whole process
@@ -364,6 +395,11 @@ async def asyncio(
             `timeout_secs` bounds the command as it does on `ExecRequestDto`: past it
             the guest kills the command's process group and the response is exit 124
             with `timed_out`. The `setup_tag` wipe still runs afterwards.
+
+            A field this operation does not define is refused with 400
+            `validation_failed` naming it, not ignored: a caller that sends an option
+            it lacks (a typo, or an exec option added after this one) would otherwise
+            get the command run without it.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

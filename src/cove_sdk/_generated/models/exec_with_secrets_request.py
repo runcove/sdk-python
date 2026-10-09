@@ -4,7 +4,6 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 from typing_extensions import Self
 
 from ..types import UNSET, Unset
@@ -31,6 +30,11 @@ class ExecWithSecretsRequest:
     `timeout_secs` bounds the command as it does on `ExecRequestDto`: past it
     the guest kills the command's process group and the response is exit 124
     with `timed_out`. The `setup_tag` wipe still runs afterwards.
+
+    A field this operation does not define is refused with 400
+    `validation_failed` naming it, not ignored: a caller that sends an option
+    it lacks (a typo, or an exec option added after this one) would otherwise
+    get the command run without it.
 
         Attributes:
             command (list[str]): argv, first element is the program. Must not be empty.
@@ -60,7 +64,6 @@ class ExecWithSecretsRequest:
     command: list[str]
     selector: InjectSelectorType0 | InjectSelectorType1 | InjectSelectorType2
     timeout_secs: int | None | Unset = UNSET
-    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.inject_selector_type_0 import InjectSelectorType0
@@ -83,7 +86,7 @@ class ExecWithSecretsRequest:
             timeout_secs = self.timeout_secs
 
         field_dict: dict[str, Any] = {}
-        field_dict.update(self.additional_properties)
+
         field_dict.update(
             {
                 "command": command,
@@ -152,21 +155,4 @@ class ExecWithSecretsRequest:
             timeout_secs=timeout_secs,
         )
 
-        exec_with_secrets_request.additional_properties = d
         return exec_with_secrets_request
-
-    @property
-    def additional_keys(self) -> list[str]:
-        return list(self.additional_properties.keys())
-
-    def __getitem__(self, key: str) -> Any:
-        return self.additional_properties[key]
-
-    def __setitem__(self, key: str, value: Any) -> None:
-        self.additional_properties[key] = value
-
-    def __delitem__(self, key: str) -> None:
-        del self.additional_properties[key]
-
-    def __contains__(self, key: str) -> bool:
-        return key in self.additional_properties
