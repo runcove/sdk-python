@@ -9,6 +9,7 @@ this SDK never sends it).
 
 from __future__ import annotations
 
+import base64
 import builtins
 from collections.abc import Iterator, Iterable, Mapping, Sequence
 from typing import Any, cast
@@ -104,6 +105,13 @@ from .._transport import (
     TimeoutArg,
     api_path,
 )
+
+
+EXEC_STDIN_MIN_API_VERSION: int = 8
+"""First server API version that takes exec stdin (``stdin``, ``stdin_b64``). An older server
+ignores both fields and would run the command on empty input, so an exec with stdin first reads
+the server's version and raises :class:`~cove_sdk.CoveError` below this. Equal to the server's
+``EXEC_STDIN_API_VERSION``; ``cove/cove-cli/tests/version_drift.rs`` checks the two stay equal."""
 
 
 class Vms:
@@ -564,6 +572,7 @@ class Vms:
         env: Mapping[str, str] | None = None,
         user: str | None = None,
         login: bool | None = None,
+        stdin: str | bytes | None = None,
         timeout: TimeoutArg = None,
     ) -> ExecStream:
         """Run ``command`` in the guest, streaming its output. Scope ``vms:exec``.
@@ -583,6 +592,14 @@ class Vms:
         account's login shell so its profile files apply. A VM whose guest agent predates
         protocol 9 refuses an exec that sets any of them (``ExecError``); one that sets none
         is sent exactly as before.
+
+        ``stdin`` is written to the command's stdin, which is then closed: a ``str`` is sent as
+        UTF-8 text (``stdin``), ``bytes`` byte for byte (``stdin_b64``). At most 1 MiB; the
+        server refuses more before anything runs. A guest agent older than protocol 10 refuses
+        it (``ExecError``) rather than run the command without it. With ``stdin`` set, entering the
+        stream first reads the server's API version (a ``GET /api/whoami``) and raises
+        :class:`~cove_sdk.CoveError`, sending nothing, below :data:`EXEC_STDIN_MIN_API_VERSION`:
+        an older server would drop stdin.
         """
         body: dict[str, object] = {"command": builtins.list(command)}
         if timeout_secs is not None:
@@ -595,11 +612,17 @@ class Vms:
             body["user"] = user
         if login:
             body["login"] = True  # False is the default: leave it out of a plain exec
+        if isinstance(stdin, str):
+            body["stdin"] = stdin
+        elif stdin is not None:
+            body["stdin_b64"] = base64.b64encode(stdin).decode("ascii")
         return ExecStream(
             self._t,
             api_path("/api/vms/{name}/exec", name=name),
             body=body,
             timeout=timeout,
+            # An older server would ignore stdin and run the command on empty input.
+            min_api_version=EXEC_STDIN_MIN_API_VERSION if stdin is not None else None,
         )
 
     def exec_collect(
@@ -612,6 +635,7 @@ class Vms:
         env: Mapping[str, str] | None = None,
         user: str | None = None,
         login: bool | None = None,
+        stdin: str | bytes | None = None,
         timeout: TimeoutArg = None,
     ) -> ExecResult:
         """Run ``command`` through :meth:`exec` and gather its output. Scope ``vms:exec``.
@@ -631,6 +655,7 @@ class Vms:
             env=env,
             user=user,
             login=login,
+            stdin=stdin,
             timeout=timeout,
         ) as stream:
             for event in stream:

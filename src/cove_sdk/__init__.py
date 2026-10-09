@@ -9,6 +9,7 @@ re-exports the API's models; the events streamed exec and the event streams yiel
 from . import types
 from ._async._client import AsyncCoveClient
 from ._async.resources.keys import SERVICE_KEYS_MIN_API_VERSION
+from ._async.resources.vms import EXEC_STDIN_MIN_API_VERSION
 from ._meta import API_VERSION
 from ._spotlight import DEFAULT_PROTECT as SPOTLIGHT_DEFAULT_PROTECT
 from ._spotlight import SpotlightOffResult, SpotlightOnResult, SpotlightStatus
@@ -72,6 +73,7 @@ __all__ = [
     "CoveTimeoutError",
     "DenyReason",
     "DownloadTruncatedError",
+    "EXEC_STDIN_MIN_API_VERSION",
     "ExecError",
     "ExecEvent",
     "ExecExit",

@@ -132,6 +132,15 @@ def sync_detailed(
     connects to it, so a retry shortly after usually succeeds. A `cwd` that does not exist or an unknown
     `user` also ends the stream with an `error` event.
 
+    **Stdin.** `stdin` (text) or `stdin_b64` (standard base64, for bytes) is written to the command's
+    stdin, which is then closed, so a reader sees end of input: pipe a script into an interpreter
+    (`["python3", "-"]`) or data into a command. At most 1 MiB (1048576 bytes, counted after decoding);
+    a larger one, both fields at once or malformed base64 is refused with 400 before anything runs.
+    Without either, stdin is empty (`/dev/null`). Stdin needs a guest agent that speaks protocol 10 or
+    later: on an older one the stream ends with an `error` event naming both versions instead of running
+    the command without its input. Interactive (streamed) stdin is not offered; for larger payloads
+    write a file first.
+
     **The buffered, secrets-injected form has moved to `POST /api/vms/{name}/exec-with-secrets`
     (`execVmWithSecrets`).** Until the split, this one route answered with either an SSE stream or a
     JSON body depending on whether the request body carried a `selector` field — the exact shape that
@@ -214,6 +223,15 @@ def sync(
     connects to it, so a retry shortly after usually succeeds. A `cwd` that does not exist or an unknown
     `user` also ends the stream with an `error` event.
 
+    **Stdin.** `stdin` (text) or `stdin_b64` (standard base64, for bytes) is written to the command's
+    stdin, which is then closed, so a reader sees end of input: pipe a script into an interpreter
+    (`["python3", "-"]`) or data into a command. At most 1 MiB (1048576 bytes, counted after decoding);
+    a larger one, both fields at once or malformed base64 is refused with 400 before anything runs.
+    Without either, stdin is empty (`/dev/null`). Stdin needs a guest agent that speaks protocol 10 or
+    later: on an older one the stream ends with an `error` event naming both versions instead of running
+    the command without its input. Interactive (streamed) stdin is not offered; for larger payloads
+    write a file first.
+
     **The buffered, secrets-injected form has moved to `POST /api/vms/{name}/exec-with-secrets`
     (`execVmWithSecrets`).** Until the split, this one route answered with either an SSE stream or a
     JSON body depending on whether the request body carried a `selector` field — the exact shape that
@@ -290,6 +308,15 @@ async def asyncio_detailed(
     stream ends with an `error` event naming both versions. Cove updates an outdated agent when it
     connects to it, so a retry shortly after usually succeeds. A `cwd` that does not exist or an unknown
     `user` also ends the stream with an `error` event.
+
+    **Stdin.** `stdin` (text) or `stdin_b64` (standard base64, for bytes) is written to the command's
+    stdin, which is then closed, so a reader sees end of input: pipe a script into an interpreter
+    (`["python3", "-"]`) or data into a command. At most 1 MiB (1048576 bytes, counted after decoding);
+    a larger one, both fields at once or malformed base64 is refused with 400 before anything runs.
+    Without either, stdin is empty (`/dev/null`). Stdin needs a guest agent that speaks protocol 10 or
+    later: on an older one the stream ends with an `error` event naming both versions instead of running
+    the command without its input. Interactive (streamed) stdin is not offered; for larger payloads
+    write a file first.
 
     **The buffered, secrets-injected form has moved to `POST /api/vms/{name}/exec-with-secrets`
     (`execVmWithSecrets`).** Until the split, this one route answered with either an SSE stream or a
@@ -370,6 +397,15 @@ async def asyncio(
     stream ends with an `error` event naming both versions. Cove updates an outdated agent when it
     connects to it, so a retry shortly after usually succeeds. A `cwd` that does not exist or an unknown
     `user` also ends the stream with an `error` event.
+
+    **Stdin.** `stdin` (text) or `stdin_b64` (standard base64, for bytes) is written to the command's
+    stdin, which is then closed, so a reader sees end of input: pipe a script into an interpreter
+    (`["python3", "-"]`) or data into a command. At most 1 MiB (1048576 bytes, counted after decoding);
+    a larger one, both fields at once or malformed base64 is refused with 400 before anything runs.
+    Without either, stdin is empty (`/dev/null`). Stdin needs a guest agent that speaks protocol 10 or
+    later: on an older one the stream ends with an `error` event naming both versions instead of running
+    the command without its input. Interactive (streamed) stdin is not offered; for larger payloads
+    write a file first.
 
     **The buffered, secrets-injected form has moved to `POST /api/vms/{name}/exec-with-secrets`
     (`execVmWithSecrets`).** Until the split, this one route answered with either an SSE stream or a

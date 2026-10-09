@@ -9,7 +9,7 @@ from mockapi import HEADERS
 
 from cove_sdk._async._streams import EventStream, ExecStream
 from cove_sdk._async._transport import AsyncCoveTransport
-from cove_sdk._async.resources.vms import Vms
+from cove_sdk._async.resources.vms import EXEC_STDIN_MIN_API_VERSION, Vms
 from cove_sdk.auth import BearerAuth
 from cove_sdk.errors import CoveError
 from cove_sdk.streams import ExecExit, ExecResult, ExecStdout
@@ -95,6 +95,63 @@ async def test_component_exec_login_false_is_left_out() -> None:
     seen, vms = _vms(OUTPUT)
     await vms.exec_collect("v", command=["true"], login=False)
     assert json.loads(seen[0].content) == {"command": ["true"]}
+
+
+def _vms_at(version: str | None, *bodies: bytes) -> tuple[list[httpx.Request], Vms]:
+    """Like :func:`_vms`, but ``GET /api/whoami`` answers from a server speaking API ``version``
+    (``None``: no version header); ``seen`` records every request, the version reads included."""
+    seen: list[httpx.Request] = []
+    streams = list(bodies)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        if request.url.path == "/api/whoami":
+            headers = {} if version is None else {"x-cove-api-version": version}
+            return httpx.Response(200, headers=headers, json={"username": "u"})
+        if not streams:
+            raise AssertionError(f"unexpected request {len(seen)}: {request.url}")
+        return httpx.Response(200, headers=SSE, content=streams.pop(0))
+
+    t = AsyncCoveTransport(
+        "https://h", auth=BearerAuth("cvk_t"), transport=httpx.MockTransport(handler)
+    )
+    return seen, Vms(t)
+
+
+async def test_component_exec_stdin_text_and_bytes() -> None:
+    # Stdin first reads the server's version from /api/whoami (stdin needs API 8).
+    seen, vms = _vms_at("8", OUTPUT, OUTPUT)
+    await vms.exec_collect("v", command=["python3", "-"], stdin="print(1+1)")
+    # bytes travel as standard base64, byte for byte (NUL and non-UTF-8 included).
+    async with vms.exec("v", command=["sha256sum"], stdin=b"\x00\xff\x80") as stream:
+        _ = [e async for e in stream]
+    assert [r.url.path for r in seen] == ["/api/whoami", "/api/vms/v/exec"] * 2
+    assert json.loads(seen[1].content) == {
+        "command": ["python3", "-"],
+        "stdin": "print(1+1)",
+    }
+    assert json.loads(seen[3].content) == {"command": ["sha256sum"], "stdin_b64": "AP+A"}
+
+
+async def test_component_exec_stdin_is_refused_by_a_server_older_than_api_8() -> None:
+    # An API 7 server ignores stdin and would run the command on empty input: nothing is sent.
+    # A loop, not parametrize: conftest marks coroutine tests for anyio at collection.
+    cases: list[tuple[str | None, str | bytes]] = [("7", "print(1)"), ("7", b"\x01"), (None, "x")]
+    for version, stdin in cases:
+        seen, vms = _vms_at(version, OUTPUT)
+        with pytest.raises(CoveError) as err:
+            await vms.exec_collect("v", command=["python3", "-"], stdin=stdin)
+        assert "does not support exec stdin; upgrade the server to API 8 or later" in str(err.value)
+        if version == "7":
+            assert "this server (API 7) does not support exec stdin" in str(err.value)
+        assert [r.url.path for r in seen] == ["/api/whoami"]
+    assert EXEC_STDIN_MIN_API_VERSION == 8
+
+
+async def test_component_exec_without_stdin_reads_no_version() -> None:
+    seen, vms = _vms_at("7", OUTPUT)
+    await vms.exec_collect("v", command=["ls"])
+    assert [r.url.path for r in seen] == ["/api/vms/v/exec"]
 
 
 TIMED_OUT = (

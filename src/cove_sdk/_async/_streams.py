@@ -23,7 +23,7 @@ from typing import Any, Generic, Protocol, Self, TypeVar
 import httpx
 
 from .._colour import async_sleep, monotonic
-from ..errors import CoveConnectionError, CoveError, CoveTimeoutError
+from ..errors import CoveConnectionError, CoveError, CoveTimeoutError, _parse_api_version
 from ..streams import (
     ExecError,
     ExecEvent,
@@ -36,7 +36,7 @@ from ..streams import (
     VmEvent,
 )
 from ._sse import ServerSentEvent, iter_lines, parse_sse
-from ._transport import AsyncCoveTransport, TimeoutArg
+from ._transport import CLIENT_DEFAULT, AsyncCoveTransport, TimeoutArg, api_path
 
 T = TypeVar("T")
 
@@ -216,10 +216,44 @@ class ExecStream(_Stream):
         *,
         body: Mapping[str, object],
         timeout: TimeoutArg = None,
+        min_api_version: int | None = None,
     ) -> None:
         super().__init__(
             transport, "POST", path, params=None, body=dict(body), timeout=timeout
         )
+        self._min_api_version = min_api_version
+
+    async def _open(self) -> httpx.Response:
+        if self._min_api_version is not None:
+            await self._require_api_version(self._min_api_version)
+        return await super()._open()
+
+    async def _require_api_version(self, minimum: int) -> None:
+        """Refuse an exec with stdin unless the server says it speaks ``minimum`` or later: an
+        older server ignores stdin and would run the command on empty input. ``/api/whoami`` is in
+        the contract and served on every listener, and every successful reply carries
+        ``x-cove-api-version``; read it from this reply, not the transport's last-seen version. A
+        missing, zero or unreadable version, or a read that fails, is refused too."""
+        try:
+            response = await self._t.request(
+                "GET",
+                api_path("/api/whoami"),
+                timeout=CLIENT_DEFAULT if self._timeout is None else self._timeout,
+            )
+        except (CoveTimeoutError, CoveConnectionError):
+            raise
+        except CoveError as exc:
+            raise CoveError(
+                f"could not read the server's API version ({exc}), so cannot confirm it supports "
+                f"exec stdin (API {minimum} or later); nothing was sent"
+            ) from exc
+        version = _parse_api_version(response.headers.get("x-cove-api-version"))
+        if not version or version < minimum:
+            raise CoveError(
+                f"this server (API {'unknown' if version is None else version}) does not support "
+                f"exec stdin; upgrade the server to API {minimum} or later. An older server would "
+                "run the command without its input; nothing was sent"
+            )
 
     def __aiter__(self) -> AsyncIterator[ExecEvent]:
         self._check_entered()

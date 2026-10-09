@@ -36,6 +36,18 @@ class ExecRequestDto:
             to `PATH`). Default `false`: the command gets a login-like
             environment without any profile file being run.
         selector (InjectSelectorType0 | InjectSelectorType1 | InjectSelectorType2 | None | Unset):
+        stdin (None | str | Unset): Text written to the command's stdin (as UTF-8), which is then closed,
+            so a reader sees end of input. Use it to pipe a script into an
+            interpreter (`["python3", "-"]`) or data into a command. At most
+            1 MiB (1048576 bytes); a larger one is refused with 400 before
+            anything runs. Not together with `stdin_b64`. Without either, the
+            command's stdin is empty (`/dev/null`). Needs a guest agent of
+            protocol 10 or later; an older one refuses the exec. With `login`,
+            the login shell's profile files share this stdin, so one that reads
+            input would consume it first.
+        stdin_b64 (None | str | Unset): Like `stdin`, for bytes: standard base64 (with padding), decoded and
+            written byte for byte. The 1 MiB cap applies to the decoded bytes.
+            Not together with `stdin`.
         timeout_secs (int | None | Unset): Seconds the command may run (default 30). Past it the guest kills the
             command's whole process group and the stream ends with `exit`
             `{"code": 124, "timed_out": true}`.
@@ -50,6 +62,8 @@ class ExecRequestDto:
     selector: (
         InjectSelectorType0 | InjectSelectorType1 | InjectSelectorType2 | None | Unset
     ) = UNSET
+    stdin: None | str | Unset = UNSET
+    stdin_b64: None | str | Unset = UNSET
     timeout_secs: int | None | Unset = UNSET
     user: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -96,6 +110,18 @@ class ExecRequestDto:
         else:
             selector = self.selector
 
+        stdin: None | str | Unset
+        if isinstance(self.stdin, Unset):
+            stdin = UNSET
+        else:
+            stdin = self.stdin
+
+        stdin_b64: None | str | Unset
+        if isinstance(self.stdin_b64, Unset):
+            stdin_b64 = UNSET
+        else:
+            stdin_b64 = self.stdin_b64
+
         timeout_secs: int | None | Unset
         if isinstance(self.timeout_secs, Unset):
             timeout_secs = UNSET
@@ -123,6 +149,10 @@ class ExecRequestDto:
             field_dict["login"] = login
         if selector is not UNSET:
             field_dict["selector"] = selector
+        if stdin is not UNSET:
+            field_dict["stdin"] = stdin
+        if stdin_b64 is not UNSET:
+            field_dict["stdin_b64"] = stdin_b64
         if timeout_secs is not UNSET:
             field_dict["timeout_secs"] = timeout_secs
         if user is not UNSET:
@@ -231,6 +261,24 @@ class ExecRequestDto:
 
         selector = _parse_selector(d.pop("selector", UNSET))
 
+        def _parse_stdin(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        stdin = _parse_stdin(d.pop("stdin", UNSET))
+
+        def _parse_stdin_b64(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        stdin_b64 = _parse_stdin_b64(d.pop("stdin_b64", UNSET))
+
         def _parse_timeout_secs(data: object) -> int | None | Unset:
             if data is None:
                 return data
@@ -255,6 +303,8 @@ class ExecRequestDto:
             env=env,
             login=login,
             selector=selector,
+            stdin=stdin,
+            stdin_b64=stdin_b64,
             timeout_secs=timeout_secs,
             user=user,
         )
