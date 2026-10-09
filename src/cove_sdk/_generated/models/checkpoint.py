@@ -50,6 +50,19 @@ class Checkpoint:
             golden_image_id (str | Unset): Service-owned: golden-image identifier the source VM was launched
                 from. Pinned at snapshot time so a future restore can refuse a
                 cove-version that no longer ships that image.
+            orphaned_at (datetime.datetime | None | Unset): When the checkpoint's source VM was deleted (RFC 3339, UTC).
+                Present
+                only on an orphan, a checkpoint that outlived its VM (`vm_id` is then
+                empty). Absent too on an orphan from a release before this field,
+                until the server's orphan-checkpoint reclaim pass first sees it.
+            reclaim_at (datetime.datetime | None | Unset): When the server will delete this orphan on its own (RFC 3339,
+                UTC):
+                `orphaned_at` plus the server's `[service]
+                orphan_checkpoint_reclaim_days`. Absent for a checkpoint whose VM
+                exists, for an orphan a clone still depends on (it is kept while the
+                clone exists), and for every checkpoint when the server does not
+                reclaim orphans (the setting is `0`). A time in the past means the
+                next reclaim pass deletes it.
             size_bytes (int | None | Unset): On-disk total size in bytes; `None` until the reconciler measures.
             vm_image_at_creation (None | str | Unset): Source VM image captured at creation time.
             vm_name_at_creation (None | str | Unset): Source VM name captured at checkpoint creation time. Survives
@@ -70,6 +83,8 @@ class Checkpoint:
     disk_only: bool | Unset = UNSET
     distro: str | Unset = UNSET
     golden_image_id: str | Unset = UNSET
+    orphaned_at: datetime.datetime | None | Unset = UNSET
+    reclaim_at: datetime.datetime | None | Unset = UNSET
     size_bytes: int | None | Unset = UNSET
     vm_image_at_creation: None | str | Unset = UNSET
     vm_name_at_creation: None | str | Unset = UNSET
@@ -110,6 +125,22 @@ class Checkpoint:
         distro = self.distro
 
         golden_image_id = self.golden_image_id
+
+        orphaned_at: None | str | Unset
+        if isinstance(self.orphaned_at, Unset):
+            orphaned_at = UNSET
+        elif isinstance(self.orphaned_at, datetime.datetime):
+            orphaned_at = self.orphaned_at.isoformat()
+        else:
+            orphaned_at = self.orphaned_at
+
+        reclaim_at: None | str | Unset
+        if isinstance(self.reclaim_at, Unset):
+            reclaim_at = UNSET
+        elif isinstance(self.reclaim_at, datetime.datetime):
+            reclaim_at = self.reclaim_at.isoformat()
+        else:
+            reclaim_at = self.reclaim_at
 
         size_bytes: int | None | Unset
         if isinstance(self.size_bytes, Unset):
@@ -156,6 +187,10 @@ class Checkpoint:
             field_dict["distro"] = distro
         if golden_image_id is not UNSET:
             field_dict["golden_image_id"] = golden_image_id
+        if orphaned_at is not UNSET:
+            field_dict["orphaned_at"] = orphaned_at
+        if reclaim_at is not UNSET:
+            field_dict["reclaim_at"] = reclaim_at
         if size_bytes is not UNSET:
             field_dict["size_bytes"] = size_bytes
         if vm_image_at_creation is not UNSET:
@@ -216,6 +251,40 @@ class Checkpoint:
 
         golden_image_id = d.pop("golden_image_id", UNSET)
 
+        def _parse_orphaned_at(data: object) -> datetime.datetime | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                orphaned_at_type_0 = datetime.datetime.fromisoformat(data)
+
+                return orphaned_at_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(datetime.datetime | None | Unset, data)
+
+        orphaned_at = _parse_orphaned_at(d.pop("orphaned_at", UNSET))
+
+        def _parse_reclaim_at(data: object) -> datetime.datetime | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                reclaim_at_type_0 = datetime.datetime.fromisoformat(data)
+
+                return reclaim_at_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(datetime.datetime | None | Unset, data)
+
+        reclaim_at = _parse_reclaim_at(d.pop("reclaim_at", UNSET))
+
         def _parse_size_bytes(data: object) -> int | None | Unset:
             if data is None:
                 return data
@@ -262,6 +331,8 @@ class Checkpoint:
             disk_only=disk_only,
             distro=distro,
             golden_image_id=golden_image_id,
+            orphaned_at=orphaned_at,
+            reclaim_at=reclaim_at,
             size_bytes=size_bytes,
             vm_image_at_creation=vm_image_at_creation,
             vm_name_at_creation=vm_name_at_creation,

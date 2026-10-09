@@ -94,7 +94,12 @@ def sync_detailed(
     """List every checkpoint owned by the caller (including orphans)
 
      Checkpoints the caller owns across every VM, including orphan checkpoints whose source VM was
-    deleted. Lets `cove checkpoint ls` (no `--vm`) work without aggregating per-VM calls.
+    deleted. Lets `cove checkpoint ls` (no VM name) work without aggregating per-VM calls.
+
+    An orphan has an empty `vm_id` and carries `orphaned_at`, when its VM was deleted. The server
+    deletes an orphan on its own once `[service] orphan_checkpoint_reclaim_days` (default 14) have
+    passed since then, unless a clone of it still exists; `reclaim_at` says when, and is absent while a
+    clone exists. With that setting at `0` nothing is reclaimed and no checkpoint carries `reclaim_at`.
 
     Cursor-paginated, with the same envelope, parameters and ordering as the per-VM `GET
     /api/vms/{name}/checkpoints`: at most `limit` rows come back, and `next_cursor` is non-null whenever
@@ -135,7 +140,12 @@ def sync(
     """List every checkpoint owned by the caller (including orphans)
 
      Checkpoints the caller owns across every VM, including orphan checkpoints whose source VM was
-    deleted. Lets `cove checkpoint ls` (no `--vm`) work without aggregating per-VM calls.
+    deleted. Lets `cove checkpoint ls` (no VM name) work without aggregating per-VM calls.
+
+    An orphan has an empty `vm_id` and carries `orphaned_at`, when its VM was deleted. The server
+    deletes an orphan on its own once `[service] orphan_checkpoint_reclaim_days` (default 14) have
+    passed since then, unless a clone of it still exists; `reclaim_at` says when, and is absent while a
+    clone exists. With that setting at `0` nothing is reclaimed and no checkpoint carries `reclaim_at`.
 
     Cursor-paginated, with the same envelope, parameters and ordering as the per-VM `GET
     /api/vms/{name}/checkpoints`: at most `limit` rows come back, and `next_cursor` is non-null whenever
@@ -171,7 +181,12 @@ async def asyncio_detailed(
     """List every checkpoint owned by the caller (including orphans)
 
      Checkpoints the caller owns across every VM, including orphan checkpoints whose source VM was
-    deleted. Lets `cove checkpoint ls` (no `--vm`) work without aggregating per-VM calls.
+    deleted. Lets `cove checkpoint ls` (no VM name) work without aggregating per-VM calls.
+
+    An orphan has an empty `vm_id` and carries `orphaned_at`, when its VM was deleted. The server
+    deletes an orphan on its own once `[service] orphan_checkpoint_reclaim_days` (default 14) have
+    passed since then, unless a clone of it still exists; `reclaim_at` says when, and is absent while a
+    clone exists. With that setting at `0` nothing is reclaimed and no checkpoint carries `reclaim_at`.
 
     Cursor-paginated, with the same envelope, parameters and ordering as the per-VM `GET
     /api/vms/{name}/checkpoints`: at most `limit` rows come back, and `next_cursor` is non-null whenever
@@ -210,7 +225,12 @@ async def asyncio(
     """List every checkpoint owned by the caller (including orphans)
 
      Checkpoints the caller owns across every VM, including orphan checkpoints whose source VM was
-    deleted. Lets `cove checkpoint ls` (no `--vm`) work without aggregating per-VM calls.
+    deleted. Lets `cove checkpoint ls` (no VM name) work without aggregating per-VM calls.
+
+    An orphan has an empty `vm_id` and carries `orphaned_at`, when its VM was deleted. The server
+    deletes an orphan on its own once `[service] orphan_checkpoint_reclaim_days` (default 14) have
+    passed since then, unless a clone of it still exists; `reclaim_at` says when, and is absent while a
+    clone exists. With that setting at `0` nothing is reclaimed and no checkpoint carries `reclaim_at`.
 
     Cursor-paginated, with the same envelope, parameters and ordering as the per-VM `GET
     /api/vms/{name}/checkpoints`: at most `limit` rows come back, and `next_cursor` is non-null whenever
