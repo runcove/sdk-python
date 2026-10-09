@@ -49,6 +49,7 @@ class ErrorCode(StrEnum):
     UNAVAILABLE = "unavailable"
     UNKNOWN_IMAGE = "unknown_image"
     USER_DISABLED = "user_disabled"
+    USER_NEVER_SIGNED_IN = "user_never_signed_in"
     USER_NOT_PROVISIONED = "user_not_provisioned"
     VALIDATION_FAILED = "validation_failed"
     VM_ACCESS_DENIED = "vm_access_denied"

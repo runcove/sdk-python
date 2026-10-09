@@ -107,8 +107,14 @@ def sync_detailed(
      Grants a share (owner/admin only — the service op gates on `VmShare`, held by no grantable role). A
     non-permitted caller gets the same 404 as a missing VM (existence-leak guard).
 
-    Returns 201 + `user_known`: `false` when the sharee has no Warpgate account yet (the grant still
-    succeeds; access applies on their first SSO login).
+    A user grant must name someone who has signed in to this Cove server at least once. A username Cove
+    has never seen is refused with 422 `user_never_signed_in` (`field` is `subject_id`) and nothing is
+    granted, for administrators too: that person signs in once, then the grant is made again. Team
+    grants are unaffected. Grants made before this refusal existed are kept and apply at that person's
+    first sign-in.
+
+    Returns 201 + `user_known`: `false` when the person has no account at the access gateway right now
+    (the grant still succeeds; access applies when they next sign in).
 
     Served on every listener, including the external API listener.
 
@@ -155,8 +161,14 @@ def sync(
      Grants a share (owner/admin only — the service op gates on `VmShare`, held by no grantable role). A
     non-permitted caller gets the same 404 as a missing VM (existence-leak guard).
 
-    Returns 201 + `user_known`: `false` when the sharee has no Warpgate account yet (the grant still
-    succeeds; access applies on their first SSO login).
+    A user grant must name someone who has signed in to this Cove server at least once. A username Cove
+    has never seen is refused with 422 `user_never_signed_in` (`field` is `subject_id`) and nothing is
+    granted, for administrators too: that person signs in once, then the grant is made again. Team
+    grants are unaffected. Grants made before this refusal existed are kept and apply at that person's
+    first sign-in.
+
+    Returns 201 + `user_known`: `false` when the person has no account at the access gateway right now
+    (the grant still succeeds; access applies when they next sign in).
 
     Served on every listener, including the external API listener.
 
@@ -198,8 +210,14 @@ async def asyncio_detailed(
      Grants a share (owner/admin only — the service op gates on `VmShare`, held by no grantable role). A
     non-permitted caller gets the same 404 as a missing VM (existence-leak guard).
 
-    Returns 201 + `user_known`: `false` when the sharee has no Warpgate account yet (the grant still
-    succeeds; access applies on their first SSO login).
+    A user grant must name someone who has signed in to this Cove server at least once. A username Cove
+    has never seen is refused with 422 `user_never_signed_in` (`field` is `subject_id`) and nothing is
+    granted, for administrators too: that person signs in once, then the grant is made again. Team
+    grants are unaffected. Grants made before this refusal existed are kept and apply at that person's
+    first sign-in.
+
+    Returns 201 + `user_known`: `false` when the person has no account at the access gateway right now
+    (the grant still succeeds; access applies when they next sign in).
 
     Served on every listener, including the external API listener.
 
@@ -244,8 +262,14 @@ async def asyncio(
      Grants a share (owner/admin only — the service op gates on `VmShare`, held by no grantable role). A
     non-permitted caller gets the same 404 as a missing VM (existence-leak guard).
 
-    Returns 201 + `user_known`: `false` when the sharee has no Warpgate account yet (the grant still
-    succeeds; access applies on their first SSO login).
+    A user grant must name someone who has signed in to this Cove server at least once. A username Cove
+    has never seen is refused with 422 `user_never_signed_in` (`field` is `subject_id`) and nothing is
+    granted, for administrators too: that person signs in once, then the grant is made again. Team
+    grants are unaffected. Grants made before this refusal existed are kept and apply at that person's
+    first sign-in.
+
+    Returns 201 + `user_known`: `false` when the person has no account at the access gateway right now
+    (the grant still succeeds; access applies when they next sign in).
 
     Served on every listener, including the external API listener.
 

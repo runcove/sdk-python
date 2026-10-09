@@ -733,9 +733,11 @@ class Vms:
         """Share VM ``name`` with a user or a team.
 
         ``subject_type`` is ``"user"`` or ``"team"``, ``subject_id`` the username or team name,
-        ``role`` ``"user"`` or ``"collaborator"``. ``user_known`` is ``False`` when the user has
-        not signed in yet; the share still applies from their first login. Its owner and
-        administrators only; anyone else gets a 404. Scope ``access:write``.
+        ``role`` ``"user"`` or ``"collaborator"``. A user must have signed in to the server at
+        least once: one it has never seen is refused with 422 ``user_never_signed_in`` and
+        nothing is shared. ``user_known`` is ``False`` when the user has no account at the
+        access gateway right now; the share still applies when they next sign in. Its owner
+        and administrators only; anyone else gets a 404. Scope ``access:write``.
         """
         req = GrantShareRequest(
             subject_type=subject_type, subject_id=subject_id, role=role

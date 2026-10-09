@@ -12,10 +12,12 @@ T = TypeVar("T", bound="GrantShareOutcome")
 
 @_attrs_define
 class GrantShareOutcome:
-    """Grant result. `user_known` is `false` when the sharee has
-    no Warpgate account yet — the pre-share case. The grant still succeeds
-    (role assigned to targets); access applies on the sharee's first SSO login.
-    Callers surface a "hasn't signed in yet" notice when `user_known` is false.
+    """Grant result. A user grant must name someone who has signed in to this
+    Cove server at least once; a never-seen username is refused (422
+    `user_never_signed_in`) rather than answered here. `user_known` is `false`
+    when that person has no account at the access gateway right now (it was
+    deleted, say). The grant still succeeds (role assigned to targets); access
+    applies when they next sign in. Callers surface a note when it is false.
 
     This is the ONE `GrantShareOutcome` that gets `ToSchema`. The
     server-side `cove_service::ops::share::GrantShareOutcome` is a stale

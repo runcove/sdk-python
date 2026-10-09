@@ -66,7 +66,7 @@ def main() -> int:
                 grant = client.vms.share(
                     name, subject_type="user", subject_id=colleague, role="collaborator"
                 )
-                print(f"gave {colleague} access{'' if grant.user_known else ' (from their first sign-in)'}")
+                print(f"gave {colleague} access{'' if grant.user_known else ' (when they next sign in)'}")
                 print(f"{colleague} connects with: cove ssh {name}")
         except CoveAPIError as err:
             print(f"API error {err.status} {err.code}: {err.message}", file=sys.stderr)
