@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from ..models.offboard_api_key import OffboardApiKey
     from ..models.offboard_cli_session import OffboardCliSession
     from ..models.offboard_connected_app import OffboardConnectedApp
+    from ..models.offboard_left_behind import OffboardLeftBehind
     from ..models.offboard_secret import OffboardSecret
     from ..models.offboard_service_key import OffboardServiceKey
     from ..models.offboard_session import OffboardSession
@@ -73,6 +74,7 @@ class OffboardUserReport:
                 administrator enables them again (`POST
                 /api/admin/users/{username}/enable`). False from a server that
                 predates this.
+            left_behind (None | OffboardLeftBehind | Unset):
             second_sweep_error (None | str | Unset): Set when the credential sweep that runs again after the Warpgate
                 sessions are closed failed: anything a still-open session created in
                 between may still be live, so run the offboarding again. A failed
@@ -98,12 +100,14 @@ class OffboardUserReport:
     vms_stopped: list[OffboardVm]
     webhooks_disabled: list[OffboardWebhook]
     disabled: bool | Unset = UNSET
+    left_behind: None | OffboardLeftBehind | Unset = UNSET
     second_sweep_error: None | str | Unset = UNSET
     warpgate_role: None | OffboardWarpgateRole | Unset = UNSET
     warpgate_user: None | OffboardWarpgateUser | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.offboard_left_behind import OffboardLeftBehind
         from ..models.offboard_warpgate_role import OffboardWarpgateRole
         from ..models.offboard_warpgate_user import OffboardWarpgateUser
 
@@ -177,6 +181,14 @@ class OffboardUserReport:
 
         disabled = self.disabled
 
+        left_behind: dict[str, Any] | None | Unset
+        if isinstance(self.left_behind, Unset):
+            left_behind = UNSET
+        elif isinstance(self.left_behind, OffboardLeftBehind):
+            left_behind = self.left_behind.to_dict()
+        else:
+            left_behind = self.left_behind
+
         second_sweep_error: None | str | Unset
         if isinstance(self.second_sweep_error, Unset):
             second_sweep_error = UNSET
@@ -223,6 +235,8 @@ class OffboardUserReport:
         )
         if disabled is not UNSET:
             field_dict["disabled"] = disabled
+        if left_behind is not UNSET:
+            field_dict["left_behind"] = left_behind
         if second_sweep_error is not UNSET:
             field_dict["second_sweep_error"] = second_sweep_error
         if warpgate_role is not UNSET:
@@ -239,6 +253,7 @@ class OffboardUserReport:
         from ..models.offboard_connected_app import (
             OffboardConnectedApp,
         )
+        from ..models.offboard_left_behind import OffboardLeftBehind
         from ..models.offboard_secret import OffboardSecret
         from ..models.offboard_service_key import OffboardServiceKey
         from ..models.offboard_session import OffboardSession
@@ -356,6 +371,23 @@ class OffboardUserReport:
 
         disabled = d.pop("disabled", UNSET)
 
+        def _parse_left_behind(data: object) -> None | OffboardLeftBehind | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                left_behind_type_1 = OffboardLeftBehind.from_dict(data)
+
+                return left_behind_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | OffboardLeftBehind | Unset, data)
+
+        left_behind = _parse_left_behind(d.pop("left_behind", UNSET))
+
         def _parse_second_sweep_error(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -419,6 +451,7 @@ class OffboardUserReport:
             vms_stopped=vms_stopped,
             webhooks_disabled=webhooks_disabled,
             disabled=disabled,
+            left_behind=left_behind,
             second_sweep_error=second_sweep_error,
             warpgate_role=warpgate_role,
             warpgate_user=warpgate_user,

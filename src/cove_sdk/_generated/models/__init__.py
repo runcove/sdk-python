@@ -152,8 +152,13 @@ from .oci_cache_entry import OciCacheEntry
 from .offboard_api_key import OffboardApiKey
 from .offboard_cli_session import OffboardCliSession
 from .offboard_connected_app import OffboardConnectedApp
+from .offboard_left_behind import OffboardLeftBehind
+from .offboard_minted_key import OffboardMintedKey
+from .offboard_port_invite import OffboardPortInvite
 from .offboard_secret import OffboardSecret
 from .offboard_service_key import OffboardServiceKey
+from .offboard_service_vm import OffboardServiceVm
+from .offboard_service_webhook import OffboardServiceWebhook
 from .offboard_session import OffboardSession
 from .offboard_share import OffboardShare
 from .offboard_ssh_key import OffboardSshKey
@@ -423,8 +428,13 @@ __all__ = (
     "OffboardApiKey",
     "OffboardCliSession",
     "OffboardConnectedApp",
+    "OffboardLeftBehind",
+    "OffboardMintedKey",
+    "OffboardPortInvite",
     "OffboardSecret",
     "OffboardServiceKey",
+    "OffboardServiceVm",
+    "OffboardServiceWebhook",
     "OffboardSession",
     "OffboardShare",
     "OffboardSshKey",
