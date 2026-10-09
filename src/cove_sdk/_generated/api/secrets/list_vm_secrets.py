@@ -94,11 +94,15 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto]]:
-    """List secret names on a VM
+    """List secrets on a VM
 
-     Returns the names of every secret injected into this VM — never the values, which are never exposed
-    over HTTP. Merges nothing: this is the VM's own store only, not the effective merged set it would
-    receive at boot (the scope-merge precedence decides that).
+     Returns every secret injected into this VM, ordered by name: its `name`, how the VM receives it
+    (`exposure`: `file`, `fifo` or `env`, with `target_unit` for `env`) and how long it lasts
+    (`lifetime`: `persistent`, `setup_only` with its `setup_tag` if it has one, or `ttl` with
+    `ttl_seconds`). Never the values, nor anything derived from them: values are never exposed over
+    HTTP. An optional field that does not apply is omitted. Merges nothing: this is the VM's own store
+    only, not the effective merged set it would receive at boot (the scope-merge precedence decides
+    that).
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`. A VM that does not exist,
     or is not visible to the caller, returns the same **404** as an existent-but-inaccessible one
@@ -131,11 +135,15 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto] | None:
-    """List secret names on a VM
+    """List secrets on a VM
 
-     Returns the names of every secret injected into this VM — never the values, which are never exposed
-    over HTTP. Merges nothing: this is the VM's own store only, not the effective merged set it would
-    receive at boot (the scope-merge precedence decides that).
+     Returns every secret injected into this VM, ordered by name: its `name`, how the VM receives it
+    (`exposure`: `file`, `fifo` or `env`, with `target_unit` for `env`) and how long it lasts
+    (`lifetime`: `persistent`, `setup_only` with its `setup_tag` if it has one, or `ttl` with
+    `ttl_seconds`). Never the values, nor anything derived from them: values are never exposed over
+    HTTP. An optional field that does not apply is omitted. Merges nothing: this is the VM's own store
+    only, not the effective merged set it would receive at boot (the scope-merge precedence decides
+    that).
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`. A VM that does not exist,
     or is not visible to the caller, returns the same **404** as an existent-but-inaccessible one
@@ -163,11 +171,15 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto]]:
-    """List secret names on a VM
+    """List secrets on a VM
 
-     Returns the names of every secret injected into this VM — never the values, which are never exposed
-    over HTTP. Merges nothing: this is the VM's own store only, not the effective merged set it would
-    receive at boot (the scope-merge precedence decides that).
+     Returns every secret injected into this VM, ordered by name: its `name`, how the VM receives it
+    (`exposure`: `file`, `fifo` or `env`, with `target_unit` for `env`) and how long it lasts
+    (`lifetime`: `persistent`, `setup_only` with its `setup_tag` if it has one, or `ttl` with
+    `ttl_seconds`). Never the values, nor anything derived from them: values are never exposed over
+    HTTP. An optional field that does not apply is omitted. Merges nothing: this is the VM's own store
+    only, not the effective merged set it would receive at boot (the scope-merge precedence decides
+    that).
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`. A VM that does not exist,
     or is not visible to the caller, returns the same **404** as an existent-but-inaccessible one
@@ -198,11 +210,15 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto] | None:
-    """List secret names on a VM
+    """List secrets on a VM
 
-     Returns the names of every secret injected into this VM — never the values, which are never exposed
-    over HTTP. Merges nothing: this is the VM's own store only, not the effective merged set it would
-    receive at boot (the scope-merge precedence decides that).
+     Returns every secret injected into this VM, ordered by name: its `name`, how the VM receives it
+    (`exposure`: `file`, `fifo` or `env`, with `target_unit` for `env`) and how long it lasts
+    (`lifetime`: `persistent`, `setup_only` with its `setup_tag` if it has one, or `ttl` with
+    `ttl_seconds`). Never the values, nor anything derived from them: values are never exposed over
+    HTTP. An optional field that does not apply is omitted. Merges nothing: this is the VM's own store
+    only, not the effective merged set it would receive at boot (the scope-merge precedence decides
+    that).
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`. A VM that does not exist,
     or is not visible to the caller, returns the same **404** as an existent-but-inaccessible one

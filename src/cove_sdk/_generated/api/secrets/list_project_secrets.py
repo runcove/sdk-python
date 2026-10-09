@@ -94,12 +94,14 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto]]:
-    """List project-scoped secret names
+    """List project-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is member-or-admin, re-verified fresh at every
-    call rather than cached: a project has no identity row of its own, `project_members` rows ARE the
-    project, so a `project_id` with zero members does not exist and this returns the same 404 a stranger
-    probing a real project would get. Lowest precedence in the `Vm > User > Team > Project` merge.
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    member-or-admin, re-verified fresh at every call rather than cached: a project has no identity row
+    of its own, `project_members` rows ARE the project, so a `project_id` with zero members does not
+    exist and this returns the same 404 a stranger probing a real project would get. Lowest precedence
+    in the `Vm > User > Team > Project` merge.
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project
@@ -138,12 +140,14 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto] | None:
-    """List project-scoped secret names
+    """List project-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is member-or-admin, re-verified fresh at every
-    call rather than cached: a project has no identity row of its own, `project_members` rows ARE the
-    project, so a `project_id` with zero members does not exist and this returns the same 404 a stranger
-    probing a real project would get. Lowest precedence in the `Vm > User > Team > Project` merge.
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    member-or-admin, re-verified fresh at every call rather than cached: a project has no identity row
+    of its own, `project_members` rows ARE the project, so a `project_id` with zero members does not
+    exist and this returns the same 404 a stranger probing a real project would get. Lowest precedence
+    in the `Vm > User > Team > Project` merge.
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project
@@ -177,12 +181,14 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto]]:
-    """List project-scoped secret names
+    """List project-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is member-or-admin, re-verified fresh at every
-    call rather than cached: a project has no identity row of its own, `project_members` rows ARE the
-    project, so a `project_id` with zero members does not exist and this returns the same 404 a stranger
-    probing a real project would get. Lowest precedence in the `Vm > User > Team > Project` merge.
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    member-or-admin, re-verified fresh at every call rather than cached: a project has no identity row
+    of its own, `project_members` rows ARE the project, so a `project_id` with zero members does not
+    exist and this returns the same 404 a stranger probing a real project would get. Lowest precedence
+    in the `Vm > User > Team > Project` merge.
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project
@@ -219,12 +225,14 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto] | None:
-    """List project-scoped secret names
+    """List project-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is member-or-admin, re-verified fresh at every
-    call rather than cached: a project has no identity row of its own, `project_members` rows ARE the
-    project, so a `project_id` with zero members does not exist and this returns the same 404 a stranger
-    probing a real project would get. Lowest precedence in the `Vm > User > Team > Project` merge.
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    member-or-admin, re-verified fresh at every call rather than cached: a project has no identity row
+    of its own, `project_members` rows ARE the project, so a `project_id` with zero members does not
+    exist and this returns the same 404 a stranger probing a real project would get. Lowest precedence
+    in the `Vm > User > Team > Project` merge.
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project

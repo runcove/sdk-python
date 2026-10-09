@@ -94,13 +94,14 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto]]:
-    """List team-scoped secret names
+    """List team-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is member-or-admin: a member of the team, or an
-    admin, may read this; a non-member gets the same 404 a nonexistent team would (existence non-leak).
-    A team-scoped secret is merged into every VM owned by a team member at inject time, subordinate to
-    that VM's own and its owner's `User`-scoped values (precedence `Vm > User > Team > Project`, oldest-
-    team-first on multi-team ties).
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    member-or-admin: a member of the team, or an admin, may read this; a non-member gets the same 404 a
+    nonexistent team would (existence non-leak). A team-scoped secret is merged into every VM owned by a
+    team member at inject time, subordinate to that VM's own and its owner's `User`-scoped values
+    (precedence `Vm > User > Team > Project`, oldest-team-first on multi-team ties).
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project
@@ -139,13 +140,14 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto] | None:
-    """List team-scoped secret names
+    """List team-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is member-or-admin: a member of the team, or an
-    admin, may read this; a non-member gets the same 404 a nonexistent team would (existence non-leak).
-    A team-scoped secret is merged into every VM owned by a team member at inject time, subordinate to
-    that VM's own and its owner's `User`-scoped values (precedence `Vm > User > Team > Project`, oldest-
-    team-first on multi-team ties).
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    member-or-admin: a member of the team, or an admin, may read this; a non-member gets the same 404 a
+    nonexistent team would (existence non-leak). A team-scoped secret is merged into every VM owned by a
+    team member at inject time, subordinate to that VM's own and its owner's `User`-scoped values
+    (precedence `Vm > User > Team > Project`, oldest-team-first on multi-team ties).
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project
@@ -179,13 +181,14 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto]]:
-    """List team-scoped secret names
+    """List team-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is member-or-admin: a member of the team, or an
-    admin, may read this; a non-member gets the same 404 a nonexistent team would (existence non-leak).
-    A team-scoped secret is merged into every VM owned by a team member at inject time, subordinate to
-    that VM's own and its owner's `User`-scoped values (precedence `Vm > User > Team > Project`, oldest-
-    team-first on multi-team ties).
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    member-or-admin: a member of the team, or an admin, may read this; a non-member gets the same 404 a
+    nonexistent team would (existence non-leak). A team-scoped secret is merged into every VM owned by a
+    team member at inject time, subordinate to that VM's own and its owner's `User`-scoped values
+    (precedence `Vm > User > Team > Project`, oldest-team-first on multi-team ties).
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project
@@ -222,13 +225,14 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto] | None:
-    """List team-scoped secret names
+    """List team-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is member-or-admin: a member of the team, or an
-    admin, may read this; a non-member gets the same 404 a nonexistent team would (existence non-leak).
-    A team-scoped secret is merged into every VM owned by a team member at inject time, subordinate to
-    that VM's own and its owner's `User`-scoped values (precedence `Vm > User > Team > Project`, oldest-
-    team-first on multi-team ties).
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    member-or-admin: a member of the team, or an admin, may read this; a non-member gets the same 404 a
+    nonexistent team would (existence non-leak). A team-scoped secret is merged into every VM owned by a
+    team member at inject time, subordinate to that VM's own and its owner's `User`-scoped values
+    (precedence `Vm > User > Team > Project`, oldest-team-first on multi-team ties).
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project

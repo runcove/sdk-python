@@ -94,12 +94,13 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto]]:
-    """List user-scoped secret names
+    """List user-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is self-or-admin: the named user, or an admin,
-    may read this; anyone else gets the same 404 an unknown username would (existence non-leak). A user-
-    scoped secret is one input to the merge a VM receives at inject time — the precedence is `Vm > User
-    > Team > Project`, most-specific wins.
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    self-or-admin: the named user, or an admin, may read this; anyone else gets the same 404 an unknown
+    username would (existence non-leak). A user-scoped secret is one input to the merge a VM receives at
+    inject time — the precedence is `Vm > User > Team > Project`, most-specific wins.
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project
@@ -138,12 +139,13 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto] | None:
-    """List user-scoped secret names
+    """List user-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is self-or-admin: the named user, or an admin,
-    may read this; anyone else gets the same 404 an unknown username would (existence non-leak). A user-
-    scoped secret is one input to the merge a VM receives at inject time — the precedence is `Vm > User
-    > Team > Project`, most-specific wins.
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    self-or-admin: the named user, or an admin, may read this; anyone else gets the same 404 an unknown
+    username would (existence non-leak). A user-scoped secret is one input to the merge a VM receives at
+    inject time — the precedence is `Vm > User > Team > Project`, most-specific wins.
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project
@@ -177,12 +179,13 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto]]:
-    """List user-scoped secret names
+    """List user-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is self-or-admin: the named user, or an admin,
-    may read this; anyone else gets the same 404 an unknown username would (existence non-leak). A user-
-    scoped secret is one input to the merge a VM receives at inject time — the precedence is `Vm > User
-    > Team > Project`, most-specific wins.
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    self-or-admin: the named user, or an admin, may read this; anyone else gets the same 404 an unknown
+    username would (existence non-leak). A user-scoped secret is one input to the merge a VM receives at
+    inject time — the precedence is `Vm > User > Team > Project`, most-specific wins.
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project
@@ -219,12 +222,13 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | list[SecretEntryDto] | None:
-    """List user-scoped secret names
+    """List user-scoped secrets
 
-     Names only — values are never exposed via HTTP. ACL is self-or-admin: the named user, or an admin,
-    may read this; anyone else gets the same 404 an unknown username would (existence non-leak). A user-
-    scoped secret is one input to the merge a VM receives at inject time — the precedence is `Vm > User
-    > Team > Project`, most-specific wins.
+     Each secret's name, `exposure` and `lifetime` (with `target_unit`, `setup_tag` and `ttl_seconds`
+    where they apply), ordered by name — never its value: values are never exposed via HTTP. ACL is
+    self-or-admin: the named user, or an admin, may read this; anyone else gets the same 404 an unknown
+    username would (existence non-leak). A user-scoped secret is one input to the merge a VM receives at
+    inject time — the precedence is `Vm > User > Team > Project`, most-specific wins.
 
     An API key needs MORE than `secrets:read` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: listing another user's names, or those of a team or project
