@@ -23,9 +23,10 @@ exclude = ["AGENTS.md", "CLAUDE.md"]   # belt and braces: `packages` already lim
 
 [tool.hatch.build.targets.sdist]
 # An allowlist, so a file added to this directory later (an agent-instructions file under any
-# name, a .claude/ directory, a design note) never ships by default. AGENTS.md, CLAUDE.md (a
-# symlink to it) and the CI workflow are the repository's working files, not part of a package,
-# and the release's content gate refuses the first (internal pointers) and the symlink. The
+# name, a .claude/ directory, a design note) never ships by default. AGENTS.md and the CI
+# workflow are the repository's working files, not part of a package, and the release's content
+# gate refuses AGENTS.md (internal pointers) and any symlink; CLAUDE.md stays excluded by name in
+# case one comes back. The
 # tests stay, as a PyPI sdist conventionally carries them. A new file the sdist should carry is
 # added here. tests/ci/test-sdk-python-dist-members.sh holds this.
 only-include = [
