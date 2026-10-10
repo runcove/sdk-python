@@ -53,7 +53,7 @@ async def test_component_exec_sends_timeout_secs_and_streams() -> None:
     async with stream:
         events = [e async for e in stream]
     assert events == [ExecStdout("a"), ExecStdout("b"), ExecExit(0)]
-    assert seen[0].url.raw_path == b"/api/vms/my%20vm/exec"
+    assert seen[0].url.raw_path == b"/api/vms/my%20vm/exec?encoding=json"
     assert json.loads(seen[0].content) == {"command": ["ls"], "timeout_secs": 5}
 
 
@@ -229,3 +229,35 @@ def test_component_exec_methods_declare_their_operations() -> None:
     }
     for op_id, fn in ops.items():
         assert getattr(fn, "__cove_operation__") == op_id
+
+
+CR_OUTPUT = (
+    b'event: stdout\ndata: "one\\r\\ntwo\\r\\n"\n\n'
+    b'event: stdout\ndata: "50%\\r100%\\n"\n\n'
+    b'event: stderr\ndata: "warn\\r\\n"\n\n'
+    b'event: exit\ndata: {"code":0,"timed_out":false}\n\n'
+)
+
+
+async def test_component_exec_keeps_carriage_returns_byte_exact() -> None:
+    # The SDK opts in, and the server answers with each chunk as a JSON string and says so.
+    seen: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        headers = {**SSE, "x-cove-exec-encoding": "json"}
+        return httpx.Response(200, headers=headers, content=CR_OUTPUT)
+
+    t = AsyncCoveTransport(
+        "https://h", auth=BearerAuth("cvk_t"), transport=httpx.MockTransport(handler)
+    )
+    result = await Vms(t).exec_collect("v", command=["ls"])
+    assert result == ExecResult("one\r\ntwo\r\n50%\r100%\n", "warn\r\n", 0)
+    # The opt-in is a query parameter, as in the TypeScript SDK, not a request header.
+    assert seen[0].url.params["encoding"] == "json"
+    assert "x-cove-exec-encoding" not in seen[0].headers
+
+
+async def test_component_exec_reads_raw_chunks_without_the_encoding_header() -> None:
+    _, vms = _vms(b'event: stdout\ndata: "quoted"\n\nevent: exit\ndata: {"code":0}\n\n')
+    assert (await vms.exec_collect("v", command=["ls"])).stdout == '"quoted"'

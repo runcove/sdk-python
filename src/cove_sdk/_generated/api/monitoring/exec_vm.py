@@ -10,21 +10,32 @@ from ...models.api_error import ApiError
 from ...models.cli_too_old_body import CliTooOldBody
 from ...models.exec_request_dto import ExecRequestDto
 from ...models.scope_denied_body import ScopeDeniedBody
-from ...types import Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     name: str,
     *,
     body: ExecRequestDto,
+    encoding: str | Unset = UNSET,
+    x_cove_exec_encoding: None | str | Unset = UNSET,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
+    if not isinstance(x_cove_exec_encoding, Unset):
+        headers["x-cove-exec-encoding"] = x_cove_exec_encoding
+
+    params: dict[str, Any] = {}
+
+    params["encoding"] = encoding
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/api/vms/{name}/exec".format(
             name=quote(str(name), safe=""),
         ),
+        "params": params,
     }
 
     _kwargs["json"] = body.to_dict()
@@ -94,13 +105,22 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: ExecRequestDto,
+    encoding: str | Unset = UNSET,
+    x_cove_exec_encoding: None | str | Unset = UNSET,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | str]:
     """Execute a command in the guest, streaming its output
 
      **`200 text/event-stream`, always.** SSE event types:
-    - `stdout` / `stderr`: data is one raw output chunk, not JSON: a line with its newline, or a piece
-    of at most 64 KiB of a longer line. Concatenate the chunks of each stream verbatim to rebuild its
-    output. Bytes the command wrote that are not valid UTF-8 arrive as U+FFFD.
+    - `stdout` / `stderr`: data is one output chunk: a line with its newline, or a piece of at most 64
+    KiB of a longer line. Concatenate the chunks of each stream to rebuild its output. Bytes the command
+    wrote that are not valid UTF-8 arrive as U+FFFD. **How the chunk is written depends on the caller.**
+    A request that opts in with `?encoding=json` (or the `x-cove-exec-encoding: json` header) gets each
+    chunk as a JSON string (`"one\\r\\n"`), and the response carries `x-cove-exec-encoding: json`:
+    decode the string to get the chunk byte for byte, carriage returns included. The opt-in is that
+    parameter or header alone, whatever `X-Cove-Api-Version` the request declares. Any other request
+    (such as `curl`, or a client that predates the parameter) gets the raw chunk, as before, and no such
+    header: SSE ends a data line at a carriage return, so in raw form a `\\r` in the output arrives as a
+    line break.
     - `exit`: terminal, data `{"code": <int>, "timed_out": <bool>}` (schema `ExecExit`). `timed_out` is
     `true` when the command ran past `timeout_secs` (default 30): the guest SIGKILLs the command's whole
     process group — the command and everything it started that stayed in its group — and `code` is 124,
@@ -158,6 +178,8 @@ def sync_detailed(
 
     Args:
         name (str):
+        encoding (str | Unset):
+        x_cove_exec_encoding (None | str | Unset):
         body (ExecRequestDto): POST /vms/{name}/exec request body.
 
     Raises:
@@ -171,6 +193,8 @@ def sync_detailed(
     kwargs = _get_kwargs(
         name=name,
         body=body,
+        encoding=encoding,
+        x_cove_exec_encoding=x_cove_exec_encoding,
     )
 
     response = client.get_httpx_client().request(
@@ -185,13 +209,22 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     body: ExecRequestDto,
+    encoding: str | Unset = UNSET,
+    x_cove_exec_encoding: None | str | Unset = UNSET,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | str | None:
     """Execute a command in the guest, streaming its output
 
      **`200 text/event-stream`, always.** SSE event types:
-    - `stdout` / `stderr`: data is one raw output chunk, not JSON: a line with its newline, or a piece
-    of at most 64 KiB of a longer line. Concatenate the chunks of each stream verbatim to rebuild its
-    output. Bytes the command wrote that are not valid UTF-8 arrive as U+FFFD.
+    - `stdout` / `stderr`: data is one output chunk: a line with its newline, or a piece of at most 64
+    KiB of a longer line. Concatenate the chunks of each stream to rebuild its output. Bytes the command
+    wrote that are not valid UTF-8 arrive as U+FFFD. **How the chunk is written depends on the caller.**
+    A request that opts in with `?encoding=json` (or the `x-cove-exec-encoding: json` header) gets each
+    chunk as a JSON string (`"one\\r\\n"`), and the response carries `x-cove-exec-encoding: json`:
+    decode the string to get the chunk byte for byte, carriage returns included. The opt-in is that
+    parameter or header alone, whatever `X-Cove-Api-Version` the request declares. Any other request
+    (such as `curl`, or a client that predates the parameter) gets the raw chunk, as before, and no such
+    header: SSE ends a data line at a carriage return, so in raw form a `\\r` in the output arrives as a
+    line break.
     - `exit`: terminal, data `{"code": <int>, "timed_out": <bool>}` (schema `ExecExit`). `timed_out` is
     `true` when the command ran past `timeout_secs` (default 30): the guest SIGKILLs the command's whole
     process group — the command and everything it started that stayed in its group — and `code` is 124,
@@ -249,6 +282,8 @@ def sync(
 
     Args:
         name (str):
+        encoding (str | Unset):
+        x_cove_exec_encoding (None | str | Unset):
         body (ExecRequestDto): POST /vms/{name}/exec request body.
 
     Raises:
@@ -263,6 +298,8 @@ def sync(
         name=name,
         client=client,
         body=body,
+        encoding=encoding,
+        x_cove_exec_encoding=x_cove_exec_encoding,
     ).parsed
 
 
@@ -271,13 +308,22 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: ExecRequestDto,
+    encoding: str | Unset = UNSET,
+    x_cove_exec_encoding: None | str | Unset = UNSET,
 ) -> Response[ApiError | CliTooOldBody | ScopeDeniedBody | str]:
     """Execute a command in the guest, streaming its output
 
      **`200 text/event-stream`, always.** SSE event types:
-    - `stdout` / `stderr`: data is one raw output chunk, not JSON: a line with its newline, or a piece
-    of at most 64 KiB of a longer line. Concatenate the chunks of each stream verbatim to rebuild its
-    output. Bytes the command wrote that are not valid UTF-8 arrive as U+FFFD.
+    - `stdout` / `stderr`: data is one output chunk: a line with its newline, or a piece of at most 64
+    KiB of a longer line. Concatenate the chunks of each stream to rebuild its output. Bytes the command
+    wrote that are not valid UTF-8 arrive as U+FFFD. **How the chunk is written depends on the caller.**
+    A request that opts in with `?encoding=json` (or the `x-cove-exec-encoding: json` header) gets each
+    chunk as a JSON string (`"one\\r\\n"`), and the response carries `x-cove-exec-encoding: json`:
+    decode the string to get the chunk byte for byte, carriage returns included. The opt-in is that
+    parameter or header alone, whatever `X-Cove-Api-Version` the request declares. Any other request
+    (such as `curl`, or a client that predates the parameter) gets the raw chunk, as before, and no such
+    header: SSE ends a data line at a carriage return, so in raw form a `\\r` in the output arrives as a
+    line break.
     - `exit`: terminal, data `{"code": <int>, "timed_out": <bool>}` (schema `ExecExit`). `timed_out` is
     `true` when the command ran past `timeout_secs` (default 30): the guest SIGKILLs the command's whole
     process group — the command and everything it started that stayed in its group — and `code` is 124,
@@ -335,6 +381,8 @@ async def asyncio_detailed(
 
     Args:
         name (str):
+        encoding (str | Unset):
+        x_cove_exec_encoding (None | str | Unset):
         body (ExecRequestDto): POST /vms/{name}/exec request body.
 
     Raises:
@@ -348,6 +396,8 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         name=name,
         body=body,
+        encoding=encoding,
+        x_cove_exec_encoding=x_cove_exec_encoding,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -360,13 +410,22 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     body: ExecRequestDto,
+    encoding: str | Unset = UNSET,
+    x_cove_exec_encoding: None | str | Unset = UNSET,
 ) -> ApiError | CliTooOldBody | ScopeDeniedBody | str | None:
     """Execute a command in the guest, streaming its output
 
      **`200 text/event-stream`, always.** SSE event types:
-    - `stdout` / `stderr`: data is one raw output chunk, not JSON: a line with its newline, or a piece
-    of at most 64 KiB of a longer line. Concatenate the chunks of each stream verbatim to rebuild its
-    output. Bytes the command wrote that are not valid UTF-8 arrive as U+FFFD.
+    - `stdout` / `stderr`: data is one output chunk: a line with its newline, or a piece of at most 64
+    KiB of a longer line. Concatenate the chunks of each stream to rebuild its output. Bytes the command
+    wrote that are not valid UTF-8 arrive as U+FFFD. **How the chunk is written depends on the caller.**
+    A request that opts in with `?encoding=json` (or the `x-cove-exec-encoding: json` header) gets each
+    chunk as a JSON string (`"one\\r\\n"`), and the response carries `x-cove-exec-encoding: json`:
+    decode the string to get the chunk byte for byte, carriage returns included. The opt-in is that
+    parameter or header alone, whatever `X-Cove-Api-Version` the request declares. Any other request
+    (such as `curl`, or a client that predates the parameter) gets the raw chunk, as before, and no such
+    header: SSE ends a data line at a carriage return, so in raw form a `\\r` in the output arrives as a
+    line break.
     - `exit`: terminal, data `{"code": <int>, "timed_out": <bool>}` (schema `ExecExit`). `timed_out` is
     `true` when the command ran past `timeout_secs` (default 30): the guest SIGKILLs the command's whole
     process group — the command and everything it started that stayed in its group — and `code` is 124,
@@ -424,6 +483,8 @@ async def asyncio(
 
     Args:
         name (str):
+        encoding (str | Unset):
+        x_cove_exec_encoding (None | str | Unset):
         body (ExecRequestDto): POST /vms/{name}/exec request body.
 
     Raises:
@@ -439,5 +500,7 @@ async def asyncio(
             name=name,
             client=client,
             body=body,
+            encoding=encoding,
+            x_cove_exec_encoding=x_cove_exec_encoding,
         )
     ).parsed

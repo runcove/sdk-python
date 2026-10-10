@@ -66,12 +66,40 @@ def _field(kind: str, payload: Any, name: str, typ: type) -> Any:
     return value
 
 
-def _exec_event(sse: ServerSentEvent) -> ExecEvent | None:
+EXEC_ENCODING_HEADER = "x-cove-exec-encoding"
+"""The header that confirms JSON-string ``stdout``/``stderr`` chunks on an exec response.
+
+SSE ends a data line at a carriage return, so this SDK asks for the chunks JSON-encoded to carry
+``\\r`` intact (``?encoding=json``, see ``EXEC_ENCODING_QUERY``), and decodes them when the
+response confirms it; an older server ignores the request and sends raw chunks without it."""
+
+EXEC_ENCODING_QUERY = "encoding"
+"""The query parameter that asks an exec stream for JSON-string chunks. A query parameter, as in
+the TypeScript SDK: a released server ignores one it does not know."""
+
+
+def _json_chunks(response: httpx.Response) -> bool:
+    encoding: str = response.headers.get(EXEC_ENCODING_HEADER, "")
+    return encoding.strip().lower() == "json"
+
+
+def _chunk(data: str, json_chunks: bool) -> str:
+    """An output chunk: ``data`` JSON-decoded when the response said so, else as it came."""
+    if not json_chunks:
+        return data
+    try:
+        chunk = json.loads(data)
+    except ValueError:
+        return data
+    return chunk if isinstance(chunk, str) else data
+
+
+def _exec_event(sse: ServerSentEvent, json_chunks: bool) -> ExecEvent | None:
     kind = sse.event
     if kind == "stdout":
-        return ExecStdout(sse.data)
+        return ExecStdout(_chunk(sse.data, json_chunks))
     if kind == "stderr":
-        return ExecStderr(sse.data)
+        return ExecStderr(_chunk(sse.data, json_chunks))
     if kind == "exit":
         payload = _json(kind, sse.data)
         code = _field(kind, payload, "code", int)
@@ -132,8 +160,10 @@ class _Stream:
         params: Mapping[str, object] | None,
         body: object,
         timeout: TimeoutArg,
+        headers: Mapping[str, str] | None = None,
     ) -> None:
         self._t = transport
+        self._headers = headers
         self._method = method
         self._path = path
         self._params = params
@@ -152,6 +182,7 @@ class _Stream:
             params=self._params,
             json=self._body,
             timeout=self._timeout,
+            headers=self._headers,
         )
         response = await cm.__aenter__()
         self._cm, self._response = cm, response
@@ -219,7 +250,12 @@ class ExecStream(_Stream):
         min_api_version: int | None = None,
     ) -> None:
         super().__init__(
-            transport, "POST", path, params=None, body=dict(body), timeout=timeout
+            transport,
+            "POST",
+            path,
+            params={EXEC_ENCODING_QUERY: "json"},
+            body=dict(body),
+            timeout=timeout,
         )
         self._min_api_version = min_api_version
 
@@ -263,10 +299,11 @@ class ExecStream(_Stream):
 
     async def _iterate(self) -> AsyncGenerator[ExecEvent, None]:
         assert self._response is not None
+        json_chunks = _json_chunks(self._response)
         frames = self._frames(self._response)
         try:
             async for sse in frames:
-                event = _exec_event(sse)
+                event = _exec_event(sse, json_chunks)
                 if event is None:
                     continue
                 yield event
