@@ -88,6 +88,11 @@ def sync_detailed(
     the URL a caller would actually reach it at (portless for the primary port, shape-specific for the
     rest).
 
+    `web_url` is the address Cove's web app is served on, from the server's configuration
+    (`[daemon.cli_releases] public_url`, else `https://<api_external_host>`); the VM's page there is
+    `<web_url>/vms/<vm_name>`, and opening it needs a Cove sign-in. It is absent when the server has no
+    web address configured.
+
     A VM that does not exist, or is not visible to the caller, returns 404 (existence non-leak).
 
     Args:
@@ -123,6 +128,11 @@ def sync(
     the URL a caller would actually reach it at (portless for the primary port, shape-specific for the
     rest).
 
+    `web_url` is the address Cove's web app is served on, from the server's configuration
+    (`[daemon.cli_releases] public_url`, else `https://<api_external_host>`); the VM's page there is
+    `<web_url>/vms/<vm_name>`, and opening it needs a Cove sign-in. It is absent when the server has no
+    web address configured.
+
     A VM that does not exist, or is not visible to the caller, returns 404 (existence non-leak).
 
     Args:
@@ -152,6 +162,11 @@ async def asyncio_detailed(
      The VM's SSH connection URL plus every registered HTTPS proxy port, each with its `public` flag and
     the URL a caller would actually reach it at (portless for the primary port, shape-specific for the
     rest).
+
+    `web_url` is the address Cove's web app is served on, from the server's configuration
+    (`[daemon.cli_releases] public_url`, else `https://<api_external_host>`); the VM's page there is
+    `<web_url>/vms/<vm_name>`, and opening it needs a Cove sign-in. It is absent when the server has no
+    web address configured.
 
     A VM that does not exist, or is not visible to the caller, returns 404 (existence non-leak).
 
@@ -185,6 +200,11 @@ async def asyncio(
      The VM's SSH connection URL plus every registered HTTPS proxy port, each with its `public` flag and
     the URL a caller would actually reach it at (portless for the primary port, shape-specific for the
     rest).
+
+    `web_url` is the address Cove's web app is served on, from the server's configuration
+    (`[daemon.cli_releases] public_url`, else `https://<api_external_host>`); the VM's page there is
+    `<web_url>/vms/<vm_name>`, and opening it needs a Cove sign-in. It is absent when the server has no
+    web address configured.
 
     A VM that does not exist, or is not visible to the caller, returns 404 (existence non-leak).
 
