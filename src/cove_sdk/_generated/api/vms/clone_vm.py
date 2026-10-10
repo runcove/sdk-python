@@ -404,7 +404,11 @@ def sync_detailed(
     copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
     maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
     lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
-    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags.
+    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags. A
+    tag of `source`'s that the clone's owner could not set (a `project` tag for a project they are not a
+    member of, or a key today's rules refuse) stays behind, and the response's `tags` show what the
+    clone has. The clone's tags are all on it before it reads as `running`, or none are: a clone whose
+    tags cannot be written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with
@@ -484,7 +488,11 @@ def sync(
     copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
     maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
     lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
-    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags.
+    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags. A
+    tag of `source`'s that the clone's owner could not set (a `project` tag for a project they are not a
+    member of, or a key today's rules refuse) stays behind, and the response's `tags` show what the
+    clone has. The clone's tags are all on it before it reads as `running`, or none are: a clone whose
+    tags cannot be written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with
@@ -558,7 +566,11 @@ async def asyncio_detailed(
     copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
     maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
     lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
-    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags.
+    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags. A
+    tag of `source`'s that the clone's owner could not set (a `project` tag for a project they are not a
+    member of, or a key today's rules refuse) stays behind, and the response's `tags` show what the
+    clone has. The clone's tags are all on it before it reads as `running`, or none are: a clone whose
+    tags cannot be written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with
@@ -636,7 +648,11 @@ async def asyncio(
     copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
     maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
     lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
-    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags.
+    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags. A
+    tag of `source`'s that the clone's owner could not set (a `project` tag for a project they are not a
+    member of, or a key today's rules refuse) stays behind, and the response's `tags` show what the
+    clone has. The clone's tags are all on it before it reads as `running`, or none are: a clone whose
+    tags cannot be written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with

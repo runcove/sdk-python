@@ -413,6 +413,10 @@ def sync_detailed(
     the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
     admitted opt-in always cold-boots, so it never takes a VM from the warm pool.
 
+    **Tags.** `initial_tags` are all on the VM before it first reads as `running`, or none are: a create
+    whose tags cannot be written fails after the 202 like any other late failure, and the VM is removed
+    (`GET` answers **404**).
+
     Args:
         body (CreateVmRequest): POST /vms request body.
 
@@ -489,6 +493,10 @@ def sync(
     the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
     admitted opt-in always cold-boots, so it never takes a VM from the warm pool.
 
+    **Tags.** `initial_tags` are all on the VM before it first reads as `running`, or none are: a create
+    whose tags cannot be written fails after the 202 like any other late failure, and the VM is removed
+    (`GET` answers **404**).
+
     Args:
         body (CreateVmRequest): POST /vms request body.
 
@@ -558,6 +566,10 @@ async def asyncio_detailed(
     `nested_virt: true` is refused synchronously with **403** `admin_required` unless the caller is in
     the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
     admitted opt-in always cold-boots, so it never takes a VM from the warm pool.
+
+    **Tags.** `initial_tags` are all on the VM before it first reads as `running`, or none are: a create
+    whose tags cannot be written fails after the 202 like any other late failure, and the VM is removed
+    (`GET` answers **404**).
 
     Args:
         body (CreateVmRequest): POST /vms request body.
@@ -632,6 +644,10 @@ async def asyncio(
     `nested_virt: true` is refused synchronously with **403** `admin_required` unless the caller is in
     the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
     admitted opt-in always cold-boots, so it never takes a VM from the warm pool.
+
+    **Tags.** `initial_tags` are all on the VM before it first reads as `running`, or none are: a create
+    whose tags cannot be written fails after the 202 like any other late failure, and the VM is removed
+    (`GET` answers **404**).
 
     Args:
         body (CreateVmRequest): POST /vms request body.
