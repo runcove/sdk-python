@@ -5,6 +5,7 @@ class ErrorCode(StrEnum):
     ADMIN_REQUIRED = "admin_required"
     CAPACITY_EXHAUSTED = "capacity_exhausted"
     CHECKPOINT_CONFLICT = "checkpoint_conflict"
+    CLIENT_ADDRESS_DENIED = "client_address_denied"
     CLI_DISTRIBUTION_NOT_CONFIGURED = "cli_distribution_not_configured"
     CLI_TOO_OLD = "CLI_TOO_OLD"
     CLONE_SOURCE_NOT_FOUND = "clone_source_not_found"

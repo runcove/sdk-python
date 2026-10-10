@@ -11,6 +11,7 @@ from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.broadcast_lag_entry import BroadcastLagEntry
+    from ..models.request_refusal_entry import RequestRefusalEntry
     from ..models.snapshot_image_usage import SnapshotImageUsage
     from ..models.snapshot_reap_summary import SnapshotReapSummary
 
@@ -54,6 +55,12 @@ class AdminHostStateResponse:
               They write no audit row, so this counter is where they show. Not
               `required` in the schema: a daemon that predates it omits it, and the
               generated SDKs must still decode that daemon's answer.
+          request_refusals (list[RequestRefusalEntry] | Unset): Requests the external listener refused this process, per
+              (route
+              group, reason): an address its `allow`/`deny` lists refuse, or a
+              spent per-address or per-credential budget. All twelve rows, zeros
+              included. Not `required` in the schema: a daemon that predates it
+              omits it.
           snapshot_last_reap (None | SnapshotReapSummary | Unset):
     """
 
@@ -65,6 +72,7 @@ class AdminHostStateResponse:
     ttl_pending_count: int
     embedded_agent_version: None | str | Unset = UNSET
     key_presentations_ignored_total: int | Unset = UNSET
+    request_refusals: list[RequestRefusalEntry] | Unset = UNSET
     snapshot_last_reap: None | SnapshotReapSummary | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -97,6 +105,13 @@ class AdminHostStateResponse:
 
         key_presentations_ignored_total = self.key_presentations_ignored_total
 
+        request_refusals: list[dict[str, Any]] | Unset = UNSET
+        if not isinstance(self.request_refusals, Unset):
+            request_refusals = []
+            for request_refusals_item_data in self.request_refusals:
+                request_refusals_item = request_refusals_item_data.to_dict()
+                request_refusals.append(request_refusals_item)
+
         snapshot_last_reap: dict[str, Any] | None | Unset
         if isinstance(self.snapshot_last_reap, Unset):
             snapshot_last_reap = UNSET
@@ -123,6 +138,8 @@ class AdminHostStateResponse:
             field_dict["key_presentations_ignored_total"] = (
                 key_presentations_ignored_total
             )
+        if request_refusals is not UNSET:
+            field_dict["request_refusals"] = request_refusals
         if snapshot_last_reap is not UNSET:
             field_dict["snapshot_last_reap"] = snapshot_last_reap
 
@@ -131,6 +148,7 @@ class AdminHostStateResponse:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.broadcast_lag_entry import BroadcastLagEntry
+        from ..models.request_refusal_entry import RequestRefusalEntry
         from ..models.snapshot_image_usage import SnapshotImageUsage
         from ..models.snapshot_reap_summary import SnapshotReapSummary
 
@@ -174,6 +192,17 @@ class AdminHostStateResponse:
             "key_presentations_ignored_total", UNSET
         )
 
+        _request_refusals = d.pop("request_refusals", UNSET)
+        request_refusals: list[RequestRefusalEntry] | Unset = UNSET
+        if _request_refusals is not UNSET:
+            request_refusals = []
+            for request_refusals_item_data in _request_refusals:
+                request_refusals_item = RequestRefusalEntry.from_dict(
+                    request_refusals_item_data
+                )
+
+                request_refusals.append(request_refusals_item)
+
         def _parse_snapshot_last_reap(
             data: object,
         ) -> None | SnapshotReapSummary | Unset:
@@ -204,6 +233,7 @@ class AdminHostStateResponse:
             ttl_pending_count=ttl_pending_count,
             embedded_agent_version=embedded_agent_version,
             key_presentations_ignored_total=key_presentations_ignored_total,
+            request_refusals=request_refusals,
             snapshot_last_reap=snapshot_last_reap,
         )
 

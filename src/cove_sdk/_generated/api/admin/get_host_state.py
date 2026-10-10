@@ -96,6 +96,10 @@ def sync_detailed(
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means
     someone is sending junk to the anonymous route.
+    - `request_refusals` — requests the external listener refused, per route group (`mcp`,
+    `oauth_token`, `oauth`, `api`) and reason: `address_denied` (403, the group's address lists),
+    `rate_limited_address` or `rate_limited_credential` (429, a spent budget). The numbers to tune
+    `[api.limits]` by.
 
     Counters that say `this process` reset when the daemon restarts.
 
@@ -146,6 +150,10 @@ def sync(
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means
     someone is sending junk to the anonymous route.
+    - `request_refusals` — requests the external listener refused, per route group (`mcp`,
+    `oauth_token`, `oauth`, `api`) and reason: `address_denied` (403, the group's address lists),
+    `rate_limited_address` or `rate_limited_credential` (429, a spent budget). The numbers to tune
+    `[api.limits]` by.
 
     Counters that say `this process` reset when the daemon restarts.
 
@@ -192,6 +200,10 @@ async def asyncio_detailed(
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means
     someone is sending junk to the anonymous route.
+    - `request_refusals` — requests the external listener refused, per route group (`mcp`,
+    `oauth_token`, `oauth`, `api`) and reason: `address_denied` (403, the group's address lists),
+    `rate_limited_address` or `rate_limited_credential` (429, a spent budget). The numbers to tune
+    `[api.limits]` by.
 
     Counters that say `this process` reset when the daemon restarts.
 
@@ -240,6 +252,10 @@ async def asyncio(
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means
     someone is sending junk to the anonymous route.
+    - `request_refusals` — requests the external listener refused, per route group (`mcp`,
+    `oauth_token`, `oauth`, `api`) and reason: `address_denied` (403, the group's address lists),
+    `rate_limited_address` or `rate_limited_credential` (429, a spent budget). The numbers to tune
+    `[api.limits]` by.
 
     Counters that say `this process` reset when the daemon restarts.
 

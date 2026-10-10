@@ -204,6 +204,7 @@ from .removal_response import RemovalResponse
 from .remove_member_outcome import RemoveMemberOutcome
 from .rename_body import RenameBody
 from .replay_webhook_delivery_response import ReplayWebhookDeliveryResponse
+from .request_refusal_entry import RequestRefusalEntry
 from .reservation_kind import ReservationKind
 from .reservation_ref import ReservationRef
 from .resize_request import ResizeRequest
@@ -480,6 +481,7 @@ __all__ = (
     "RemoveMemberOutcome",
     "RenameBody",
     "ReplayWebhookDeliveryResponse",
+    "RequestRefusalEntry",
     "ReservationKind",
     "ReservationRef",
     "ResizeRequest",
