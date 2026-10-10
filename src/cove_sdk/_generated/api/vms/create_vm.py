@@ -54,9 +54,6 @@ def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
 ) -> (
     ApiError
-    | InvalidVmNameBody
-    | CliTooOldBody
-    | CreateVmResponse
     | DenyReasonType0
     | DenyReasonType1
     | DenyReasonType10
@@ -75,6 +72,9 @@ def _parse_response(
     | DenyReasonType8
     | DenyReasonType9
     | VmNameTakenBody
+    | InvalidVmNameBody
+    | CliTooOldBody
+    | CreateVmResponse
     | None
 ):
     if response.status_code == 202:
@@ -122,7 +122,8 @@ def _parse_response(
         def _parse_response_409(
             data: object,
         ) -> (
-            DenyReasonType0
+            ApiError
+            | DenyReasonType0
             | DenyReasonType1
             | DenyReasonType10
             | DenyReasonType11
@@ -279,11 +280,21 @@ def _parse_response(
                 return componentsschemas_deny_reason_type_15
             except (TypeError, ValueError, AttributeError, KeyError):
                 pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_deny_reason_type_16 = DenyReasonType16.from_dict(data)
+
+                return componentsschemas_deny_reason_type_16
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
             if not isinstance(data, dict):
                 raise TypeError()
-            componentsschemas_deny_reason_type_16 = DenyReasonType16.from_dict(data)
+            componentsschemas_vm_create_conflict_response_type_2 = ApiError.from_dict(
+                data
+            )
 
-            return componentsschemas_deny_reason_type_16
+            return componentsschemas_vm_create_conflict_response_type_2
 
         response_409 = _parse_response_409(response.json())
 
@@ -319,9 +330,6 @@ def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
 ) -> Response[
     ApiError
-    | InvalidVmNameBody
-    | CliTooOldBody
-    | CreateVmResponse
     | DenyReasonType0
     | DenyReasonType1
     | DenyReasonType10
@@ -340,6 +348,9 @@ def _build_response(
     | DenyReasonType8
     | DenyReasonType9
     | VmNameTakenBody
+    | InvalidVmNameBody
+    | CliTooOldBody
+    | CreateVmResponse
 ]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -355,9 +366,6 @@ def sync_detailed(
     body: CreateVmRequest,
 ) -> Response[
     ApiError
-    | InvalidVmNameBody
-    | CliTooOldBody
-    | CreateVmResponse
     | DenyReasonType0
     | DenyReasonType1
     | DenyReasonType10
@@ -376,6 +384,9 @@ def sync_detailed(
     | DenyReasonType8
     | DenyReasonType9
     | VmNameTakenBody
+    | InvalidVmNameBody
+    | CliTooOldBody
+    | CreateVmResponse
 ]:
     """Create a VM
 
@@ -410,7 +421,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | ApiError | InvalidVmNameBody | CliTooOldBody | CreateVmResponse | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody]
+        Response[ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody | ApiError | InvalidVmNameBody | CliTooOldBody | CreateVmResponse]
     """
 
     kwargs = _get_kwargs(
@@ -430,9 +441,6 @@ def sync(
     body: CreateVmRequest,
 ) -> (
     ApiError
-    | InvalidVmNameBody
-    | CliTooOldBody
-    | CreateVmResponse
     | DenyReasonType0
     | DenyReasonType1
     | DenyReasonType10
@@ -451,6 +459,9 @@ def sync(
     | DenyReasonType8
     | DenyReasonType9
     | VmNameTakenBody
+    | InvalidVmNameBody
+    | CliTooOldBody
+    | CreateVmResponse
     | None
 ):
     """Create a VM
@@ -486,7 +497,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | ApiError | InvalidVmNameBody | CliTooOldBody | CreateVmResponse | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody
+        ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody | ApiError | InvalidVmNameBody | CliTooOldBody | CreateVmResponse
     """
 
     return sync_detailed(
@@ -501,9 +512,6 @@ async def asyncio_detailed(
     body: CreateVmRequest,
 ) -> Response[
     ApiError
-    | InvalidVmNameBody
-    | CliTooOldBody
-    | CreateVmResponse
     | DenyReasonType0
     | DenyReasonType1
     | DenyReasonType10
@@ -522,6 +530,9 @@ async def asyncio_detailed(
     | DenyReasonType8
     | DenyReasonType9
     | VmNameTakenBody
+    | InvalidVmNameBody
+    | CliTooOldBody
+    | CreateVmResponse
 ]:
     """Create a VM
 
@@ -556,7 +567,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | ApiError | InvalidVmNameBody | CliTooOldBody | CreateVmResponse | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody]
+        Response[ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody | ApiError | InvalidVmNameBody | CliTooOldBody | CreateVmResponse]
     """
 
     kwargs = _get_kwargs(
@@ -574,9 +585,6 @@ async def asyncio(
     body: CreateVmRequest,
 ) -> (
     ApiError
-    | InvalidVmNameBody
-    | CliTooOldBody
-    | CreateVmResponse
     | DenyReasonType0
     | DenyReasonType1
     | DenyReasonType10
@@ -595,6 +603,9 @@ async def asyncio(
     | DenyReasonType8
     | DenyReasonType9
     | VmNameTakenBody
+    | InvalidVmNameBody
+    | CliTooOldBody
+    | CreateVmResponse
     | None
 ):
     """Create a VM
@@ -630,7 +641,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | ApiError | InvalidVmNameBody | CliTooOldBody | CreateVmResponse | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody
+        ApiError | ApiError | DenyReasonType0 | DenyReasonType1 | DenyReasonType10 | DenyReasonType11 | DenyReasonType12 | DenyReasonType13 | DenyReasonType14 | DenyReasonType15 | DenyReasonType16 | DenyReasonType2 | DenyReasonType3 | DenyReasonType4 | DenyReasonType5 | DenyReasonType6 | DenyReasonType7 | DenyReasonType8 | DenyReasonType9 | VmNameTakenBody | ApiError | InvalidVmNameBody | CliTooOldBody | CreateVmResponse
     """
 
     return (

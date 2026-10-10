@@ -256,7 +256,7 @@ SensitiveOpUnauthorizedResponse: _t.TypeAlias = _t.Union[ApiError, SudoRequiredB
 VmBadRequestResponse: _t.TypeAlias = _t.Union[ApiError, InvalidVmNameBody]
 VmCloneConflictResponse: _t.TypeAlias = _t.Union[VmNameTakenBody, ApiError, DenyReason]
 VmConflictResponse: _t.TypeAlias = _t.Union[ApiError, DenyReason]
-VmCreateConflictResponse: _t.TypeAlias = _t.Union[VmNameTakenBody, DenyReason]
+VmCreateConflictResponse: _t.TypeAlias = _t.Union[VmNameTakenBody, DenyReason, ApiError]
 
 __all__ = [
     "AddMemberRequest",

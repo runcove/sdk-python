@@ -35,11 +35,18 @@ class CreateVmRequest:
         initial_secrets (list[SecretSpec] | Unset): Secrets to inject after VM creation succeeds. Older
             clients omit the field; the server treats absence as empty (additive,
             backward-compatible).
-        initial_tags (CreateVmRequestInitialTags | Unset): Tags to set immediately after VM creation. A JSON object
+        initial_tags (CreateVmRequestInitialTags | Unset): Tags the new VM gets, on it by the time it is `running`. A
+            JSON object
             of key to value, the same shape as `VmDetail.tags` (a list of
-            `[key, value]` pairs until API version 5). Each entry is validated
-            server-side via the public `validate_user_tag_key` /
-            `validate_tag_value` validators. Absent means no tags.
+            `[key, value]` pairs until API version 5). Each entry must pass the
+            rules `PUT /api/vms/{name}/tags/{key}` applies, checked before anything
+            is reserved: a bad entry is refused with 400 (a key starting `cove:`,
+            which only Cove sets, with `tag_reserved_prefix`), and more than 50
+            tags with 409 `too_many_tags`. A non-empty set needs `tags:write` as
+            well as `vms:write`: a key without it is refused with 403
+            `scope_denied`. A VM an agent creates (through hosted MCP, or with a
+            connected app's token) also gets `cove:created-by: agent`, which
+            counts toward the 50. Absent means no tags.
         memory_mb (int | None | Unset): Requested memory in MiB. `None` → service uses the configured default.
         name (None | str | Unset): The new VM's name. Omit it and the server picks one. A name must be
             3-30 characters of lowercase ASCII letters, digits and hyphens, and

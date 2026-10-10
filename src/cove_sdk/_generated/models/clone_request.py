@@ -44,7 +44,9 @@ class CloneRequest:
             tags (CloneRequestTagsType0 | None | Unset): Tags for the clone, replacing the source's. Omitted, the clone gets
                 the source's tags; an empty object gives it none. Each entry obeys
                 the same rules as setting a tag, and at most 50 are allowed; a bad
-                one is refused with 400 before anything is cloned.
+                one is refused with 400 before anything is cloned. A non-empty set
+                needs `tags:write` as well as `vms:write` (403 `scope_denied`
+                without it).
             ttl_policy (None | TtlPolicy | Unset):
     """
 
