@@ -49,7 +49,7 @@ class OffboardLeftBehind:
             service_vms (list[OffboardServiceVm]): The live VMs owned by the services bound to the person (`svc:<name>`
                 of each of their member bindings, ended or not). Offboarding revokes
                 those services' keys but leaves their VMs as they are, running or
-                not: reassign, stop or delete them.
+                not: stop or delete them.
             service_webhooks (list[OffboardServiceWebhook]): The active webhook subscriptions owned by the services bound to
                 the
                 person. They still deliver to the endpoint they were created with:
