@@ -243,6 +243,10 @@ class Vms:
         one, whose disk replaces the VM's. Without ``checkpoint_id``, a stopped VM whose latest
         checkpoint is disk-only is refused with 409 ``disk_rollback_not_named`` and nothing
         changes: call ``start`` to boot the current disk, or pass the checkpoint's id to roll back.
+
+        Waking discards the VM's current disk: every write since the checkpoint is lost, so
+        checkpoint first to keep it. Naming an older checkpoint on a hibernated VM rolls back its
+        disk and memory too.
         """
         req = build_body(WakeRequest, body, fields)
         await self._t.call(wake_vm, path={"name": name}, body=req, timeout=timeout)

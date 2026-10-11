@@ -1,6 +1,9 @@
 """``client.checkpoints``: create, list, get, delete checkpoints and hibernate a VM.
 
-Waking a hibernated VM is ``client.vms.wake``; there is no checkpoint-rollback operation.
+Waking a VM from a checkpoint, including rolling a stopped VM's disk back to a disk-only one, is
+``client.vms.wake``; there is no separate rollback call. Waking discards the VM's current disk,
+so every write since the checkpoint is lost (checkpoint first to keep it); an older full
+checkpoint named on a hibernated VM rolls back its disk and memory too.
 """
 
 from __future__ import annotations

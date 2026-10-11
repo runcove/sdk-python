@@ -113,9 +113,11 @@ def sync_detailed(
     Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
     that `checkpoint_id` to roll back on purpose.
 
-    Named `wakeVm` — the public surface reserves `restore` for a future checkpoint-rollback operation
-    that does not exist yet. `POST /api/vms/{name}/restore` has been removed, not aliased — it answers
-    404. Call `POST /api/vms/{name}/wake` instead.
+    Waking a `Stopped` VM from a named disk-only checkpoint is the in-place disk rollback: there is no
+    separate rollback call. Naming an older checkpoint on a `Hibernated` VM rolls back its disk and
+    memory too, and either way the current disk is discarded, not kept. The name `restore` is reserved
+    for a future dedicated operation, so this one is `wakeVm`. `POST /api/vms/{name}/restore` has been
+    removed, not aliased — it answers 404. Call `POST /api/vms/{name}/wake` instead.
 
     Args:
         name (str):
@@ -162,9 +164,11 @@ def sync(
     Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
     that `checkpoint_id` to roll back on purpose.
 
-    Named `wakeVm` — the public surface reserves `restore` for a future checkpoint-rollback operation
-    that does not exist yet. `POST /api/vms/{name}/restore` has been removed, not aliased — it answers
-    404. Call `POST /api/vms/{name}/wake` instead.
+    Waking a `Stopped` VM from a named disk-only checkpoint is the in-place disk rollback: there is no
+    separate rollback call. Naming an older checkpoint on a `Hibernated` VM rolls back its disk and
+    memory too, and either way the current disk is discarded, not kept. The name `restore` is reserved
+    for a future dedicated operation, so this one is `wakeVm`. `POST /api/vms/{name}/restore` has been
+    removed, not aliased — it answers 404. Call `POST /api/vms/{name}/wake` instead.
 
     Args:
         name (str):
@@ -206,9 +210,11 @@ async def asyncio_detailed(
     Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
     that `checkpoint_id` to roll back on purpose.
 
-    Named `wakeVm` — the public surface reserves `restore` for a future checkpoint-rollback operation
-    that does not exist yet. `POST /api/vms/{name}/restore` has been removed, not aliased — it answers
-    404. Call `POST /api/vms/{name}/wake` instead.
+    Waking a `Stopped` VM from a named disk-only checkpoint is the in-place disk rollback: there is no
+    separate rollback call. Naming an older checkpoint on a `Hibernated` VM rolls back its disk and
+    memory too, and either way the current disk is discarded, not kept. The name `restore` is reserved
+    for a future dedicated operation, so this one is `wakeVm`. `POST /api/vms/{name}/restore` has been
+    removed, not aliased — it answers 404. Call `POST /api/vms/{name}/wake` instead.
 
     Args:
         name (str):
@@ -253,9 +259,11 @@ async def asyncio(
     Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
     that `checkpoint_id` to roll back on purpose.
 
-    Named `wakeVm` — the public surface reserves `restore` for a future checkpoint-rollback operation
-    that does not exist yet. `POST /api/vms/{name}/restore` has been removed, not aliased — it answers
-    404. Call `POST /api/vms/{name}/wake` instead.
+    Waking a `Stopped` VM from a named disk-only checkpoint is the in-place disk rollback: there is no
+    separate rollback call. Naming an older checkpoint on a `Hibernated` VM rolls back its disk and
+    memory too, and either way the current disk is discarded, not kept. The name `restore` is reserved
+    for a future dedicated operation, so this one is `wakeVm`. `POST /api/vms/{name}/restore` has been
+    removed, not aliased — it answers 404. Call `POST /api/vms/{name}/wake` instead.
 
     Args:
         name (str):
