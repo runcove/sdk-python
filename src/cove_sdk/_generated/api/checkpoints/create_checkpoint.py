@@ -105,7 +105,11 @@ def sync_detailed(
     """Checkpoint a VM
 
      Saves a point in the VM's life that it can later be rolled back to, or cloned from. `disk_only`
-    skips the memory capture — cheaper, but the result cannot be used to restore a running VM.
+    skips the memory capture — cheaper, but the result cannot be used to restore a running VM. On a
+    running VM whose guest agent is socket-activated, a command an exec request is still running is
+    killed and that request fails; on one whose agent is not socket-activated, such as Debian 12, Alpine
+    and Rocky 9 images today, the command keeps running. Background processes (one started under
+    `setsid`, or left behind by an exec that had already returned) keep running either way.
 
     Args:
         name (str):
@@ -148,7 +152,11 @@ def sync(
     """Checkpoint a VM
 
      Saves a point in the VM's life that it can later be rolled back to, or cloned from. `disk_only`
-    skips the memory capture — cheaper, but the result cannot be used to restore a running VM.
+    skips the memory capture — cheaper, but the result cannot be used to restore a running VM. On a
+    running VM whose guest agent is socket-activated, a command an exec request is still running is
+    killed and that request fails; on one whose agent is not socket-activated, such as Debian 12, Alpine
+    and Rocky 9 images today, the command keeps running. Background processes (one started under
+    `setsid`, or left behind by an exec that had already returned) keep running either way.
 
     Args:
         name (str):
@@ -186,7 +194,11 @@ async def asyncio_detailed(
     """Checkpoint a VM
 
      Saves a point in the VM's life that it can later be rolled back to, or cloned from. `disk_only`
-    skips the memory capture — cheaper, but the result cannot be used to restore a running VM.
+    skips the memory capture — cheaper, but the result cannot be used to restore a running VM. On a
+    running VM whose guest agent is socket-activated, a command an exec request is still running is
+    killed and that request fails; on one whose agent is not socket-activated, such as Debian 12, Alpine
+    and Rocky 9 images today, the command keeps running. Background processes (one started under
+    `setsid`, or left behind by an exec that had already returned) keep running either way.
 
     Args:
         name (str):
@@ -227,7 +239,11 @@ async def asyncio(
     """Checkpoint a VM
 
      Saves a point in the VM's life that it can later be rolled back to, or cloned from. `disk_only`
-    skips the memory capture — cheaper, but the result cannot be used to restore a running VM.
+    skips the memory capture — cheaper, but the result cannot be used to restore a running VM. On a
+    running VM whose guest agent is socket-activated, a command an exec request is still running is
+    killed and that request fails; on one whose agent is not socket-activated, such as Debian 12, Alpine
+    and Rocky 9 images today, the command keeps running. Background processes (one started under
+    `setsid`, or left behind by an exec that had already returned) keep running either way.
 
     Args:
         name (str):

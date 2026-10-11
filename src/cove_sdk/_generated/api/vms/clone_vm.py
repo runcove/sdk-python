@@ -401,14 +401,20 @@ def sync_detailed(
     pinned into Warpgate's known-hosts on registration so the first SSH sees no TOFU prompt.
 
     The clone resumes from the checkpoint's memory, so processes running in `source` carry on in the
-    copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
-    maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
-    lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
-    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags. A
-    tag of `source`'s that the clone's owner could not set (a `project` tag for a project they are not a
-    member of, or a key today's rules refuse) stays behind, and the response's `tags` show what the
-    clone has. The clone's tags are all on it before it reads as `running`, or none are: a clone whose
-    tags cannot be written is removed and the request fails.
+    copy; its name, address and host keys are new. The exception is a command an exec request was still
+    running when the checkpoint the clone is made from was taken: it is not in the copy. The implicit
+    `pre_clone` checkpoint is taken as the clone starts: on a `source` whose guest agent is socket-
+    activated it kills the command in `source` too, and that exec request fails; on one whose agent is
+    not socket-activated, such as Debian 12, Alpine and Rocky 9 images today, the command keeps running
+    in `source`. Background processes (one started under `setsid`, or left behind by an exec that had
+    already returned) carry on in both. It keeps `source`'s size (boot size, minimum, maximum, and the
+    current size the checkpoint holds), its idle-pause policy, its expiry policy (the lifetime counts
+    from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and `ttl_policy` in the
+    body replace the inherited value; an empty `tags` object clones with no tags. A tag of `source`'s
+    that the clone's owner could not set (a `project` tag for a project they are not a member of, or a
+    key today's rules refuse) stays behind, and the response's `tags` show what the clone has. The
+    clone's tags are all on it before it reads as `running`, or none are: a clone whose tags cannot be
+    written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with
@@ -485,14 +491,20 @@ def sync(
     pinned into Warpgate's known-hosts on registration so the first SSH sees no TOFU prompt.
 
     The clone resumes from the checkpoint's memory, so processes running in `source` carry on in the
-    copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
-    maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
-    lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
-    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags. A
-    tag of `source`'s that the clone's owner could not set (a `project` tag for a project they are not a
-    member of, or a key today's rules refuse) stays behind, and the response's `tags` show what the
-    clone has. The clone's tags are all on it before it reads as `running`, or none are: a clone whose
-    tags cannot be written is removed and the request fails.
+    copy; its name, address and host keys are new. The exception is a command an exec request was still
+    running when the checkpoint the clone is made from was taken: it is not in the copy. The implicit
+    `pre_clone` checkpoint is taken as the clone starts: on a `source` whose guest agent is socket-
+    activated it kills the command in `source` too, and that exec request fails; on one whose agent is
+    not socket-activated, such as Debian 12, Alpine and Rocky 9 images today, the command keeps running
+    in `source`. Background processes (one started under `setsid`, or left behind by an exec that had
+    already returned) carry on in both. It keeps `source`'s size (boot size, minimum, maximum, and the
+    current size the checkpoint holds), its idle-pause policy, its expiry policy (the lifetime counts
+    from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and `ttl_policy` in the
+    body replace the inherited value; an empty `tags` object clones with no tags. A tag of `source`'s
+    that the clone's owner could not set (a `project` tag for a project they are not a member of, or a
+    key today's rules refuse) stays behind, and the response's `tags` show what the clone has. The
+    clone's tags are all on it before it reads as `running`, or none are: a clone whose tags cannot be
+    written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with
@@ -563,14 +575,20 @@ async def asyncio_detailed(
     pinned into Warpgate's known-hosts on registration so the first SSH sees no TOFU prompt.
 
     The clone resumes from the checkpoint's memory, so processes running in `source` carry on in the
-    copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
-    maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
-    lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
-    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags. A
-    tag of `source`'s that the clone's owner could not set (a `project` tag for a project they are not a
-    member of, or a key today's rules refuse) stays behind, and the response's `tags` show what the
-    clone has. The clone's tags are all on it before it reads as `running`, or none are: a clone whose
-    tags cannot be written is removed and the request fails.
+    copy; its name, address and host keys are new. The exception is a command an exec request was still
+    running when the checkpoint the clone is made from was taken: it is not in the copy. The implicit
+    `pre_clone` checkpoint is taken as the clone starts: on a `source` whose guest agent is socket-
+    activated it kills the command in `source` too, and that exec request fails; on one whose agent is
+    not socket-activated, such as Debian 12, Alpine and Rocky 9 images today, the command keeps running
+    in `source`. Background processes (one started under `setsid`, or left behind by an exec that had
+    already returned) carry on in both. It keeps `source`'s size (boot size, minimum, maximum, and the
+    current size the checkpoint holds), its idle-pause policy, its expiry policy (the lifetime counts
+    from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and `ttl_policy` in the
+    body replace the inherited value; an empty `tags` object clones with no tags. A tag of `source`'s
+    that the clone's owner could not set (a `project` tag for a project they are not a member of, or a
+    key today's rules refuse) stays behind, and the response's `tags` show what the clone has. The
+    clone's tags are all on it before it reads as `running`, or none are: a clone whose tags cannot be
+    written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with
@@ -645,14 +663,20 @@ async def asyncio(
     pinned into Warpgate's known-hosts on registration so the first SSH sees no TOFU prompt.
 
     The clone resumes from the checkpoint's memory, so processes running in `source` carry on in the
-    copy; its name, address and host keys are new. It keeps `source`'s size (boot size, minimum,
-    maximum, and the current size the checkpoint holds), its idle-pause policy, its expiry policy (the
-    lifetime counts from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and
-    `ttl_policy` in the body replace the inherited value; an empty `tags` object clones with no tags. A
-    tag of `source`'s that the clone's owner could not set (a `project` tag for a project they are not a
-    member of, or a key today's rules refuse) stays behind, and the response's `tags` show what the
-    clone has. The clone's tags are all on it before it reads as `running`, or none are: a clone whose
-    tags cannot be written is removed and the request fails.
+    copy; its name, address and host keys are new. The exception is a command an exec request was still
+    running when the checkpoint the clone is made from was taken: it is not in the copy. The implicit
+    `pre_clone` checkpoint is taken as the clone starts: on a `source` whose guest agent is socket-
+    activated it kills the command in `source` too, and that exec request fails; on one whose agent is
+    not socket-activated, such as Debian 12, Alpine and Rocky 9 images today, the command keeps running
+    in `source`. Background processes (one started under `setsid`, or left behind by an exec that had
+    already returned) carry on in both. It keeps `source`'s size (boot size, minimum, maximum, and the
+    current size the checkpoint holds), its idle-pause policy, its expiry policy (the lifetime counts
+    from the clone's own creation) and its tags. `tags`, `auto_pause_policy` and `ttl_policy` in the
+    body replace the inherited value; an empty `tags` object clones with no tags. A tag of `source`'s
+    that the clone's owner could not set (a `project` tag for a project they are not a member of, or a
+    key today's rules refuse) stays behind, and the response's `tags` show what the clone has. The
+    clone's tags are all on it before it reads as `running`, or none are: a clone whose tags cannot be
+    written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
     letters, digits and hyphens, not starting or ending with a hyphen. Any other name is refused with
