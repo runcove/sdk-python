@@ -135,6 +135,10 @@ def sync_detailed(
     — an admin key and a team key included — is answered 401 `sudo_required`, the same body: run this
     over SSH, in the web UI or on the Unix socket.
 
+    Ctrl-C or a client disconnect does not cancel a bulk delete: it runs to completion and is audited. A
+    caller that stopped waiting finds the outcome in the audit log (one `admin.bulk_deleted` event for
+    the batch, and a `vm.deleted` per VM); sending the request again starts a second batch.
+
     Args:
         body (AdminBulkVmRequest): `POST /admin/vms/stop-bulk` / `POST /admin/vms/delete-bulk`
             request body.
@@ -190,6 +194,10 @@ def sync(
     — an admin key and a team key included — is answered 401 `sudo_required`, the same body: run this
     over SSH, in the web UI or on the Unix socket.
 
+    Ctrl-C or a client disconnect does not cancel a bulk delete: it runs to completion and is audited. A
+    caller that stopped waiting finds the outcome in the audit log (one `admin.bulk_deleted` event for
+    the batch, and a `vm.deleted` per VM); sending the request again starts a second batch.
+
     Args:
         body (AdminBulkVmRequest): `POST /admin/vms/stop-bulk` / `POST /admin/vms/delete-bulk`
             request body.
@@ -239,6 +247,10 @@ async def asyncio_detailed(
     get that freshness from the SSO step-up instead. An API key cannot show a recent login, so every key
     — an admin key and a team key included — is answered 401 `sudo_required`, the same body: run this
     over SSH, in the web UI or on the Unix socket.
+
+    Ctrl-C or a client disconnect does not cancel a bulk delete: it runs to completion and is audited. A
+    caller that stopped waiting finds the outcome in the audit log (one `admin.bulk_deleted` event for
+    the batch, and a `vm.deleted` per VM); sending the request again starts a second batch.
 
     Args:
         body (AdminBulkVmRequest): `POST /admin/vms/stop-bulk` / `POST /admin/vms/delete-bulk`
@@ -292,6 +304,10 @@ async def asyncio(
     get that freshness from the SSO step-up instead. An API key cannot show a recent login, so every key
     — an admin key and a team key included — is answered 401 `sudo_required`, the same body: run this
     over SSH, in the web UI or on the Unix socket.
+
+    Ctrl-C or a client disconnect does not cancel a bulk delete: it runs to completion and is audited. A
+    caller that stopped waiting finds the outcome in the audit log (one `admin.bulk_deleted` event for
+    the batch, and a `vm.deleted` per VM); sending the request again starts a second batch.
 
     Args:
         body (AdminBulkVmRequest): `POST /admin/vms/stop-bulk` / `POST /admin/vms/delete-bulk`
