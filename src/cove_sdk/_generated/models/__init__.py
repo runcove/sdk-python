@@ -147,6 +147,7 @@ from .inject_selector_type_2_kind import InjectSelectorType2Kind
 from .invalid_vm_name_body import InvalidVmNameBody
 from .key_summary import KeySummary
 from .ksm_stats import KsmStats
+from .local_status import LocalStatus
 from .new_ssh_key import NewSshKey
 from .oci_cache_entry import OciCacheEntry
 from .offboard_api_key import OffboardApiKey
@@ -424,6 +425,7 @@ __all__ = (
     "InvalidVmNameBody",
     "KeySummary",
     "KsmStats",
+    "LocalStatus",
     "NewSshKey",
     "OciCacheEntry",
     "OffboardApiKey",

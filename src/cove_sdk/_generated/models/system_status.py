@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -10,6 +10,7 @@ from typing_extensions import Self
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.local_status import LocalStatus
     from ..models.pool_status import PoolStatus
     from ..models.user_status import UserStatus
 
@@ -30,6 +31,7 @@ class SystemStatus:
         running (int):
         stopped (int):
         tap_devices (int):
+        local (LocalStatus | None | Unset):
         users (list[UserStatus] | Unset):
     """
 
@@ -41,10 +43,13 @@ class SystemStatus:
     running: int
     stopped: int
     tap_devices: int
+    local: LocalStatus | None | Unset = UNSET
     users: list[UserStatus] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.local_status import LocalStatus
+
         ch_processes = self.ch_processes
 
         memory_total_mb = self.memory_total_mb
@@ -63,6 +68,14 @@ class SystemStatus:
         stopped = self.stopped
 
         tap_devices = self.tap_devices
+
+        local: dict[str, Any] | None | Unset
+        if isinstance(self.local, Unset):
+            local = UNSET
+        elif isinstance(self.local, LocalStatus):
+            local = self.local.to_dict()
+        else:
+            local = self.local
 
         users: list[dict[str, Any]] | Unset = UNSET
         if not isinstance(self.users, Unset):
@@ -85,6 +98,8 @@ class SystemStatus:
                 "tap_devices": tap_devices,
             }
         )
+        if local is not UNSET:
+            field_dict["local"] = local
         if users is not UNSET:
             field_dict["users"] = users
 
@@ -92,6 +107,7 @@ class SystemStatus:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.local_status import LocalStatus
         from ..models.pool_status import PoolStatus
         from ..models.user_status import UserStatus
 
@@ -117,6 +133,23 @@ class SystemStatus:
 
         tap_devices = d.pop("tap_devices")
 
+        def _parse_local(data: object) -> LocalStatus | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                local_type_1 = LocalStatus.from_dict(data)
+
+                return local_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(LocalStatus | None | Unset, data)
+
+        local = _parse_local(d.pop("local", UNSET))
+
         _users = d.pop("users", UNSET)
         users: list[UserStatus] | Unset = UNSET
         if _users is not UNSET:
@@ -135,6 +168,7 @@ class SystemStatus:
             running=running,
             stopped=stopped,
             tap_devices=tap_devices,
+            local=local,
             users=users,
         )
 
