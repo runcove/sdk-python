@@ -20,7 +20,10 @@ class AdminBulkVmTarget:
     Attributes:
         result (str): `"stopped"` / `"deleted"` / `"skipped"` (dry-run) / `"failed"` /
             `"timed_out"` (fleet budget elapsed; the stop keeps draining in the
-            background).
+            background) / `"already_being_deleted"` (bulk delete only: another
+            delete, a single one or another bulk delete still running, owns the
+            VM or finished it first, so this call left it alone; it is not
+            counted in `attempted`).
         state_before (VmState): VM lifecycle state as reported by the Cove REST API and persisted by core.
 
             Serializes to lowercase JSON strings (`"running"`, `"hibernated"`, …). The

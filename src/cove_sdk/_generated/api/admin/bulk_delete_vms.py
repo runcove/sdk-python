@@ -121,13 +121,19 @@ def sync_detailed(
 
     Unlike `bulkStopVms`, this destroys data: each VM's disk goes with it, along with its access grants,
     bastion registration and DNS record. **Send `dry_run: true` first** — it reports the full target set
-    with each entry marked as skipped, so you see the reach before anything is destroyed.
+    with each entry marked as skipped (or `already_being_deleted`, see below), so you see the reach
+    before anything is destroyed.
 
-    Every VM in scope is attempted regardless of state, so `attempted` is the whole target set. A per-VM
-    failure does not fail the call: `succeeded` / `failed` and each entry's own error tell you what
-    happened, and a partial failure leaves the rest deleted. `include_pool` additionally reaches the
-    unassigned VMs Cove keeps ready so that creation is fast (administrator concept; those have no
-    owner). It is only valid with `{"type": "all"}` — combining it with a user scope is rejected 422.
+    Every VM in scope is attempted regardless of state, except one another delete already owns: a VM
+    that started deleting within the last few minutes, one a bulk delete that is still running has
+    claimed, or one already gone when its turn comes. That VM is left alone, listed with result
+    `already_being_deleted` and not counted in `attempted`, so a second bulk delete started over the
+    same VMs neither deletes them twice nor reports the first one's work as failures. A VM stuck
+    deleting for longer is retried. A per-VM failure does not fail the call: `succeeded` / `failed` and
+    each entry's own error tell you what happened, and a partial failure leaves the rest deleted.
+    `include_pool` additionally reaches the unassigned VMs Cove keeps ready so that creation is fast
+    (administrator concept; those have no owner). It is only valid with `{"type": "all"}` — combining it
+    with a user scope is rejected 422.
 
     A CLI caller signed in with a ticket needs a recent interactive login for this operation; a stale
     one is answered 401 `sudo_required` and the CLI re-authenticates and replays. Web and REPL sessions
@@ -180,13 +186,19 @@ def sync(
 
     Unlike `bulkStopVms`, this destroys data: each VM's disk goes with it, along with its access grants,
     bastion registration and DNS record. **Send `dry_run: true` first** — it reports the full target set
-    with each entry marked as skipped, so you see the reach before anything is destroyed.
+    with each entry marked as skipped (or `already_being_deleted`, see below), so you see the reach
+    before anything is destroyed.
 
-    Every VM in scope is attempted regardless of state, so `attempted` is the whole target set. A per-VM
-    failure does not fail the call: `succeeded` / `failed` and each entry's own error tell you what
-    happened, and a partial failure leaves the rest deleted. `include_pool` additionally reaches the
-    unassigned VMs Cove keeps ready so that creation is fast (administrator concept; those have no
-    owner). It is only valid with `{"type": "all"}` — combining it with a user scope is rejected 422.
+    Every VM in scope is attempted regardless of state, except one another delete already owns: a VM
+    that started deleting within the last few minutes, one a bulk delete that is still running has
+    claimed, or one already gone when its turn comes. That VM is left alone, listed with result
+    `already_being_deleted` and not counted in `attempted`, so a second bulk delete started over the
+    same VMs neither deletes them twice nor reports the first one's work as failures. A VM stuck
+    deleting for longer is retried. A per-VM failure does not fail the call: `succeeded` / `failed` and
+    each entry's own error tell you what happened, and a partial failure leaves the rest deleted.
+    `include_pool` additionally reaches the unassigned VMs Cove keeps ready so that creation is fast
+    (administrator concept; those have no owner). It is only valid with `{"type": "all"}` — combining it
+    with a user scope is rejected 422.
 
     A CLI caller signed in with a ticket needs a recent interactive login for this operation; a stale
     one is answered 401 `sudo_required` and the CLI re-authenticates and replays. Web and REPL sessions
@@ -234,13 +246,19 @@ async def asyncio_detailed(
 
     Unlike `bulkStopVms`, this destroys data: each VM's disk goes with it, along with its access grants,
     bastion registration and DNS record. **Send `dry_run: true` first** — it reports the full target set
-    with each entry marked as skipped, so you see the reach before anything is destroyed.
+    with each entry marked as skipped (or `already_being_deleted`, see below), so you see the reach
+    before anything is destroyed.
 
-    Every VM in scope is attempted regardless of state, so `attempted` is the whole target set. A per-VM
-    failure does not fail the call: `succeeded` / `failed` and each entry's own error tell you what
-    happened, and a partial failure leaves the rest deleted. `include_pool` additionally reaches the
-    unassigned VMs Cove keeps ready so that creation is fast (administrator concept; those have no
-    owner). It is only valid with `{"type": "all"}` — combining it with a user scope is rejected 422.
+    Every VM in scope is attempted regardless of state, except one another delete already owns: a VM
+    that started deleting within the last few minutes, one a bulk delete that is still running has
+    claimed, or one already gone when its turn comes. That VM is left alone, listed with result
+    `already_being_deleted` and not counted in `attempted`, so a second bulk delete started over the
+    same VMs neither deletes them twice nor reports the first one's work as failures. A VM stuck
+    deleting for longer is retried. A per-VM failure does not fail the call: `succeeded` / `failed` and
+    each entry's own error tell you what happened, and a partial failure leaves the rest deleted.
+    `include_pool` additionally reaches the unassigned VMs Cove keeps ready so that creation is fast
+    (administrator concept; those have no owner). It is only valid with `{"type": "all"}` — combining it
+    with a user scope is rejected 422.
 
     A CLI caller signed in with a ticket needs a recent interactive login for this operation; a stale
     one is answered 401 `sudo_required` and the CLI re-authenticates and replays. Web and REPL sessions
@@ -291,13 +309,19 @@ async def asyncio(
 
     Unlike `bulkStopVms`, this destroys data: each VM's disk goes with it, along with its access grants,
     bastion registration and DNS record. **Send `dry_run: true` first** — it reports the full target set
-    with each entry marked as skipped, so you see the reach before anything is destroyed.
+    with each entry marked as skipped (or `already_being_deleted`, see below), so you see the reach
+    before anything is destroyed.
 
-    Every VM in scope is attempted regardless of state, so `attempted` is the whole target set. A per-VM
-    failure does not fail the call: `succeeded` / `failed` and each entry's own error tell you what
-    happened, and a partial failure leaves the rest deleted. `include_pool` additionally reaches the
-    unassigned VMs Cove keeps ready so that creation is fast (administrator concept; those have no
-    owner). It is only valid with `{"type": "all"}` — combining it with a user scope is rejected 422.
+    Every VM in scope is attempted regardless of state, except one another delete already owns: a VM
+    that started deleting within the last few minutes, one a bulk delete that is still running has
+    claimed, or one already gone when its turn comes. That VM is left alone, listed with result
+    `already_being_deleted` and not counted in `attempted`, so a second bulk delete started over the
+    same VMs neither deletes them twice nor reports the first one's work as failures. A VM stuck
+    deleting for longer is retried. A per-VM failure does not fail the call: `succeeded` / `failed` and
+    each entry's own error tell you what happened, and a partial failure leaves the rest deleted.
+    `include_pool` additionally reaches the unassigned VMs Cove keeps ready so that creation is fast
+    (administrator concept; those have no owner). It is only valid with `{"type": "all"}` — combining it
+    with a user scope is rejected 422.
 
     A CLI caller signed in with a ticket needs a recent interactive login for this operation; a stale
     one is answered 401 `sudo_required` and the CLI re-authenticates and replays. Web and REPL sessions
