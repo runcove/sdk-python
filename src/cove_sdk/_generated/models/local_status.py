@@ -22,12 +22,17 @@ class LocalStatus:
         Attributes:
             bastion_ssh_port (int | None | Unset): The embedded Warpgate's SSH port on `127.0.0.1` when it serves.
             bastion_unavailable (None | str | Unset): Why the embedded Warpgate isn't serving; absent when it is.
+            guest_ram_cap_mb (int | None | Unset): The cap on the guest RAM running VMs may hold, in MB: `[capacity]
+                mac_max_guest_ram_fraction` of this Mac's RAM, which create and start
+                are admitted against (VZ wires guest memory). Absent when the Mac's
+                RAM couldn't be read at daemon start.
             network_owner_gateway (None | str | Unset): The network owner's gateway when it answers its control socket;
                 absent when it doesn't.
     """
 
     bastion_ssh_port: int | None | Unset = UNSET
     bastion_unavailable: None | str | Unset = UNSET
+    guest_ram_cap_mb: int | None | Unset = UNSET
     network_owner_gateway: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -44,6 +49,12 @@ class LocalStatus:
         else:
             bastion_unavailable = self.bastion_unavailable
 
+        guest_ram_cap_mb: int | None | Unset
+        if isinstance(self.guest_ram_cap_mb, Unset):
+            guest_ram_cap_mb = UNSET
+        else:
+            guest_ram_cap_mb = self.guest_ram_cap_mb
+
         network_owner_gateway: None | str | Unset
         if isinstance(self.network_owner_gateway, Unset):
             network_owner_gateway = UNSET
@@ -57,6 +68,8 @@ class LocalStatus:
             field_dict["bastion_ssh_port"] = bastion_ssh_port
         if bastion_unavailable is not UNSET:
             field_dict["bastion_unavailable"] = bastion_unavailable
+        if guest_ram_cap_mb is not UNSET:
+            field_dict["guest_ram_cap_mb"] = guest_ram_cap_mb
         if network_owner_gateway is not UNSET:
             field_dict["network_owner_gateway"] = network_owner_gateway
 
@@ -86,6 +99,15 @@ class LocalStatus:
             d.pop("bastion_unavailable", UNSET)
         )
 
+        def _parse_guest_ram_cap_mb(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        guest_ram_cap_mb = _parse_guest_ram_cap_mb(d.pop("guest_ram_cap_mb", UNSET))
+
         def _parse_network_owner_gateway(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -100,6 +122,7 @@ class LocalStatus:
         local_status = cls(
             bastion_ssh_port=bastion_ssh_port,
             bastion_unavailable=bastion_unavailable,
+            guest_ram_cap_mb=guest_ram_cap_mb,
             network_owner_gateway=network_owner_gateway,
         )
 

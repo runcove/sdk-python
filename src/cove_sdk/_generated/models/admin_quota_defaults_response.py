@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
+
+from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="AdminQuotaDefaultsResponse")
 
@@ -22,12 +24,21 @@ class AdminQuotaDefaultsResponse:
             ram_mb_max (int):
             vcpus_max (int):
             vm_count_max (int):
+            derived_from_mac (bool | None | Unset): `Some(true)` when the baseline above was derived
+                from the host Mac's own resources (macOS local mode with no
+                `[quota]` block in cove.toml), `Some(false)` when it was not (a
+                `[quota]` block overrides that derivation, or the Mac's figures could
+                not be read and the compiled-in defaults apply), `None` off local mode — every non-macOS
+                daemon, which never derives a quota from host resources. Optional so
+                a daemon predating this field, or a non-Mac one, keeps emitting
+                exactly its old JSON (the key is absent, not `false`).
     """
 
     disk_gb_max: int
     ram_mb_max: int
     vcpus_max: int
     vm_count_max: int
+    derived_from_mac: bool | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -39,6 +50,12 @@ class AdminQuotaDefaultsResponse:
 
         vm_count_max = self.vm_count_max
 
+        derived_from_mac: bool | None | Unset
+        if isinstance(self.derived_from_mac, Unset):
+            derived_from_mac = UNSET
+        else:
+            derived_from_mac = self.derived_from_mac
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -49,6 +66,8 @@ class AdminQuotaDefaultsResponse:
                 "vm_count_max": vm_count_max,
             }
         )
+        if derived_from_mac is not UNSET:
+            field_dict["derived_from_mac"] = derived_from_mac
 
         return field_dict
 
@@ -63,11 +82,21 @@ class AdminQuotaDefaultsResponse:
 
         vm_count_max = d.pop("vm_count_max")
 
+        def _parse_derived_from_mac(data: object) -> bool | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(bool | None | Unset, data)
+
+        derived_from_mac = _parse_derived_from_mac(d.pop("derived_from_mac", UNSET))
+
         admin_quota_defaults_response = cls(
             disk_gb_max=disk_gb_max,
             ram_mb_max=ram_mb_max,
             vcpus_max=vcpus_max,
             vm_count_max=vm_count_max,
+            derived_from_mac=derived_from_mac,
         )
 
         admin_quota_defaults_response.additional_properties = d
