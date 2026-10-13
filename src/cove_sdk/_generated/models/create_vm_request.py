@@ -49,9 +49,10 @@ class CreateVmRequest:
             counts toward the 50. Absent means no tags.
         memory_mb (int | None | Unset): Requested memory in MiB. `None` → service uses the configured default.
         name (None | str | Unset): The new VM's name. Omit it and the server picks one. A name must be
-            3-30 characters of lowercase ASCII letters, digits and hyphens, and
-            must not start or end with a hyphen; any other name is refused with
-            400 `invalid_vm_name`.
+            3-30 characters of lowercase ASCII letters, digits and hyphens, must
+            not start or end with a hyphen, and must not start with `pool-`,
+            which is reserved for VMs Cove keeps ready in advance; any other name is
+            refused with 400 `invalid_vm_name`.
         nested_virt (bool | Unset): Expose nested virtualisation (VMX/SVM) to the
             new VM's guest. Off unless `true`; administrators only (anyone else is
             refused 403). An opted-in VM is always cold-booted, never claimed from

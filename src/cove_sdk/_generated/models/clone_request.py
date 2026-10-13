@@ -34,8 +34,8 @@ class CloneRequest:
         Attributes:
             new_vm_name (str): The clone's name, under the same rule as a created VM's: 3-30
                 characters of lowercase ASCII letters, digits and hyphens, not starting
-                or ending with a hyphen. Any other name is refused with 400
-                `invalid_vm_name`.
+                or ending with a hyphen, and not starting with the reserved `pool-`
+                prefix. Any other name is refused with 400 `invalid_vm_name`.
             auto_pause_policy (AutoPausePolicyType0 | AutoPausePolicyType1 | None | Unset):
             source_checkpoint_id (None | str | Unset): Stringified UUID v7 of an existing checkpoint. Optional — when
                 `None` the server creates an implicit `pre_clone` checkpoint of
