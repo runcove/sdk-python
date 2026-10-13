@@ -18,14 +18,15 @@ class HostTelemetryPoint:
     018 (`host_telemetry`).
 
         Attributes:
-            cpu_pct (float):
-            mem_total_kb (int):
-            mem_used_kb (int):
-            pending_resize_mb (int):
-            pool_available (int):
-            reservation_mb (int):
+            cpu_pct (float): Always 0: host CPU is not sampled yet.
+            mem_total_kb (int): The host's RAM: `MemTotal` on Linux, `hw.memsize` on a Mac.
+            mem_used_kb (int): RAM in use: `MemTotal - MemAvailable` on Linux; on a Mac, RAM less
+                the free, inactive and speculative pages, as `cove status` shows.
+            pending_resize_mb (int): The part of `reservation_mb` held by resize-ups.
+            pool_available (int): Pooled VMs ready to claim (not already being claimed).
+            reservation_mb (int): Memory the live capacity reservations hold, in MB.
             ts (int):
-            vms_running (int):
+            vms_running (int): VMs in the Running state.
             ksm_pages_shared (int | None | Unset):
             ksm_pages_sharing (int | None | Unset):
             mem_swap_used_kb (int | None | Unset):

@@ -17,7 +17,9 @@ class RamCapacity:
     Attributes:
         headroom_mb (int):
         host_total_mb (int):
-        mem_available_mb (int):
+        mem_available_mb (int): `MemAvailable` on Linux. 0 on a Mac, like the swap and PSI fields:
+            a Mac's admission does not read host memory pressure (its guest-RAM
+            guard caps the VMs instead), so none of them is sampled there.
         pending_resize_mb (int):
         psi_mem_avg10_pct (float):
         ratio (float):
