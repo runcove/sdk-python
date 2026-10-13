@@ -148,7 +148,7 @@ A Cove deployment has two listeners, and each accepts one kind of credential. Pa
 | Listener | Credential | Client argument |
 |---|---|---|
 | External bearer listener (`[api] bind`, `127.0.0.1:8090` by default) | a `cvk_` API key (`cove key create`) | `token="cvk_..."`, the shorthand for `auth=BearerAuth(...)` |
-| Warpgate-fronted main listener (`https://<cove-web-host>`) | a Warpgate SSO ticket, the one `cove login` stores (`~/.config/cove/ticket` on Linux, `~/Library/Application Support/cove/ticket` on macOS; `$XDG_CONFIG_HOME/cove/ticket` when `XDG_CONFIG_HOME` is set) | `ticket=...`, the shorthand for `auth=TicketAuth(...)` |
+| Warpgate-fronted main listener (`https://<cove-web-host>`) | a Warpgate SSO ticket, the one `cove login` stores in the current context: `~/.config/cove/contexts/<name>/ticket` on Linux, `~/Library/Application Support/cove/contexts/<name>/ticket` on macOS (`$XDG_CONFIG_HOME/cove/...` when `XDG_CONFIG_HOME` is set), `<name>` being the line in `current-context` beside `contexts` | `ticket=...`, the shorthand for `auth=TicketAuth(...)` |
 
 A bearer key on the Warpgate-fronted listener is refused with 401; so is a ticket on the bearer
 listener. From another machine, either forward the port
