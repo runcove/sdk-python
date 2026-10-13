@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any
+from typing import Any, cast
 
 import httpx
 
@@ -34,7 +34,7 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ApiError | SudoRequiredBody | CliTooOldBody | SshKey | None:
+) -> Any | ApiError | SudoRequiredBody | CliTooOldBody | SshKey | None:
     if response.status_code == 201:
         response_201 = SshKey.from_dict(response.json())
 
@@ -70,6 +70,10 @@ def _parse_response(
 
         return response_401
 
+    if response.status_code == 409:
+        response_409 = cast(Any, None)
+        return response_409
+
     if response.status_code == 426:
         response_426 = CliTooOldBody.from_dict(response.json())
 
@@ -83,7 +87,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ApiError | SudoRequiredBody | CliTooOldBody | SshKey]:
+) -> Response[Any | ApiError | SudoRequiredBody | CliTooOldBody | SshKey]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -96,7 +100,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: NewSshKey,
-) -> Response[ApiError | SudoRequiredBody | CliTooOldBody | SshKey]:
+) -> Response[Any | ApiError | SudoRequiredBody | CliTooOldBody | SshKey]:
     """Register a new SSH key
 
      Registers a new SSH public key against the caller's own identity. Errors are plain-text bodies, not
@@ -115,7 +119,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | ApiError | SudoRequiredBody | CliTooOldBody | SshKey]
+        Response[Any | ApiError | ApiError | SudoRequiredBody | CliTooOldBody | SshKey]
     """
 
     kwargs = _get_kwargs(
@@ -133,7 +137,7 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     body: NewSshKey,
-) -> ApiError | SudoRequiredBody | CliTooOldBody | SshKey | None:
+) -> Any | ApiError | SudoRequiredBody | CliTooOldBody | SshKey | None:
     """Register a new SSH key
 
      Registers a new SSH public key against the caller's own identity. Errors are plain-text bodies, not
@@ -152,7 +156,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | ApiError | SudoRequiredBody | CliTooOldBody | SshKey
+        Any | ApiError | ApiError | SudoRequiredBody | CliTooOldBody | SshKey
     """
 
     return sync_detailed(
@@ -165,7 +169,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: NewSshKey,
-) -> Response[ApiError | SudoRequiredBody | CliTooOldBody | SshKey]:
+) -> Response[Any | ApiError | SudoRequiredBody | CliTooOldBody | SshKey]:
     """Register a new SSH key
 
      Registers a new SSH public key against the caller's own identity. Errors are plain-text bodies, not
@@ -184,7 +188,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | ApiError | SudoRequiredBody | CliTooOldBody | SshKey]
+        Response[Any | ApiError | ApiError | SudoRequiredBody | CliTooOldBody | SshKey]
     """
 
     kwargs = _get_kwargs(
@@ -200,7 +204,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     body: NewSshKey,
-) -> ApiError | SudoRequiredBody | CliTooOldBody | SshKey | None:
+) -> Any | ApiError | SudoRequiredBody | CliTooOldBody | SshKey | None:
     """Register a new SSH key
 
      Registers a new SSH public key against the caller's own identity. Errors are plain-text bodies, not
@@ -219,7 +223,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | ApiError | SudoRequiredBody | CliTooOldBody | SshKey
+        Any | ApiError | ApiError | SudoRequiredBody | CliTooOldBody | SshKey
     """
 
     return (

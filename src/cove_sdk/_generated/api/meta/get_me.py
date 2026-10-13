@@ -78,7 +78,9 @@ def sync_detailed(
     (`--admin`) of one; an admin's ordinary key, or one minted before admin keys existed, reads `false`.
     A key also needs the route's `admin:*` permission in `permissions.scopes`. Neither says whether a
     given VM is reachable. `roles` are gateway roles, a separate thing: a team key has no gateway
-    identity, so its `roles` is empty.
+    identity, so its `roles` is empty. Neither does anyone on a daemon with no bastion (local mode
+    without Warpgate), or while an embedded bastion is starting or down: there the summary answers 200
+    with no roles, keys or CLI tickets and `keys_managed: false`, and still carries the quotas.
 
     Errors from this endpoint are plain-text bodies, not the `ApiError` JSON envelope.
 
@@ -119,7 +121,9 @@ def sync(
     (`--admin`) of one; an admin's ordinary key, or one minted before admin keys existed, reads `false`.
     A key also needs the route's `admin:*` permission in `permissions.scopes`. Neither says whether a
     given VM is reachable. `roles` are gateway roles, a separate thing: a team key has no gateway
-    identity, so its `roles` is empty.
+    identity, so its `roles` is empty. Neither does anyone on a daemon with no bastion (local mode
+    without Warpgate), or while an embedded bastion is starting or down: there the summary answers 200
+    with no roles, keys or CLI tickets and `keys_managed: false`, and still carries the quotas.
 
     Errors from this endpoint are plain-text bodies, not the `ApiError` JSON envelope.
 
@@ -156,7 +160,9 @@ async def asyncio_detailed(
     (`--admin`) of one; an admin's ordinary key, or one minted before admin keys existed, reads `false`.
     A key also needs the route's `admin:*` permission in `permissions.scopes`. Neither says whether a
     given VM is reachable. `roles` are gateway roles, a separate thing: a team key has no gateway
-    identity, so its `roles` is empty.
+    identity, so its `roles` is empty. Neither does anyone on a daemon with no bastion (local mode
+    without Warpgate), or while an embedded bastion is starting or down: there the summary answers 200
+    with no roles, keys or CLI tickets and `keys_managed: false`, and still carries the quotas.
 
     Errors from this endpoint are plain-text bodies, not the `ApiError` JSON envelope.
 
@@ -195,7 +201,9 @@ async def asyncio(
     (`--admin`) of one; an admin's ordinary key, or one minted before admin keys existed, reads `false`.
     A key also needs the route's `admin:*` permission in `permissions.scopes`. Neither says whether a
     given VM is reachable. `roles` are gateway roles, a separate thing: a team key has no gateway
-    identity, so its `roles` is empty.
+    identity, so its `roles` is empty. Neither does anyone on a daemon with no bastion (local mode
+    without Warpgate), or while an embedded bastion is starting or down: there the summary answers 200
+    with no roles, keys or CLI tickets and `keys_managed: false`, and still carries the quotas.
 
     Errors from this endpoint are plain-text bodies, not the `ApiError` JSON envelope.
 

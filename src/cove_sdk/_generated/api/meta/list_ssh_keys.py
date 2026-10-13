@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any
+from typing import Any, cast
 
 import httpx
 
@@ -23,7 +23,7 @@ def _get_kwargs() -> dict[str, Any]:
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ApiError | CliTooOldBody | list[SshKey] | None:
+) -> Any | ApiError | CliTooOldBody | list[SshKey] | None:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
@@ -38,6 +38,10 @@ def _parse_response(
         response_401 = ApiError.from_dict(response.json())
 
         return response_401
+
+    if response.status_code == 409:
+        response_409 = cast(Any, None)
+        return response_409
 
     if response.status_code == 426:
         response_426 = CliTooOldBody.from_dict(response.json())
@@ -57,7 +61,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ApiError | CliTooOldBody | list[SshKey]]:
+) -> Response[Any | ApiError | CliTooOldBody | list[SshKey]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -69,7 +73,7 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
-) -> Response[ApiError | CliTooOldBody | list[SshKey]]:
+) -> Response[Any | ApiError | CliTooOldBody | list[SshKey]]:
     """Caller's registered SSH keys (read-only)
 
      Read-only over the bearer API — SSH key mutation (add/rename/delete) is not mounted on the external
@@ -82,7 +86,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | CliTooOldBody | list[SshKey]]
+        Response[Any | ApiError | CliTooOldBody | list[SshKey]]
     """
 
     kwargs = _get_kwargs()
@@ -97,7 +101,7 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient | Client,
-) -> ApiError | CliTooOldBody | list[SshKey] | None:
+) -> Any | ApiError | CliTooOldBody | list[SshKey] | None:
     """Caller's registered SSH keys (read-only)
 
      Read-only over the bearer API — SSH key mutation (add/rename/delete) is not mounted on the external
@@ -110,7 +114,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | CliTooOldBody | list[SshKey]
+        Any | ApiError | CliTooOldBody | list[SshKey]
     """
 
     return sync_detailed(
@@ -121,7 +125,7 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
-) -> Response[ApiError | CliTooOldBody | list[SshKey]]:
+) -> Response[Any | ApiError | CliTooOldBody | list[SshKey]]:
     """Caller's registered SSH keys (read-only)
 
      Read-only over the bearer API — SSH key mutation (add/rename/delete) is not mounted on the external
@@ -134,7 +138,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | CliTooOldBody | list[SshKey]]
+        Response[Any | ApiError | CliTooOldBody | list[SshKey]]
     """
 
     kwargs = _get_kwargs()
@@ -147,7 +151,7 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient | Client,
-) -> ApiError | CliTooOldBody | list[SshKey] | None:
+) -> Any | ApiError | CliTooOldBody | list[SshKey] | None:
     """Caller's registered SSH keys (read-only)
 
      Read-only over the bearer API — SSH key mutation (add/rename/delete) is not mounted on the external
@@ -160,7 +164,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | CliTooOldBody | list[SshKey]
+        Any | ApiError | CliTooOldBody | list[SshKey]
     """
 
     return (
