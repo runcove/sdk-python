@@ -116,6 +116,16 @@ class VmDetail:
             max_life_expires_in_secs (int | None | Unset):
             memory_max_mb (int | Unset): Most memory in MiB a resize can give the VM while it runs.
             memory_min_mb (int | Unset): Least memory in MiB a resize can take the VM down to.
+            permissions (list[str] | Unset): What the caller may do to this VM: owner and administrator hold every
+                permission, a share or team grant holds its role's. The web UI shows
+                an action only when this lists its permission (`vm.power` for
+                hibernate and wake, `vm.snapshot` for clone and checkpoint). An API
+                key's scopes can narrow what it may call further. Absent from a server
+                that predates the field.
+
+                Plain strings, not a closed set: an owner holds every permission, so
+                a permission a newer server adds reaches every owner's client. Skip a
+                name you do not know rather than fail to read the VM.
             tags (VmDetailTags | Unset):
             ttl_policy (TtlPolicy | Unset): Per-VM TTL policy bundle. Both knobs default to "off" (`Never` / `None`);
                 pool defaults and CLI flags merge into this on create.
@@ -149,6 +159,7 @@ class VmDetail:
     max_life_expires_in_secs: int | None | Unset = UNSET
     memory_max_mb: int | Unset = UNSET
     memory_min_mb: int | Unset = UNSET
+    permissions: list[str] | Unset = UNSET
     tags: VmDetailTags | Unset = UNSET
     ttl_policy: TtlPolicy | Unset = UNSET
     vcpus_max: int | Unset = UNSET
@@ -248,6 +259,10 @@ class VmDetail:
 
         memory_min_mb = self.memory_min_mb
 
+        permissions: list[str] | Unset = UNSET
+        if not isinstance(self.permissions, Unset):
+            permissions = self.permissions
+
         tags: dict[str, Any] | Unset = UNSET
         if not isinstance(self.tags, Unset):
             tags = self.tags.to_dict()
@@ -307,6 +322,8 @@ class VmDetail:
             field_dict["memory_max_mb"] = memory_max_mb
         if memory_min_mb is not UNSET:
             field_dict["memory_min_mb"] = memory_min_mb
+        if permissions is not UNSET:
+            field_dict["permissions"] = permissions
         if tags is not UNSET:
             field_dict["tags"] = tags
         if ttl_policy is not UNSET:
@@ -464,6 +481,8 @@ class VmDetail:
 
         memory_min_mb = d.pop("memory_min_mb", UNSET)
 
+        permissions = cast(list[str], d.pop("permissions", UNSET))
+
         _tags = d.pop("tags", UNSET)
         tags: VmDetailTags | Unset
         if isinstance(_tags, Unset):
@@ -509,6 +528,7 @@ class VmDetail:
             max_life_expires_in_secs=max_life_expires_in_secs,
             memory_max_mb=memory_max_mb,
             memory_min_mb=memory_min_mb,
+            permissions=permissions,
             tags=tags,
             ttl_policy=ttl_policy,
             vcpus_max=vcpus_max,
