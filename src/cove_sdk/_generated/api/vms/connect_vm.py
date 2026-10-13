@@ -96,6 +96,11 @@ def sync_detailed(
     Mint the ticket when you are about to connect: one not spent within five minutes of the mint
     expires. The expiry bounds only the login; a session it opened is not cut off.
 
+    A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
+    permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
+    seconds to a few minutes; the call answers once the VM is running. Concurrent connects to one VM
+    start one wake, and a wake the caller stops waiting for still finishes.
+
     A **409** issued seconds after `POST /api/vms` means the create is still claiming a pool VM: wait on
     `GET /api/vms/{name}/events` (or poll `GET /api/vms/{name}` until it leaves `creating`) and retry.
 
@@ -135,6 +140,11 @@ def sync(
     Mint the ticket when you are about to connect: one not spent within five minutes of the mint
     expires. The expiry bounds only the login; a session it opened is not cut off.
 
+    A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
+    permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
+    seconds to a few minutes; the call answers once the VM is running. Concurrent connects to one VM
+    start one wake, and a wake the caller stops waiting for still finishes.
+
     A **409** issued seconds after `POST /api/vms` means the create is still claiming a pool VM: wait on
     `GET /api/vms/{name}/events` (or poll `GET /api/vms/{name}` until it leaves `creating`) and retry.
 
@@ -168,6 +178,11 @@ async def asyncio_detailed(
 
     Mint the ticket when you are about to connect: one not spent within five minutes of the mint
     expires. The expiry bounds only the login; a session it opened is not cut off.
+
+    A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
+    permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
+    seconds to a few minutes; the call answers once the VM is running. Concurrent connects to one VM
+    start one wake, and a wake the caller stops waiting for still finishes.
 
     A **409** issued seconds after `POST /api/vms` means the create is still claiming a pool VM: wait on
     `GET /api/vms/{name}/events` (or poll `GET /api/vms/{name}` until it leaves `creating`) and retry.
@@ -205,6 +220,11 @@ async def asyncio(
 
     Mint the ticket when you are about to connect: one not spent within five minutes of the mint
     expires. The expiry bounds only the login; a session it opened is not cut off.
+
+    A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
+    permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
+    seconds to a few minutes; the call answers once the VM is running. Concurrent connects to one VM
+    start one wake, and a wake the caller stops waiting for still finishes.
 
     A **409** issued seconds after `POST /api/vms` means the create is still claiming a pool VM: wait on
     `GET /api/vms/{name}/events` (or poll `GET /api/vms/{name}` until it leaves `creating`) and retry.
