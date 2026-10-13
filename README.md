@@ -529,7 +529,11 @@ From the repository root:
 ```
 
 Both use the hash-locked toolchain venv (`scripts/sdk-python-env.sh install` builds it from
-`sdk/python/requirements-dev.lock`). Never hand-edit `src/cove_sdk/_generated/`, `_meta.py`,
+`sdk/python/requirements-dev.lock`). The venv is built with `COVE_SDK_PYTHON` if you set it (it must
+be a working Python 3.11 or newer, or the script refuses), else `python3.14`, else `python3`: the
+locked wheels lag a brand-new Python, so a host whose default is 3.15 still gets a working venv. A
+venv built with a different major.minor than the interpreter chosen now is rebuilt by `install`.
+Never hand-edit `src/cove_sdk/_generated/`, `_meta.py`,
 `types.py`, `src/cove_sdk/_sync/` or `tests/_sync/`: write the async code and tests, and the sync
 ones are mirrored from them.
 
