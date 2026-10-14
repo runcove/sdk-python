@@ -32,9 +32,8 @@ class InvalidVmNameBody:
                 discriminant on `code` too, and that is all the two share — its values
                 (`ram_headroom_exceeded`, `user_vcpu_quota_exceeded`, …) are a separate closed
                 catalogue and none of them appears here. This text is published in
-                `sdk/openapi.yaml`, and an earlier version said the two "share the same wire
-                vocabulary", which would lead a client author to type every `code` as this
-                enum and be wrong on every 409.
+                `sdk/openapi.yaml`: a client author who typed every `code` as this enum
+                would be wrong on every 409.
 
                 `snake_case`, `<subject>_<condition>`: the subject is
                 the thing that went wrong, not the endpoint.

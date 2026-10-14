@@ -24,15 +24,14 @@ class SharedVmSummary:
     adds `owner` (absent from `VmSummaryDto`, since your own VMs have no
     "owner" distinct from you) and omits `created_at`/`tags`/`share_count`.
 
-    Named here rather than left inline even though no
-    prior hand-written spec ever published this operation — the outgoing
-    `sdk/openapi.yaml` has no `/vms/shared-with-me` entry at all, so this is a
-    first publication, not a migration.
+    Named here rather than left inline; the outgoing hand-written
+    `sdk/openapi.yaml` has no `/vms/shared-with-me` entry at all, so there is
+    no earlier schema name to keep.
 
-    Every client-side `list_shared_vms` decodes THIS type. Two of them used to
-    decode `VmSummaryDto` instead — which parsed cleanly (serde tolerates
-    unknown fields) while dropping `owner`, so `cove ls --shared-with-me`
-    rendered no sharer at all. If you add a client impl, decode this shape.
+    Every client-side `list_shared_vms` decodes THIS type. Decoding
+    `VmSummaryDto` instead parses cleanly (serde tolerates unknown fields)
+    while dropping `owner`, so `cove ls --shared-with-me` would render no
+    sharer at all. If you add a client impl, decode this shape.
 
         Attributes:
             image (str):
@@ -51,10 +50,9 @@ class SharedVmSummary:
                 written down. `Display`, [`std::str::FromStr`] and every SQL predicate that
                 filters the `vms.state` column are all derived from it (via
                 [`VmState::ALL`]), so renaming a state is a compile error at each derived
-                site rather than a silent behaviour change. Two real defects came from the
-                hand-maintained copies this replaces: a reconciler query filtering
-                `force_killing`, a spelling no schema version ever held, and
-                every hibernated VM rendering as an unstyled badge.
+                site rather than a silent behaviour change. Hand-maintained copies let a
+                query filter on a spelling no schema version holds, or a badge go
+                unstyled for a state it does not know.
 
                 The serde encoding is the one representation still declared separately
                 (attributes cannot call a function); `unit_vm_state_wire_roundtrip` pins the
@@ -64,19 +62,16 @@ class SharedVmSummary:
 
                 [`VmState::display_name`] carries the words for a human — `"Force
                 stopping"`, not the wire value `force_stopping`. Presentation layers must
-                use it verbatim rather than capitalising the wire string, which is how
-                `force_stopping` came to be shown as `Force_stopping`.
+                use it verbatim rather than capitalising the wire string, which would show
+                `force_stopping` as `Force_stopping`.
 
-                # The names the rename retired are gone
+                # Retired names are rejected
 
-                The 2026-07 terminology rename gave four states clearer names —
-                `suspending` → `hibernating`, `suspended` → `hibernated`, `restoring` →
-                `waking`, `forcekilling` → `force_stopping`. Migration 035 rewrites every
-                stored row, so the old spellings exist nowhere after it runs and are now
-                **rejected** on the way in, by serde and by `FromStr` alike. There is one
-                production environment, a handful of users and no external API consumer, so
-                the data was migrated forward instead of being read in two spellings
-                indefinitely.
+                The states are `hibernating`, `hibernated`, `waking` and
+                `force_stopping`; the spellings `suspending`, `suspended`, `restoring` and
+                `forcekilling` are **rejected** on the way in, by serde and by `FromStr`
+                alike. Migration 035 rewrites every stored row, so the retired spellings
+                exist nowhere after it runs and nothing has to be read in two spellings.
             degraded (bool | Unset):
             degraded_reason (None | str | Unset):
             ip_address (None | str | Unset):

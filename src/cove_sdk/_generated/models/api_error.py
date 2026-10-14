@@ -18,8 +18,7 @@ class ApiError:
     """Standard API error envelope.
 
     `code` is [`ErrorCode`], not `String` — an unlisted code is a compile
-    error, not a runtime string a reviewer has to catch. `field`
-    absorbs what the retired `ValidationFailedBody` carried: when `code` is
+    error, not a runtime string a reviewer has to catch. When `code` is
     [`ErrorCode::ValidationFailed`] and the failure is scoped to one request
     field, `field` names it (`"label"`, `"cursor"`, `"value_b64"`, …); `None`
     for whole-body or cross-field failures, and for every other code.
@@ -31,9 +30,8 @@ class ApiError:
                 discriminant on `code` too, and that is all the two share — its values
                 (`ram_headroom_exceeded`, `user_vcpu_quota_exceeded`, …) are a separate closed
                 catalogue and none of them appears here. This text is published in
-                `sdk/openapi.yaml`, and an earlier version said the two "share the same wire
-                vocabulary", which would lead a client author to type every `code` as this
-                enum and be wrong on every 409.
+                `sdk/openapi.yaml`: a client author who typed every `code` as this enum
+                would be wrong on every 409.
 
                 `snake_case`, `<subject>_<condition>`: the subject is
                 the thing that went wrong, not the endpoint.

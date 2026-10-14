@@ -16,8 +16,9 @@ T = TypeVar("T", bound="SudoRequiredBody")
 class SudoRequiredBody:
     """401 body for [`cove_types::ErrorCode::SudoRequired`]. `reauth_window_secs`
     names how long a fresh sudo re-auth lasts. `message` is a human-readable
-    explanation, carried here as on `ScopeDeniedBody` so neither body is a
-    bare `{code, reauth_window_secs}`.
+    explanation, carried here as on `ScopeDeniedBody`, so neither body is
+    bare: this one is not just `{code, reauth_window_secs}`, nor that one
+    just `{code, required}`.
 
         Attributes:
             code (ErrorCode): A machine-readable error code from the REST API's `ApiError.code` field.
@@ -26,9 +27,8 @@ class SudoRequiredBody:
                 discriminant on `code` too, and that is all the two share — its values
                 (`ram_headroom_exceeded`, `user_vcpu_quota_exceeded`, …) are a separate closed
                 catalogue and none of them appears here. This text is published in
-                `sdk/openapi.yaml`, and an earlier version said the two "share the same wire
-                vocabulary", which would lead a client author to type every `code` as this
-                enum and be wrong on every 409.
+                `sdk/openapi.yaml`: a client author who typed every `code` as this enum
+                would be wrong on every 409.
 
                 `snake_case`, `<subject>_<condition>`: the subject is
                 the thing that went wrong, not the endpoint.

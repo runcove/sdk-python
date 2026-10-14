@@ -15,11 +15,9 @@ T = TypeVar("T", bound="ScopeDeniedBody")
 @_attrs_define
 class ScopeDeniedBody:
     """403 body for [`ErrorCode::ScopeDenied`]. `required` names the scope the
-    route needs. `message` was added later — the pre-existing body was `{code,
-    required}` with no `message` at all, the one shape in the inventory with
-    neither a `message` nor a `field`; every other typed body keeps `message`
-    mandatory, so this one gets a filled-in default rather than staying the
-    exception.
+    route needs. `message` is a filled-in human-readable default: every typed
+    error body carries a mandatory `message`, so this one is not the exception
+    a bare `{code, required}` would be.
 
         Attributes:
             code (ErrorCode): A machine-readable error code from the REST API's `ApiError.code` field.
@@ -28,9 +26,8 @@ class ScopeDeniedBody:
                 discriminant on `code` too, and that is all the two share — its values
                 (`ram_headroom_exceeded`, `user_vcpu_quota_exceeded`, …) are a separate closed
                 catalogue and none of them appears here. This text is published in
-                `sdk/openapi.yaml`, and an earlier version said the two "share the same wire
-                vocabulary", which would lead a client author to type every `code` as this
-                enum and be wrong on every 409.
+                `sdk/openapi.yaml`: a client author who typed every `code` as this enum
+                would be wrong on every 409.
 
                 `snake_case`, `<subject>_<condition>`: the subject is
                 the thing that went wrong, not the endpoint.

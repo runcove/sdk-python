@@ -16,9 +16,8 @@ T = TypeVar("T", bound="AutoPausePolicyType0")
 class AutoPausePolicyType0:
     """Pause the VM once it has been idle for `idle_timeout_secs`.
 
-    The wire tag is `auto_pause`. Its predecessor `auto_suspend` is no
-    longer accepted — cove-core migration 036 rewrote every stored row. See
-    the module docs.
+    The wire tag is `auto_pause`. `auto_suspend` is not accepted —
+    cove-core migration 036 rewrites every stored row. See the module docs.
 
         Attributes:
             idle_timeout_secs (int):

@@ -28,13 +28,10 @@ class Session:
             state (SessionState): Lifecycle state of a CLI ticket. The service layer computes this; the UI
                 renders a pill from it without having to reason about (revoked_at, expires_at, now).
 
-                The public surface no longer says "ticket" — the CLI-session sense
-                becomes **session**. This type/operation set was never published in the
-                outgoing hand-written spec (only aggregate counts were), so there is no
-                existing public name to preserve; the schema is minted fresh under the
-                approved vocabulary via `#[schema(as = SessionState)]` rather than
-                carrying "CliTicket" into a first publication. The Rust name is unchanged
-                (internal code keeps saying "ticket" until a later full rename).
+                The public surface says **session**, not "ticket", for the CLI-session
+                sense: the schema is published under the approved vocabulary via
+                `#[schema(as = SessionState)]` rather than carrying "CliTicket". The Rust
+                name keeps "ticket" internally.
             target_name (str):
             expires_at (datetime.datetime | None | Unset):
             last_used_at (datetime.datetime | None | Unset): Last-seen: when this ticket was last used on an authenticated

@@ -144,11 +144,10 @@ def sync_detailed(
         name (str):
         body (ExecWithSecretsRequest): POST /vms/{name}/exec-with-secrets request body.
 
-            The buffered, secrets-injected form of exec, split out of `/exec` because
-            one route cannot answer with both an SSE stream and a JSON body in any
-            describable way. `selector` is REQUIRED here — it is what the operation is
-            for — where on `ExecRequestDto` it is the optional field that used to switch
-            `/exec` between its two response shapes.
+            The buffered, secrets-injected form of exec, a separate operation from
+            `/exec` because one route cannot answer with both an SSE stream and a JSON
+            body in any describable way. `selector` is REQUIRED here — it is what the
+            operation is for — whereas `/exec` refuses a request carrying one with 400.
 
             `timeout_secs` bounds the command as it does on `ExecRequestDto`: past it
             the guest kills the command's process group and the response is exit 124
@@ -227,11 +226,10 @@ def sync(
         name (str):
         body (ExecWithSecretsRequest): POST /vms/{name}/exec-with-secrets request body.
 
-            The buffered, secrets-injected form of exec, split out of `/exec` because
-            one route cannot answer with both an SSE stream and a JSON body in any
-            describable way. `selector` is REQUIRED here — it is what the operation is
-            for — where on `ExecRequestDto` it is the optional field that used to switch
-            `/exec` between its two response shapes.
+            The buffered, secrets-injected form of exec, a separate operation from
+            `/exec` because one route cannot answer with both an SSE stream and a JSON
+            body in any describable way. `selector` is REQUIRED here — it is what the
+            operation is for — whereas `/exec` refuses a request carrying one with 400.
 
             `timeout_secs` bounds the command as it does on `ExecRequestDto`: past it
             the guest kills the command's process group and the response is exit 124
@@ -305,11 +303,10 @@ async def asyncio_detailed(
         name (str):
         body (ExecWithSecretsRequest): POST /vms/{name}/exec-with-secrets request body.
 
-            The buffered, secrets-injected form of exec, split out of `/exec` because
-            one route cannot answer with both an SSE stream and a JSON body in any
-            describable way. `selector` is REQUIRED here — it is what the operation is
-            for — where on `ExecRequestDto` it is the optional field that used to switch
-            `/exec` between its two response shapes.
+            The buffered, secrets-injected form of exec, a separate operation from
+            `/exec` because one route cannot answer with both an SSE stream and a JSON
+            body in any describable way. `selector` is REQUIRED here — it is what the
+            operation is for — whereas `/exec` refuses a request carrying one with 400.
 
             `timeout_secs` bounds the command as it does on `ExecRequestDto`: past it
             the guest kills the command's process group and the response is exit 124
@@ -386,11 +383,10 @@ async def asyncio(
         name (str):
         body (ExecWithSecretsRequest): POST /vms/{name}/exec-with-secrets request body.
 
-            The buffered, secrets-injected form of exec, split out of `/exec` because
-            one route cannot answer with both an SSE stream and a JSON body in any
-            describable way. `selector` is REQUIRED here — it is what the operation is
-            for — where on `ExecRequestDto` it is the optional field that used to switch
-            `/exec` between its two response shapes.
+            The buffered, secrets-injected form of exec, a separate operation from
+            `/exec` because one route cannot answer with both an SSE stream and a JSON
+            body in any describable way. `selector` is REQUIRED here — it is what the
+            operation is for — whereas `/exec` refuses a request carrying one with 400.
 
             `timeout_secs` bounds the command as it does on `ExecRequestDto`: past it
             the guest kills the command's process group and the response is exit 124

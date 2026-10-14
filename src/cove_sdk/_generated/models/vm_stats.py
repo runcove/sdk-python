@@ -17,8 +17,8 @@ class VmStats:
     """GET /vms/{name}/stats response body.
 
     `timestamp` is the server-side sample time (unix epoch seconds). It is
-    always emitted on the wire; consolidating the previously-duplicated client
-    and server copies restored it to the client, which had silently dropped it.
+    always emitted on the wire, and the client decodes this same type, so it
+    cannot silently drop the field.
 
         Attributes:
             cpu_percent (float):

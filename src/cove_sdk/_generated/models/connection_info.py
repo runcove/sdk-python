@@ -14,13 +14,11 @@ T = TypeVar("T", bound="ConnectionInfo")
 class ConnectionInfo:
     """POST /vms/{name}/connect response body.
 
-    `warpgate_host`/`warpgate_port`/`warpgate_ssh_host_pubkey` renamed to
-    `bastion_host`/`bastion_port`/`bastion_ssh_host_pubkey`. "Warpgate" is a
-    banned public word in this product — an implementation choice, not
-    something a user should ever see — and these fields are the wire contract
-    itself, so they were the most visible remaining violation. No serde
-    alias: there is no external API consumer yet (the SDK has not shipped),
-    so the old spelling is removed rather than carried forward.
+    The fields are `bastion_host`/`bastion_port`/`bastion_ssh_host_pubkey`,
+    never `warpgate_*`: "Warpgate" is a banned public word in this product —
+    an implementation choice, not something a user should ever see — and
+    these fields are the wire contract itself. No serde alias accepts a
+    `warpgate_*` spelling.
 
         Attributes:
             bastion_host (str):

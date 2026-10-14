@@ -13,8 +13,8 @@ T = TypeVar("T", bound="WhoamiResponse")
 @_attrs_define
 class WhoamiResponse:
     """GET /whoami response body. Published as `WhoamiResponse` — the schema name
-    the outgoing hand-written spec used, kept via `#[schema(as = ...)]` so
-    consolidating the two Rust declarations doesn't rename the wire contract.
+    the outgoing hand-written spec used, kept via `#[schema(as = ...)]` so the
+    Rust type name does not rename the wire contract.
 
         Attributes:
             username (str):
