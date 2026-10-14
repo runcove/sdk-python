@@ -108,6 +108,10 @@ class VmDetail:
                 as its total, give or take what the kernel keeps for itself. Quota is
                 charged on this.
             current_vcpus (int | Unset): vCPUs the VM has now. Quota is charged on this.
+            datapath (None | str | Unset): How a VM on a Mac reaches the network: `"relay"`, which keeps it
+                apart from other VMs and from the Mac's own services (except the
+                TCP ports in `[local_network] host_ports`), or `"vmnet"`, which does
+                not. Present only for a running or paused VM on a Mac.
             degraded (bool | Unset):
             degraded_reason (None | str | Unset):
             deletes_in_secs (int | None | Unset):
@@ -151,6 +155,7 @@ class VmDetail:
     agent_version: None | str | Unset = UNSET
     current_memory_mb: int | Unset = UNSET
     current_vcpus: int | Unset = UNSET
+    datapath: None | str | Unset = UNSET
     degraded: bool | Unset = UNSET
     degraded_reason: None | str | Unset = UNSET
     deletes_in_secs: int | None | Unset = UNSET
@@ -224,6 +229,12 @@ class VmDetail:
         current_memory_mb = self.current_memory_mb
 
         current_vcpus = self.current_vcpus
+
+        datapath: None | str | Unset
+        if isinstance(self.datapath, Unset):
+            datapath = UNSET
+        else:
+            datapath = self.datapath
 
         degraded = self.degraded
 
@@ -306,6 +317,8 @@ class VmDetail:
             field_dict["current_memory_mb"] = current_memory_mb
         if current_vcpus is not UNSET:
             field_dict["current_vcpus"] = current_vcpus
+        if datapath is not UNSET:
+            field_dict["datapath"] = datapath
         if degraded is not UNSET:
             field_dict["degraded"] = degraded
         if degraded_reason is not UNSET:
@@ -430,6 +443,15 @@ class VmDetail:
 
         current_vcpus = d.pop("current_vcpus", UNSET)
 
+        def _parse_datapath(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        datapath = _parse_datapath(d.pop("datapath", UNSET))
+
         degraded = d.pop("degraded", UNSET)
 
         def _parse_degraded_reason(data: object) -> None | str | Unset:
@@ -520,6 +542,7 @@ class VmDetail:
             agent_version=agent_version,
             current_memory_mb=current_memory_mb,
             current_vcpus=current_vcpus,
+            datapath=datapath,
             degraded=degraded,
             degraded_reason=degraded_reason,
             deletes_in_secs=deletes_in_secs,
