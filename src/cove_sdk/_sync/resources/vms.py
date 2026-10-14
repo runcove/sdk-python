@@ -45,6 +45,7 @@ from ..._generated.api.vms import (
     list_vm_access,
     list_vms,
     pause_vm,
+    recover_vm,
     resize_vm,
     resume_vm,
     revoke_vm_access,
@@ -233,6 +234,15 @@ class Vms:
     def resume(self, name: str, *, timeout: CallTimeout = CLIENT_DEFAULT) -> None:
         """Resume a paused VM. Scope ``vms:write``."""
         self._t.call(resume_vm, path={"name": name}, timeout=timeout)
+
+    @operation("recoverVm")
+    def recover(self, name: str, *, timeout: CallTimeout = CLIENT_DEFAULT) -> None:
+        """Return a ``failed`` VM to ``stopped`` so :meth:`start` can boot it from its disk.
+
+        Scope ``vms:write``. 409 when the VM is not failed, its hypervisor process may still
+        run, or its disk is missing (delete it instead).
+        """
+        self._t.call(recover_vm, path={"name": name}, timeout=timeout)
 
     @operation("wakeVm")
     def wake(

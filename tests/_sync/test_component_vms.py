@@ -163,7 +163,7 @@ def test_component_vms_get_maps_404() -> None:
 def test_component_vms_lifecycle_verbs_post_and_return_none() -> None:
     api = Api()
     api.on("POST", "/api/vms/v/stop", 202)
-    for verb in ("start", "pause", "resume"):
+    for verb in ("start", "pause", "resume", "recover"):
         api.on("POST", f"/api/vms/v/{verb}", 200)
     api.on("DELETE", "/api/vms/v", 202)
     vms = _vms(api)
@@ -171,12 +171,14 @@ def test_component_vms_lifecycle_verbs_post_and_return_none() -> None:
     assert vms.start("v") is None
     assert vms.pause("v") is None
     assert vms.resume("v") is None
+    assert vms.recover("v") is None
     assert vms.delete("v") is None
     assert [(r.method, r.url.path) for r in api.seen] == [
         ("POST", "/api/vms/v/stop"),
         ("POST", "/api/vms/v/start"),
         ("POST", "/api/vms/v/pause"),
         ("POST", "/api/vms/v/resume"),
+        ("POST", "/api/vms/v/recover"),
         ("DELETE", "/api/vms/v"),
     ]
 
