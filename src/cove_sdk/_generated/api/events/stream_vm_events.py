@@ -94,7 +94,10 @@ def sync_detailed(
     state where it was (a health degrade or recovery, pause, clone and pool-claim details, the create-
     completed announcement; creation progress arrives as `progress`), so a frame can repeat the previous
     state: treat `state` as idempotent and act on a change, not on a frame.
-    - `progress`: a creation stage was reached, data `{"stage", "message"}`.
+    - `progress`: a creation stage was reached, data `{"stage", "message"}`, plus `transfer` while a
+    long stage runs (a Mac's first-run image download and unpack, sent about once a second): `{"done",
+    "total", "bytes_per_sec", "secs_left"}`, bytes and seconds, each of the last three absent until
+    known.
     - `error`: creation failed, data `{"stage": "Failed", "message": "<error>"}`.
     - `lagged`: the server's broadcast channel dropped events because this connection fell behind, data
     `{"skipped": <int>}`. Reconnect to resync — the dropped events are not replayed.
@@ -152,7 +155,10 @@ def sync(
     state where it was (a health degrade or recovery, pause, clone and pool-claim details, the create-
     completed announcement; creation progress arrives as `progress`), so a frame can repeat the previous
     state: treat `state` as idempotent and act on a change, not on a frame.
-    - `progress`: a creation stage was reached, data `{"stage", "message"}`.
+    - `progress`: a creation stage was reached, data `{"stage", "message"}`, plus `transfer` while a
+    long stage runs (a Mac's first-run image download and unpack, sent about once a second): `{"done",
+    "total", "bytes_per_sec", "secs_left"}`, bytes and seconds, each of the last three absent until
+    known.
     - `error`: creation failed, data `{"stage": "Failed", "message": "<error>"}`.
     - `lagged`: the server's broadcast channel dropped events because this connection fell behind, data
     `{"skipped": <int>}`. Reconnect to resync — the dropped events are not replayed.
@@ -205,7 +211,10 @@ async def asyncio_detailed(
     state where it was (a health degrade or recovery, pause, clone and pool-claim details, the create-
     completed announcement; creation progress arrives as `progress`), so a frame can repeat the previous
     state: treat `state` as idempotent and act on a change, not on a frame.
-    - `progress`: a creation stage was reached, data `{"stage", "message"}`.
+    - `progress`: a creation stage was reached, data `{"stage", "message"}`, plus `transfer` while a
+    long stage runs (a Mac's first-run image download and unpack, sent about once a second): `{"done",
+    "total", "bytes_per_sec", "secs_left"}`, bytes and seconds, each of the last three absent until
+    known.
     - `error`: creation failed, data `{"stage": "Failed", "message": "<error>"}`.
     - `lagged`: the server's broadcast channel dropped events because this connection fell behind, data
     `{"skipped": <int>}`. Reconnect to resync — the dropped events are not replayed.
@@ -261,7 +270,10 @@ async def asyncio(
     state where it was (a health degrade or recovery, pause, clone and pool-claim details, the create-
     completed announcement; creation progress arrives as `progress`), so a frame can repeat the previous
     state: treat `state` as idempotent and act on a change, not on a frame.
-    - `progress`: a creation stage was reached, data `{"stage", "message"}`.
+    - `progress`: a creation stage was reached, data `{"stage", "message"}`, plus `transfer` while a
+    long stage runs (a Mac's first-run image download and unpack, sent about once a second): `{"done",
+    "total", "bytes_per_sec", "secs_left"}`, bytes and seconds, each of the last three absent until
+    known.
     - `error`: creation failed, data `{"stage": "Failed", "message": "<error>"}`.
     - `lagged`: the server's broadcast channel dropped events because this connection fell behind, data
     `{"skipped": <int>}`. Reconnect to resync — the dropped events are not replayed.
