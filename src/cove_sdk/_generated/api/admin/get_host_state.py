@@ -89,9 +89,9 @@ def sync_detailed(
     - `broadcast_lag` — per (channel, consumer) counts of events dropped because that consumer fell
     behind. Names which consumer is lagging and by how much.
     - `embedded_agent_version` — the version of the guest agent this daemon embeds for hot-patching, or
-    `null` when the build embeds none (the daemon cannot hot-patch then; `POST /api/admin/update-agents`
-    can still push an uploaded binary). A VM whose agent reports another version is not running the
-    host's agent.
+    `null` when it cannot hot-patch: the build embeds none, or the daemon could not extract it at
+    startup (`POST /api/admin/update-agents` can still push an uploaded binary). A VM whose agent
+    reports another version is not running the host's agent.
     - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means
@@ -143,9 +143,9 @@ def sync(
     - `broadcast_lag` — per (channel, consumer) counts of events dropped because that consumer fell
     behind. Names which consumer is lagging and by how much.
     - `embedded_agent_version` — the version of the guest agent this daemon embeds for hot-patching, or
-    `null` when the build embeds none (the daemon cannot hot-patch then; `POST /api/admin/update-agents`
-    can still push an uploaded binary). A VM whose agent reports another version is not running the
-    host's agent.
+    `null` when it cannot hot-patch: the build embeds none, or the daemon could not extract it at
+    startup (`POST /api/admin/update-agents` can still push an uploaded binary). A VM whose agent
+    reports another version is not running the host's agent.
     - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means
@@ -193,9 +193,9 @@ async def asyncio_detailed(
     - `broadcast_lag` — per (channel, consumer) counts of events dropped because that consumer fell
     behind. Names which consumer is lagging and by how much.
     - `embedded_agent_version` — the version of the guest agent this daemon embeds for hot-patching, or
-    `null` when the build embeds none (the daemon cannot hot-patch then; `POST /api/admin/update-agents`
-    can still push an uploaded binary). A VM whose agent reports another version is not running the
-    host's agent.
+    `null` when it cannot hot-patch: the build embeds none, or the daemon could not extract it at
+    startup (`POST /api/admin/update-agents` can still push an uploaded binary). A VM whose agent
+    reports another version is not running the host's agent.
     - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means
@@ -245,9 +245,9 @@ async def asyncio(
     - `broadcast_lag` — per (channel, consumer) counts of events dropped because that consumer fell
     behind. Names which consumer is lagging and by how much.
     - `embedded_agent_version` — the version of the guest agent this daemon embeds for hot-patching, or
-    `null` when the build embeds none (the daemon cannot hot-patch then; `POST /api/admin/update-agents`
-    can still push an uploaded binary). A VM whose agent reports another version is not running the
-    host's agent.
+    `null` when it cannot hot-patch: the build embeds none, or the daemon could not extract it at
+    startup (`POST /api/admin/update-agents` can still push an uploaded binary). A VM whose agent
+    reports another version is not running the host's agent.
     - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means

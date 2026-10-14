@@ -46,8 +46,9 @@ class AdminHostStateResponse:
               `GET /admin/checkpoints[?orphaned=true]` closes.
           snapshot_images (list[SnapshotImageUsage]): Per-image snapshot disk usage (version-dir count + bytes).
           ttl_pending_count (int):
-          embedded_agent_version (None | str | Unset): Version of the guest agent this daemon embeds for hot-patching, or
-              `None` when the build embeds none (`embedded_agent_version`). The admin
+          embedded_agent_version (None | str | Unset): Version of the guest agent this daemon hot-patches with, or `None`
+              when it cannot hot-patch: the build embeds none, or the daemon could
+              not extract it at startup (`hot_patch_agent_version`). The admin
               Guest Agents page compares each VM's reported version against it.
           key_presentations_ignored_total (int | Unset): Presentations to `POST /api/api-keys/revoke` this process
               answered
