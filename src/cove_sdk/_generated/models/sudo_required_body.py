@@ -15,9 +15,9 @@ T = TypeVar("T", bound="SudoRequiredBody")
 @_attrs_define
 class SudoRequiredBody:
     """401 body for [`cove_types::ErrorCode::SudoRequired`]. `reauth_window_secs`
-    names how long a fresh sudo re-auth lasts. `message` was added later — like
-    `ScopeDeniedBody`, this used to be `{code, reauth_window_secs}` with no
-    `message` at all.
+    names how long a fresh sudo re-auth lasts. `message` is a human-readable
+    explanation, carried here as on `ScopeDeniedBody` so neither body is a
+    bare `{code, reauth_window_secs}`.
 
         Attributes:
             code (ErrorCode): A machine-readable error code from the REST API's `ApiError.code` field.
