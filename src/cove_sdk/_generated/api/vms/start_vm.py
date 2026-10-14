@@ -88,7 +88,9 @@ def sync_detailed(
     """Start a stopped VM
 
      Powers the VM back on. Re-pins the VM's SSH host key in Warpgate as a best-effort side effect (a
-    fresh-OS recovery/rebuild regenerates the guest key; a failure there never fails the start).
+    fresh-OS recovery/rebuild regenerates the guest key; a failure there never fails the start). A VM
+    whose owner is disabled (offboarded) is started only by an administrator; anyone else gets 403
+    `user_disabled` with no `detail`, and nothing changes.
 
     Args:
         name (str):
@@ -120,7 +122,9 @@ def sync(
     """Start a stopped VM
 
      Powers the VM back on. Re-pins the VM's SSH host key in Warpgate as a best-effort side effect (a
-    fresh-OS recovery/rebuild regenerates the guest key; a failure there never fails the start).
+    fresh-OS recovery/rebuild regenerates the guest key; a failure there never fails the start). A VM
+    whose owner is disabled (offboarded) is started only by an administrator; anyone else gets 403
+    `user_disabled` with no `detail`, and nothing changes.
 
     Args:
         name (str):
@@ -147,7 +151,9 @@ async def asyncio_detailed(
     """Start a stopped VM
 
      Powers the VM back on. Re-pins the VM's SSH host key in Warpgate as a best-effort side effect (a
-    fresh-OS recovery/rebuild regenerates the guest key; a failure there never fails the start).
+    fresh-OS recovery/rebuild regenerates the guest key; a failure there never fails the start). A VM
+    whose owner is disabled (offboarded) is started only by an administrator; anyone else gets 403
+    `user_disabled` with no `detail`, and nothing changes.
 
     Args:
         name (str):
@@ -177,7 +183,9 @@ async def asyncio(
     """Start a stopped VM
 
      Powers the VM back on. Re-pins the VM's SSH host key in Warpgate as a best-effort side effect (a
-    fresh-OS recovery/rebuild regenerates the guest key; a failure there never fails the start).
+    fresh-OS recovery/rebuild regenerates the guest key; a failure there never fails the start). A VM
+    whose owner is disabled (offboarded) is started only by an administrator; anyone else gets 403
+    `user_disabled` with no `detail`, and nothing changes.
 
     Args:
         name (str):

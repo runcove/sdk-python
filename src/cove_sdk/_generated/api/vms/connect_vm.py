@@ -99,7 +99,9 @@ def sync_detailed(
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
     seconds to a few minutes; the call answers once the VM is running. Concurrent connects to one VM
-    start one wake, and a wake the caller stops waiting for still finishes.
+    start one wake, and a wake the caller stops waiting for still finishes. A hibernated VM whose owner
+    is disabled (offboarded) is woken only for an administrator; anyone else gets 403 `user_disabled`
+    with no `detail`, and the VM stays hibernated.
 
     A **409** issued seconds after `POST /api/vms` means the create is still claiming a pool VM: wait on
     `GET /api/vms/{name}/events` (or poll `GET /api/vms/{name}` until it leaves `creating`) and retry.
@@ -143,7 +145,9 @@ def sync(
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
     seconds to a few minutes; the call answers once the VM is running. Concurrent connects to one VM
-    start one wake, and a wake the caller stops waiting for still finishes.
+    start one wake, and a wake the caller stops waiting for still finishes. A hibernated VM whose owner
+    is disabled (offboarded) is woken only for an administrator; anyone else gets 403 `user_disabled`
+    with no `detail`, and the VM stays hibernated.
 
     A **409** issued seconds after `POST /api/vms` means the create is still claiming a pool VM: wait on
     `GET /api/vms/{name}/events` (or poll `GET /api/vms/{name}` until it leaves `creating`) and retry.
@@ -182,7 +186,9 @@ async def asyncio_detailed(
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
     seconds to a few minutes; the call answers once the VM is running. Concurrent connects to one VM
-    start one wake, and a wake the caller stops waiting for still finishes.
+    start one wake, and a wake the caller stops waiting for still finishes. A hibernated VM whose owner
+    is disabled (offboarded) is woken only for an administrator; anyone else gets 403 `user_disabled`
+    with no `detail`, and the VM stays hibernated.
 
     A **409** issued seconds after `POST /api/vms` means the create is still claiming a pool VM: wait on
     `GET /api/vms/{name}/events` (or poll `GET /api/vms/{name}` until it leaves `creating`) and retry.
@@ -224,7 +230,9 @@ async def asyncio(
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
     seconds to a few minutes; the call answers once the VM is running. Concurrent connects to one VM
-    start one wake, and a wake the caller stops waiting for still finishes.
+    start one wake, and a wake the caller stops waiting for still finishes. A hibernated VM whose owner
+    is disabled (offboarded) is woken only for an administrator; anyone else gets 403 `user_disabled`
+    with no `detail`, and the VM stays hibernated.
 
     A **409** issued seconds after `POST /api/vms` means the create is still claiming a pool VM: wait on
     `GET /api/vms/{name}/events` (or poll `GET /api/vms/{name}` until it leaves `creating`) and retry.

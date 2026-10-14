@@ -87,7 +87,8 @@ def sync_detailed(
 ) -> Response[Any | ApiError | CliTooOldBody | ScopeDeniedBody]:
     """Resume a paused VM
 
-     Unfreezes a paused VM's vCPUs.
+     Unfreezes a paused VM's vCPUs. A VM whose owner is disabled (offboarded) is resumed only by an
+    administrator; anyone else gets 403 `user_disabled` with no `detail`, and nothing changes.
 
     Args:
         name (str):
@@ -118,7 +119,8 @@ def sync(
 ) -> Any | ApiError | CliTooOldBody | ScopeDeniedBody | None:
     """Resume a paused VM
 
-     Unfreezes a paused VM's vCPUs.
+     Unfreezes a paused VM's vCPUs. A VM whose owner is disabled (offboarded) is resumed only by an
+    administrator; anyone else gets 403 `user_disabled` with no `detail`, and nothing changes.
 
     Args:
         name (str):
@@ -144,7 +146,8 @@ async def asyncio_detailed(
 ) -> Response[Any | ApiError | CliTooOldBody | ScopeDeniedBody]:
     """Resume a paused VM
 
-     Unfreezes a paused VM's vCPUs.
+     Unfreezes a paused VM's vCPUs. A VM whose owner is disabled (offboarded) is resumed only by an
+    administrator; anyone else gets 403 `user_disabled` with no `detail`, and nothing changes.
 
     Args:
         name (str):
@@ -173,7 +176,8 @@ async def asyncio(
 ) -> Any | ApiError | CliTooOldBody | ScopeDeniedBody | None:
     """Resume a paused VM
 
-     Unfreezes a paused VM's vCPUs.
+     Unfreezes a paused VM's vCPUs. A VM whose owner is disabled (offboarded) is resumed only by an
+    administrator; anyone else gets 403 `user_disabled` with no `detail`, and nothing changes.
 
     Args:
         name (str):

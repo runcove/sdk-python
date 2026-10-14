@@ -113,6 +113,9 @@ def sync_detailed(
     Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
     that `checkpoint_id` to roll back on purpose.
 
+    A VM whose owner is disabled (offboarded) is woken only by an administrator; anyone else gets 403
+    `user_disabled` with no `detail`, and nothing changes.
+
     Waking a `Stopped` VM from a named disk-only checkpoint is the in-place disk rollback: there is no
     separate rollback call. Naming an older checkpoint on a `Hibernated` VM rolls back its disk and
     memory too, and either way the current disk is discarded, not kept. The name `restore` is reserved
@@ -164,6 +167,9 @@ def sync(
     Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
     that `checkpoint_id` to roll back on purpose.
 
+    A VM whose owner is disabled (offboarded) is woken only by an administrator; anyone else gets 403
+    `user_disabled` with no `detail`, and nothing changes.
+
     Waking a `Stopped` VM from a named disk-only checkpoint is the in-place disk rollback: there is no
     separate rollback call. Naming an older checkpoint on a `Hibernated` VM rolls back its disk and
     memory too, and either way the current disk is discarded, not kept. The name `restore` is reserved
@@ -209,6 +215,9 @@ async def asyncio_detailed(
     checkpoint being named, so it is refused with 409 `disk_rollback_not_named` and nothing changes.
     Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
     that `checkpoint_id` to roll back on purpose.
+
+    A VM whose owner is disabled (offboarded) is woken only by an administrator; anyone else gets 403
+    `user_disabled` with no `detail`, and nothing changes.
 
     Waking a `Stopped` VM from a named disk-only checkpoint is the in-place disk rollback: there is no
     separate rollback call. Naming an older checkpoint on a `Hibernated` VM rolls back its disk and
@@ -258,6 +267,9 @@ async def asyncio(
     checkpoint being named, so it is refused with 409 `disk_rollback_not_named` and nothing changes.
     Start the VM (`POST /api/vms/{name}/start`) to boot from its current disk, or wake it again with
     that `checkpoint_id` to roll back on purpose.
+
+    A VM whose owner is disabled (offboarded) is woken only by an administrator; anyone else gets 403
+    `user_disabled` with no `detail`, and nothing changes.
 
     Waking a `Stopped` VM from a named disk-only checkpoint is the in-place disk rollback: there is no
     separate rollback call. Naming an older checkpoint on a `Hibernated` VM rolls back its disk and
