@@ -29,6 +29,7 @@ class ErrorCode(StrEnum):
     INVALID_CONFIG = "invalid_config"
     INVALID_STATE_TRANSITION = "invalid_state_transition"
     INVALID_VM_NAME = "invalid_vm_name"
+    ORIGIN_NOT_TRUSTED = "origin_not_trusted"
     PLATFORM_NOT_AVAILABLE = "platform_not_available"
     PORT_NOT_ALLOWED = "port_not_allowed"
     PORT_NOT_PRIMARY = "port_not_primary"
