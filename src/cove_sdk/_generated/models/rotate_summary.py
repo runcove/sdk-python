@@ -27,17 +27,27 @@ class RotateSummary:
 
         Attributes:
             vm_count (int):
+            existed (bool | None | Unset): Set by a secret delete only: `true` when the secret was stored and is now gone,
+                `false` when nothing was stored under that name in that scope (the wipe is still sent; absent from rotate and
+                set replies, and from an older server's delete reply).
             skipped (list[str] | Unset):
             unconfirmed (list[str] | Unset):
     """
 
     vm_count: int
+    existed: bool | None | Unset = UNSET
     skipped: list[str] | Unset = UNSET
     unconfirmed: list[str] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         vm_count = self.vm_count
+
+        existed: bool | None | Unset
+        if isinstance(self.existed, Unset):
+            existed = UNSET
+        else:
+            existed = self.existed
 
         skipped: list[str] | Unset = UNSET
         if not isinstance(self.skipped, Unset):
@@ -54,6 +64,8 @@ class RotateSummary:
                 "vm_count": vm_count,
             }
         )
+        if existed is not UNSET:
+            field_dict["existed"] = existed
         if skipped is not UNSET:
             field_dict["skipped"] = skipped
         if unconfirmed is not UNSET:
@@ -66,12 +78,22 @@ class RotateSummary:
         d = dict(src_dict)
         vm_count = d.pop("vm_count")
 
+        def _parse_existed(data: object) -> bool | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(bool | None | Unset, data)
+
+        existed = _parse_existed(d.pop("existed", UNSET))
+
         skipped = cast(list[str], d.pop("skipped", UNSET))
 
         unconfirmed = cast(list[str], d.pop("unconfirmed", UNSET))
 
         rotate_summary = cls(
             vm_count=vm_count,
+            existed=existed,
             skipped=skipped,
             unconfirmed=unconfirmed,
         )

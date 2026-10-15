@@ -92,11 +92,14 @@ def sync_detailed(
 ) -> Response[ApiError | CliTooOldBody | RotateSummary | ScopeDeniedBody]:
     """Delete a secret (reports wipe fan-out)
 
-     Idempotent — deleting an absent key still succeeds. Best-effort fans out to the running VM if
-    reachable: the response's `RotateSummary` reports which VMs confirmed the wipe, which were reached
-    but did not ack, and which in-scope VMs could not be reached at all (e.g. hibernated) and so were
-    never actually wiped — a live wipe never reaches back into an existing checkpoint's `memory-ranges`
-    dump.
+     Idempotent — deleting an absent key still succeeds, and says so: `existed` is `false` when nothing
+    was stored under that name on the VM, and `true` when a stored secret was deleted. With nothing
+    stored the acked wipe is still sent (a repeated unset retries a wipe that failed); the audit log
+    records the attempt and each VM's confirmation, with `existed: false`, but no revocation. Best-
+    effort fans out to the running VM if reachable: the response's `RotateSummary` reports which VMs
+    confirmed the wipe, which were reached but did not ack, and which in-scope VMs could not be reached
+    at all (e.g. hibernated) and so were never actually wiped — a live wipe never reaches back into an
+    existing checkpoint's `memory-ranges` dump.
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`. A VM that does not exist,
     or is not visible to the caller, returns **404** (existence non-leak).
@@ -133,11 +136,14 @@ def sync(
 ) -> ApiError | CliTooOldBody | RotateSummary | ScopeDeniedBody | None:
     """Delete a secret (reports wipe fan-out)
 
-     Idempotent — deleting an absent key still succeeds. Best-effort fans out to the running VM if
-    reachable: the response's `RotateSummary` reports which VMs confirmed the wipe, which were reached
-    but did not ack, and which in-scope VMs could not be reached at all (e.g. hibernated) and so were
-    never actually wiped — a live wipe never reaches back into an existing checkpoint's `memory-ranges`
-    dump.
+     Idempotent — deleting an absent key still succeeds, and says so: `existed` is `false` when nothing
+    was stored under that name on the VM, and `true` when a stored secret was deleted. With nothing
+    stored the acked wipe is still sent (a repeated unset retries a wipe that failed); the audit log
+    records the attempt and each VM's confirmation, with `existed: false`, but no revocation. Best-
+    effort fans out to the running VM if reachable: the response's `RotateSummary` reports which VMs
+    confirmed the wipe, which were reached but did not ack, and which in-scope VMs could not be reached
+    at all (e.g. hibernated) and so were never actually wiped — a live wipe never reaches back into an
+    existing checkpoint's `memory-ranges` dump.
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`. A VM that does not exist,
     or is not visible to the caller, returns **404** (existence non-leak).
@@ -169,11 +175,14 @@ async def asyncio_detailed(
 ) -> Response[ApiError | CliTooOldBody | RotateSummary | ScopeDeniedBody]:
     """Delete a secret (reports wipe fan-out)
 
-     Idempotent — deleting an absent key still succeeds. Best-effort fans out to the running VM if
-    reachable: the response's `RotateSummary` reports which VMs confirmed the wipe, which were reached
-    but did not ack, and which in-scope VMs could not be reached at all (e.g. hibernated) and so were
-    never actually wiped — a live wipe never reaches back into an existing checkpoint's `memory-ranges`
-    dump.
+     Idempotent — deleting an absent key still succeeds, and says so: `existed` is `false` when nothing
+    was stored under that name on the VM, and `true` when a stored secret was deleted. With nothing
+    stored the acked wipe is still sent (a repeated unset retries a wipe that failed); the audit log
+    records the attempt and each VM's confirmation, with `existed: false`, but no revocation. Best-
+    effort fans out to the running VM if reachable: the response's `RotateSummary` reports which VMs
+    confirmed the wipe, which were reached but did not ack, and which in-scope VMs could not be reached
+    at all (e.g. hibernated) and so were never actually wiped — a live wipe never reaches back into an
+    existing checkpoint's `memory-ranges` dump.
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`. A VM that does not exist,
     or is not visible to the caller, returns **404** (existence non-leak).
@@ -208,11 +217,14 @@ async def asyncio(
 ) -> ApiError | CliTooOldBody | RotateSummary | ScopeDeniedBody | None:
     """Delete a secret (reports wipe fan-out)
 
-     Idempotent — deleting an absent key still succeeds. Best-effort fans out to the running VM if
-    reachable: the response's `RotateSummary` reports which VMs confirmed the wipe, which were reached
-    but did not ack, and which in-scope VMs could not be reached at all (e.g. hibernated) and so were
-    never actually wiped — a live wipe never reaches back into an existing checkpoint's `memory-ranges`
-    dump.
+     Idempotent — deleting an absent key still succeeds, and says so: `existed` is `false` when nothing
+    was stored under that name on the VM, and `true` when a stored secret was deleted. With nothing
+    stored the acked wipe is still sent (a repeated unset retries a wipe that failed); the audit log
+    records the attempt and each VM's confirmation, with `existed: false`, but no revocation. Best-
+    effort fans out to the running VM if reachable: the response's `RotateSummary` reports which VMs
+    confirmed the wipe, which were reached but did not ack, and which in-scope VMs could not be reached
+    at all (e.g. hibernated) and so were never actually wiped — a live wipe never reaches back into an
+    existing checkpoint's `memory-ranges` dump.
 
     Returns **503** with `feature_disabled` when `[secrets] enabled = false`. A VM that does not exist,
     or is not visible to the caller, returns **404** (existence non-leak).

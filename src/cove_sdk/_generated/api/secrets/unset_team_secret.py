@@ -92,10 +92,12 @@ def sync_detailed(
 ) -> Response[ApiError | CliTooOldBody | RotateSummary | ScopeDeniedBody]:
     """Unset a team-scoped secret
 
-     Idempotent — deleting an absent key still succeeds. Deletes the store row then re-runs the merged
-    reinject on every running VM owned by a team member (acked) so a lower-precedence shadow (e.g. a
-    project value the team's own value was hiding) is RESTORED in the guest, not left wiped. ACL is
-    member-or-admin.
+     Idempotent — deleting an absent key still succeeds. `existed` in the reply is `true` when a stored
+    secret was deleted and `false` when nothing was stored in this scope: the acked wipe is still sent
+    to the running VMs (so a repeated unset retries a wipe that failed), and the audit log records no
+    revocation for it. Deletes the store row then re-runs the merged reinject on every running VM owned
+    by a team member (acked) so a lower-precedence shadow (e.g. a project value the team's own value was
+    hiding) is RESTORED in the guest, not left wiped. ACL is member-or-admin.
 
     An API key needs MORE than `secrets:write` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: writing another user's secrets, or those of a team or
@@ -139,10 +141,12 @@ def sync(
 ) -> ApiError | CliTooOldBody | RotateSummary | ScopeDeniedBody | None:
     """Unset a team-scoped secret
 
-     Idempotent — deleting an absent key still succeeds. Deletes the store row then re-runs the merged
-    reinject on every running VM owned by a team member (acked) so a lower-precedence shadow (e.g. a
-    project value the team's own value was hiding) is RESTORED in the guest, not left wiped. ACL is
-    member-or-admin.
+     Idempotent — deleting an absent key still succeeds. `existed` in the reply is `true` when a stored
+    secret was deleted and `false` when nothing was stored in this scope: the acked wipe is still sent
+    to the running VMs (so a repeated unset retries a wipe that failed), and the audit log records no
+    revocation for it. Deletes the store row then re-runs the merged reinject on every running VM owned
+    by a team member (acked) so a lower-precedence shadow (e.g. a project value the team's own value was
+    hiding) is RESTORED in the guest, not left wiped. ACL is member-or-admin.
 
     An API key needs MORE than `secrets:write` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: writing another user's secrets, or those of a team or
@@ -181,10 +185,12 @@ async def asyncio_detailed(
 ) -> Response[ApiError | CliTooOldBody | RotateSummary | ScopeDeniedBody]:
     """Unset a team-scoped secret
 
-     Idempotent — deleting an absent key still succeeds. Deletes the store row then re-runs the merged
-    reinject on every running VM owned by a team member (acked) so a lower-precedence shadow (e.g. a
-    project value the team's own value was hiding) is RESTORED in the guest, not left wiped. ACL is
-    member-or-admin.
+     Idempotent — deleting an absent key still succeeds. `existed` in the reply is `true` when a stored
+    secret was deleted and `false` when nothing was stored in this scope: the acked wipe is still sent
+    to the running VMs (so a repeated unset retries a wipe that failed), and the audit log records no
+    revocation for it. Deletes the store row then re-runs the merged reinject on every running VM owned
+    by a team member (acked) so a lower-precedence shadow (e.g. a project value the team's own value was
+    hiding) is RESTORED in the guest, not left wiped. ACL is member-or-admin.
 
     An API key needs MORE than `secrets:write` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: writing another user's secrets, or those of a team or
@@ -226,10 +232,12 @@ async def asyncio(
 ) -> ApiError | CliTooOldBody | RotateSummary | ScopeDeniedBody | None:
     """Unset a team-scoped secret
 
-     Idempotent — deleting an absent key still succeeds. Deletes the store row then re-runs the merged
-    reinject on every running VM owned by a team member (acked) so a lower-precedence shadow (e.g. a
-    project value the team's own value was hiding) is RESTORED in the guest, not left wiped. ACL is
-    member-or-admin.
+     Idempotent — deleting an absent key still succeeds. `existed` in the reply is `true` when a stored
+    secret was deleted and `false` when nothing was stored in this scope: the acked wipe is still sent
+    to the running VMs (so a repeated unset retries a wipe that failed), and the audit log records no
+    revocation for it. Deletes the store row then re-runs the merged reinject on every running VM owned
+    by a team member (acked) so a lower-precedence shadow (e.g. a project value the team's own value was
+    hiding) is RESTORED in the guest, not left wiped. ACL is member-or-admin.
 
     An API key needs MORE than `secrets:write` to reach a principal it is not. The admin half of the ACL
     above is gated on the key's own grants: writing another user's secrets, or those of a team or
