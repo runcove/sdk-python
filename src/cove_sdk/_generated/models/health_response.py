@@ -30,6 +30,10 @@ class HealthResponse:
         min_cli_version (str | Unset):
         server_version (str | Unset):
         traffic_monitor (None | TrafficMonitorStatus | Unset):
+        wake_jump (bool | None | Unset): `true` while this daemon's wake jump is active: Warpgate then sends a
+            plain `ssh` to a hibernated VM through the jump, which waits while the
+            VM wakes. Absent when the jump is off or not (yet) registered, and from
+            servers that predate the field.
     """
 
     pool_available: int
@@ -41,6 +45,7 @@ class HealthResponse:
     min_cli_version: str | Unset = UNSET
     server_version: str | Unset = UNSET
     traffic_monitor: None | TrafficMonitorStatus | Unset = UNSET
+    wake_jump: bool | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -79,6 +84,12 @@ class HealthResponse:
         else:
             traffic_monitor = self.traffic_monitor
 
+        wake_jump: bool | None | Unset
+        if isinstance(self.wake_jump, Unset):
+            wake_jump = UNSET
+        else:
+            wake_jump = self.wake_jump
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -99,6 +110,8 @@ class HealthResponse:
             field_dict["server_version"] = server_version
         if traffic_monitor is not UNSET:
             field_dict["traffic_monitor"] = traffic_monitor
+        if wake_jump is not UNSET:
+            field_dict["wake_jump"] = wake_jump
 
         return field_dict
 
@@ -158,6 +171,15 @@ class HealthResponse:
 
         traffic_monitor = _parse_traffic_monitor(d.pop("traffic_monitor", UNSET))
 
+        def _parse_wake_jump(data: object) -> bool | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(bool | None | Unset, data)
+
+        wake_jump = _parse_wake_jump(d.pop("wake_jump", UNSET))
+
         health_response = cls(
             pool_available=pool_available,
             status=status,
@@ -168,6 +190,7 @@ class HealthResponse:
             min_cli_version=min_cli_version,
             server_version=server_version,
             traffic_monitor=traffic_monitor,
+            wake_jump=wake_jump,
         )
 
         health_response.additional_properties = d
