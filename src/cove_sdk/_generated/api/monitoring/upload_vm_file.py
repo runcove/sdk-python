@@ -18,6 +18,7 @@ def _get_kwargs(
     body: File,
     path: str,
     mode: str | Unset = UNSET,
+    mkdir: bool | Unset = UNSET,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -26,6 +27,8 @@ def _get_kwargs(
     params["path"] = path
 
     params["mode"] = mode
+
+    params["mkdir"] = mkdir
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -136,6 +139,7 @@ def sync_detailed(
     body: File,
     path: str,
     mode: str | Unset = UNSET,
+    mkdir: bool | Unset = UNSET,
 ) -> Response[ApiError | CliTooOldBody | FileUploaded]:
     """Upload one file into a running VM
 
@@ -143,15 +147,18 @@ def sync_detailed(
     guest writes a temporary file and renames it into place only once every byte has arrived, so a
     failed upload leaves the old file untouched. The size is the request's `Content-Length`, which is
     required. The file is owned by root; its mode is `mode` when given, else the replaced file's
-    permission bits, else `0644`. Symlinks are refused, not followed, anywhere in the path. Every
-    committed upload is recorded in the audit log (`vm.file.uploaded`, with the SHA-256), and so is a
-    path the guest denies (`vm.file.refused`). The caller needs SSH access to the VM; writing a file as
-    root can run code, so `files:write` is as strong as `vms:exec`.
+    permission bits, else `0644`. Symlinks are refused, not followed, anywhere in the path; the refusal
+    names the link and where it points. With `mkdir=true` the missing directories of the path are
+    created first (mode `0755`, never through a symlink). Every committed upload is recorded in the
+    audit log (`vm.file.uploaded`, with the SHA-256), and so is a path the guest denies
+    (`vm.file.refused`). The caller needs SSH access to the VM; writing a file as root can run code, so
+    `files:write` is as strong as `vms:exec`.
 
     Args:
         name (str):
         path (str):
         mode (str | Unset):
+        mkdir (bool | Unset):
         body (File): The file's raw bytes.
 
     Raises:
@@ -167,6 +174,7 @@ def sync_detailed(
         body=body,
         path=path,
         mode=mode,
+        mkdir=mkdir,
     )
 
     response = client.get_httpx_client().request(
@@ -183,6 +191,7 @@ def sync(
     body: File,
     path: str,
     mode: str | Unset = UNSET,
+    mkdir: bool | Unset = UNSET,
 ) -> ApiError | CliTooOldBody | FileUploaded | None:
     """Upload one file into a running VM
 
@@ -190,15 +199,18 @@ def sync(
     guest writes a temporary file and renames it into place only once every byte has arrived, so a
     failed upload leaves the old file untouched. The size is the request's `Content-Length`, which is
     required. The file is owned by root; its mode is `mode` when given, else the replaced file's
-    permission bits, else `0644`. Symlinks are refused, not followed, anywhere in the path. Every
-    committed upload is recorded in the audit log (`vm.file.uploaded`, with the SHA-256), and so is a
-    path the guest denies (`vm.file.refused`). The caller needs SSH access to the VM; writing a file as
-    root can run code, so `files:write` is as strong as `vms:exec`.
+    permission bits, else `0644`. Symlinks are refused, not followed, anywhere in the path; the refusal
+    names the link and where it points. With `mkdir=true` the missing directories of the path are
+    created first (mode `0755`, never through a symlink). Every committed upload is recorded in the
+    audit log (`vm.file.uploaded`, with the SHA-256), and so is a path the guest denies
+    (`vm.file.refused`). The caller needs SSH access to the VM; writing a file as root can run code, so
+    `files:write` is as strong as `vms:exec`.
 
     Args:
         name (str):
         path (str):
         mode (str | Unset):
+        mkdir (bool | Unset):
         body (File): The file's raw bytes.
 
     Raises:
@@ -215,6 +227,7 @@ def sync(
         body=body,
         path=path,
         mode=mode,
+        mkdir=mkdir,
     ).parsed
 
 
@@ -225,6 +238,7 @@ async def asyncio_detailed(
     body: File,
     path: str,
     mode: str | Unset = UNSET,
+    mkdir: bool | Unset = UNSET,
 ) -> Response[ApiError | CliTooOldBody | FileUploaded]:
     """Upload one file into a running VM
 
@@ -232,15 +246,18 @@ async def asyncio_detailed(
     guest writes a temporary file and renames it into place only once every byte has arrived, so a
     failed upload leaves the old file untouched. The size is the request's `Content-Length`, which is
     required. The file is owned by root; its mode is `mode` when given, else the replaced file's
-    permission bits, else `0644`. Symlinks are refused, not followed, anywhere in the path. Every
-    committed upload is recorded in the audit log (`vm.file.uploaded`, with the SHA-256), and so is a
-    path the guest denies (`vm.file.refused`). The caller needs SSH access to the VM; writing a file as
-    root can run code, so `files:write` is as strong as `vms:exec`.
+    permission bits, else `0644`. Symlinks are refused, not followed, anywhere in the path; the refusal
+    names the link and where it points. With `mkdir=true` the missing directories of the path are
+    created first (mode `0755`, never through a symlink). Every committed upload is recorded in the
+    audit log (`vm.file.uploaded`, with the SHA-256), and so is a path the guest denies
+    (`vm.file.refused`). The caller needs SSH access to the VM; writing a file as root can run code, so
+    `files:write` is as strong as `vms:exec`.
 
     Args:
         name (str):
         path (str):
         mode (str | Unset):
+        mkdir (bool | Unset):
         body (File): The file's raw bytes.
 
     Raises:
@@ -256,6 +273,7 @@ async def asyncio_detailed(
         body=body,
         path=path,
         mode=mode,
+        mkdir=mkdir,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -270,6 +288,7 @@ async def asyncio(
     body: File,
     path: str,
     mode: str | Unset = UNSET,
+    mkdir: bool | Unset = UNSET,
 ) -> ApiError | CliTooOldBody | FileUploaded | None:
     """Upload one file into a running VM
 
@@ -277,15 +296,18 @@ async def asyncio(
     guest writes a temporary file and renames it into place only once every byte has arrived, so a
     failed upload leaves the old file untouched. The size is the request's `Content-Length`, which is
     required. The file is owned by root; its mode is `mode` when given, else the replaced file's
-    permission bits, else `0644`. Symlinks are refused, not followed, anywhere in the path. Every
-    committed upload is recorded in the audit log (`vm.file.uploaded`, with the SHA-256), and so is a
-    path the guest denies (`vm.file.refused`). The caller needs SSH access to the VM; writing a file as
-    root can run code, so `files:write` is as strong as `vms:exec`.
+    permission bits, else `0644`. Symlinks are refused, not followed, anywhere in the path; the refusal
+    names the link and where it points. With `mkdir=true` the missing directories of the path are
+    created first (mode `0755`, never through a symlink). Every committed upload is recorded in the
+    audit log (`vm.file.uploaded`, with the SHA-256), and so is a path the guest denies
+    (`vm.file.refused`). The caller needs SSH access to the VM; writing a file as root can run code, so
+    `files:write` is as strong as `vms:exec`.
 
     Args:
         name (str):
         path (str):
         mode (str | Unset):
+        mkdir (bool | Unset):
         body (File): The file's raw bytes.
 
     Raises:
@@ -303,5 +325,6 @@ async def asyncio(
             body=body,
             path=path,
             mode=mode,
+            mkdir=mkdir,
         )
     ).parsed
