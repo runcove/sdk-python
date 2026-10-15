@@ -109,11 +109,31 @@ async def test_component_admin_fleet_and_host_round_trips() -> None:
                 200,
                 {
                     "attempted": 3,
+                    "attempted_vms": [],
                     "budget_secs": 30,
                     "failed": 0,
+                    "hibernated": [],
                     "succeeded": 3,
                     "targets": [],
                     "timed_out": 0,
+                },
+            ),
+        )
+        .on(
+            "POST",
+            "/api/admin/restore-vms",
+            (
+                200,
+                {
+                    "concurrency": 4,
+                    "failed": 0,
+                    "requested": 2,
+                    "results": [
+                        {"vm_id": "a", "vm_name": "alpha", "result": "started"},
+                        {"vm_id": "b", "vm_name": "", "result": "not_found"},
+                    ],
+                    "skipped": 1,
+                    "started": 1,
                 },
             ),
         )
@@ -148,6 +168,13 @@ async def test_component_admin_fleet_and_host_round_trips() -> None:
     assert isinstance(drained, AdminDrainResponse) and drained.succeeded == 3
     await admin.drain_host()
     assert api.query() == {}
+
+    restored = await admin.restore_vms(vms=["a", "b"], concurrency=4)
+    assert api.last_json() == {
+        "vms": [{"vm_id": "a"}, {"vm_id": "b"}],
+        "concurrency": 4,
+    }
+    assert restored.started == 1 and restored.results[1].result == "not_found"
 
     state = await admin.host_state()
     assert isinstance(state, AdminHostStateResponse)

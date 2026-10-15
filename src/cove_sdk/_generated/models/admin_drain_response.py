@@ -9,6 +9,7 @@ from typing_extensions import Self
 
 if TYPE_CHECKING:
     from ..models.drain_target import DrainTarget
+    from ..models.drain_vm_dto import DrainVmDto
 
 
 T = TypeVar("T", bound="AdminDrainResponse")
@@ -19,16 +20,22 @@ class AdminDrainResponse:
     """
     Attributes:
         attempted (int):
+        attempted_vms (list[DrainVmDto]): Every VM the drain set out to stop, with the state it was in, whether or
+            not its stop finished in time. `targets` reports a timed-out stop as `timed_out`; this
+            list is the one to restart from. Sorted by name.
         budget_secs (int):
         failed (int):
+        hibernated (list[DrainVmDto]): Hibernated VMs the drain found and left alone. Reported only.
         succeeded (int):
         targets (list[DrainTarget]):
         timed_out (int):
     """
 
     attempted: int
+    attempted_vms: list[DrainVmDto]
     budget_secs: int
     failed: int
+    hibernated: list[DrainVmDto]
     succeeded: int
     targets: list[DrainTarget]
     timed_out: int
@@ -37,9 +44,19 @@ class AdminDrainResponse:
     def to_dict(self) -> dict[str, Any]:
         attempted = self.attempted
 
+        attempted_vms = []
+        for attempted_vms_item_data in self.attempted_vms:
+            attempted_vms_item = attempted_vms_item_data.to_dict()
+            attempted_vms.append(attempted_vms_item)
+
         budget_secs = self.budget_secs
 
         failed = self.failed
+
+        hibernated = []
+        for hibernated_item_data in self.hibernated:
+            hibernated_item = hibernated_item_data.to_dict()
+            hibernated.append(hibernated_item)
 
         succeeded = self.succeeded
 
@@ -55,8 +72,10 @@ class AdminDrainResponse:
         field_dict.update(
             {
                 "attempted": attempted,
+                "attempted_vms": attempted_vms,
                 "budget_secs": budget_secs,
                 "failed": failed,
+                "hibernated": hibernated,
                 "succeeded": succeeded,
                 "targets": targets,
                 "timed_out": timed_out,
@@ -68,13 +87,28 @@ class AdminDrainResponse:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.drain_target import DrainTarget
+        from ..models.drain_vm_dto import DrainVmDto
 
         d = dict(src_dict)
         attempted = d.pop("attempted")
 
+        attempted_vms = []
+        _attempted_vms = d.pop("attempted_vms")
+        for attempted_vms_item_data in _attempted_vms:
+            attempted_vms_item = DrainVmDto.from_dict(attempted_vms_item_data)
+
+            attempted_vms.append(attempted_vms_item)
+
         budget_secs = d.pop("budget_secs")
 
         failed = d.pop("failed")
+
+        hibernated = []
+        _hibernated = d.pop("hibernated")
+        for hibernated_item_data in _hibernated:
+            hibernated_item = DrainVmDto.from_dict(hibernated_item_data)
+
+            hibernated.append(hibernated_item)
 
         succeeded = d.pop("succeeded")
 
@@ -89,8 +123,10 @@ class AdminDrainResponse:
 
         admin_drain_response = cls(
             attempted=attempted,
+            attempted_vms=attempted_vms,
             budget_secs=budget_secs,
             failed=failed,
+            hibernated=hibernated,
             succeeded=succeeded,
             targets=targets,
             timed_out=timed_out,

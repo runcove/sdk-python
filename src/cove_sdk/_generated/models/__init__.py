@@ -108,6 +108,7 @@ from .deny_reason_type_16_code import DenyReasonType16Code
 from .disk_capacity import DiskCapacity
 from .disk_format import DiskFormat
 from .drain_target import DrainTarget
+from .drain_vm_dto import DrainVmDto
 from .enable_user_response import EnableUserResponse
 from .error_code import ErrorCode
 from .exec_exit import ExecExit
@@ -210,6 +211,10 @@ from .reservation_kind import ReservationKind
 from .reservation_ref import ReservationRef
 from .resize_request import ResizeRequest
 from .resize_result import ResizeResult
+from .restore_vm_ref import RestoreVmRef
+from .restore_vm_result_dto import RestoreVmResultDto
+from .restore_vms_request import RestoreVmsRequest
+from .restore_vms_response import RestoreVmsResponse
 from .revoke_key_by_token_request import RevokeKeyByTokenRequest
 from .revoke_sessions_response import RevokeSessionsResponse
 from .revoke_share_outcome import RevokeShareOutcome
@@ -386,6 +391,7 @@ __all__ = (
     "DiskCapacity",
     "DiskFormat",
     "DrainTarget",
+    "DrainVmDto",
     "EnableUserResponse",
     "ErrorCode",
     "ExecExit",
@@ -488,6 +494,10 @@ __all__ = (
     "ReservationRef",
     "ResizeRequest",
     "ResizeResult",
+    "RestoreVmRef",
+    "RestoreVmResultDto",
+    "RestoreVmsRequest",
+    "RestoreVmsResponse",
     "RevokeKeyByTokenRequest",
     "RevokeSessionsResponse",
     "RevokeShareOutcome",

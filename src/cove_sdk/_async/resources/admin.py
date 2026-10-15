@@ -6,13 +6,13 @@ satisfies them all). An API key reaches them only if it is an admin key, minted 
 ``cove key create --admin`` (``admin_key: true``, short-lived), whose owner is in the server's
 ``[auth] admins``; an ordinary or pre-upgrade key holding the scope gets 403 ``admin_required``
 (:class:`~cove_sdk.PermissionDeniedError`). Every listener serves them (over a bearer key, only
-to an admin key of an ``[auth] admins`` user), except :meth:`Admin.drain_host`, which the
-Warpgate-fronted listener never serves.
+to an admin key of an ``[auth] admins`` user), except :meth:`Admin.drain_host` and
+:meth:`Admin.restore_vms`, which the Warpgate-fronted listener never serves.
 
-Seven of them refuse every API key, an admin key included, with 401 ``sudo_required``.
+Eight of them refuse every API key, an admin key included, with 401 ``sudo_required``.
 :meth:`Admin.update_vm_agents`, :meth:`Admin.bulk_stop_vms`, :meth:`Admin.bulk_delete_vms`,
-:meth:`Admin.delete_checkpoint`, :meth:`Admin.offboard_user` and :meth:`Admin.enable_user` need a
-recent interactive sign-in, so they run only with a ticket
+:meth:`Admin.delete_checkpoint`, :meth:`Admin.offboard_user`, :meth:`Admin.enable_user` and
+:meth:`Admin.restore_vms` need a recent interactive sign-in, so they run only with a ticket
 or a session, never a key. :meth:`Admin.drain_host` is never served on the Warpgate-fronted
 listener either, so in practice it runs on the host's Unix socket.
 """
@@ -45,6 +45,7 @@ from ..._generated.api.admin import (
     enable_user,
     list_project_members,
     offboard_user,
+    restore_vms,
     revoke_user_sessions,
     update_auto_pause_timeouts,
     update_team_quota_override,
@@ -74,6 +75,9 @@ from ..._generated.models import (
     OffboardUserReport,
     OffboardUserRequest,
     ProjectMember,
+    RestoreVmRef,
+    RestoreVmsRequest,
+    RestoreVmsResponse,
     RevokeSessionsResponse,
     UpdateAgentsResponse,
 )
@@ -128,6 +132,31 @@ class Admin:
             drain_host, budget_secs=opt(budget_secs), timeout=timeout
         )
         return cast(AdminDrainResponse, out)
+
+    @operation("restoreVms")
+    async def restore_vms(
+        self,
+        *,
+        vms: builtins.list[str],
+        concurrency: int | None = None,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+    ) -> RestoreVmsResponse:
+        """Start the VMs a host drain stopped: ``vms`` are VM ids, ``concurrency`` starts at a time.
+
+        A normal start of each VM that is stopped (default 4 at a time, clamped to 1..16), with
+        one result per VM: ``started``, ``skipped_running``, ``skipped_pool``,
+        ``skipped_owner_disabled``, ``skipped_stopping``, ``skipped_state``, ``not_found`` or ``failed``. It starts any
+        stopped VM it is given, not only drained ones; a VM whose owner was offboarded is always
+        skipped. Feed it the ``attempted_vms`` of :meth:`drain_host`. Scope ``admin:fleet:write``.
+
+        Never served on the Warpgate-fronted listener, and it refuses every API key, an admin key
+        included, with 401 ``sudo_required``: in practice it runs on the host's Unix socket.
+        """
+        req = RestoreVmsRequest(
+            vms=[RestoreVmRef(vm_id=v) for v in vms], concurrency=opt(concurrency)
+        )
+        out = await self._t.call(restore_vms, body=req, timeout=timeout)
+        return cast(RestoreVmsResponse, out)
 
     @operation("getHostState")
     async def host_state(

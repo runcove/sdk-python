@@ -16,7 +16,7 @@ T = TypeVar("T", bound="DrainTarget")
 class DrainTarget:
     """
     Attributes:
-        result (str): `"stopped"` / `"failed"`. Timed-out VMs are absent (still in flight).
+        result (str): `"stopped"` / `"failed"`. A stop still in flight at the budget is `"timed_out"`.
         vm_id (str):
         vm_name (str):
         error (None | str | Unset):

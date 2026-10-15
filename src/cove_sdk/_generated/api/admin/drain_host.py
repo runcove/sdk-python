@@ -137,6 +137,10 @@ def sync_detailed(
     with `timed_out` counting them — those VMs are **absent from `targets`** and keep stopping in the
     background. So a 200 does not by itself mean the fleet is down: check `timed_out == 0`.
 
+    `attempted_vms` lists every VM the drain set out to stop, timed-out ones included, each with the
+    state it was in (`running` or `paused`); feed it to `restoreVms` after a reboot. `hibernated` lists
+    the hibernated VMs the drain left alone; it is for reporting and nothing restarts them.
+
     Ctrl-C or a client disconnect does not cancel a drain: it runs to completion and is audited.
 
     Args:
@@ -196,6 +200,10 @@ def sync(
     with `timed_out` counting them — those VMs are **absent from `targets`** and keep stopping in the
     background. So a 200 does not by itself mean the fleet is down: check `timed_out == 0`.
 
+    `attempted_vms` lists every VM the drain set out to stop, timed-out ones included, each with the
+    state it was in (`running` or `paused`); feed it to `restoreVms` after a reboot. `hibernated` lists
+    the hibernated VMs the drain left alone; it is for reporting and nothing restarts them.
+
     Ctrl-C or a client disconnect does not cancel a drain: it runs to completion and is audited.
 
     Args:
@@ -249,6 +257,10 @@ async def asyncio_detailed(
     shorter timeout. When the deadline passes with stops still running, the response still comes back
     with `timed_out` counting them — those VMs are **absent from `targets`** and keep stopping in the
     background. So a 200 does not by itself mean the fleet is down: check `timed_out == 0`.
+
+    `attempted_vms` lists every VM the drain set out to stop, timed-out ones included, each with the
+    state it was in (`running` or `paused`); feed it to `restoreVms` after a reboot. `hibernated` lists
+    the hibernated VMs the drain left alone; it is for reporting and nothing restarts them.
 
     Ctrl-C or a client disconnect does not cancel a drain: it runs to completion and is audited.
 
@@ -306,6 +318,10 @@ async def asyncio(
     shorter timeout. When the deadline passes with stops still running, the response still comes back
     with `timed_out` counting them — those VMs are **absent from `targets`** and keep stopping in the
     background. So a 200 does not by itself mean the fleet is down: check `timed_out == 0`.
+
+    `attempted_vms` lists every VM the drain set out to stop, timed-out ones included, each with the
+    state it was in (`running` or `paused`); feed it to `restoreVms` after a reboot. `hibernated` lists
+    the hibernated VMs the drain left alone; it is for reporting and nothing restarts them.
 
     Ctrl-C or a client disconnect does not cancel a drain: it runs to completion and is audited.
 
