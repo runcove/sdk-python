@@ -113,6 +113,10 @@ def sync_detailed(
     A **204** means there was no active VM by that name, but a defunct row from a failed create was
     squatting it — that row was purged synchronously and there is nothing left to watch.
 
+    An admin's delete of an unclaimed warm-pool standby (a `pool-…` name, which has no owner) also
+    answers **204**: the standby is drained synchronously and the pool's next refill replaces it. Anyone
+    else gets the 404.
+
     Args:
         name (str):
 
@@ -148,6 +152,10 @@ def sync(
     A **204** means there was no active VM by that name, but a defunct row from a failed create was
     squatting it — that row was purged synchronously and there is nothing left to watch.
 
+    An admin's delete of an unclaimed warm-pool standby (a `pool-…` name, which has no owner) also
+    answers **204**: the standby is drained synchronously and the pool's next refill replaces it. Anyone
+    else gets the 404.
+
     Args:
         name (str):
 
@@ -177,6 +185,10 @@ async def asyncio_detailed(
 
     A **204** means there was no active VM by that name, but a defunct row from a failed create was
     squatting it — that row was purged synchronously and there is nothing left to watch.
+
+    An admin's delete of an unclaimed warm-pool standby (a `pool-…` name, which has no owner) also
+    answers **204**: the standby is drained synchronously and the pool's next refill replaces it. Anyone
+    else gets the 404.
 
     Args:
         name (str):
@@ -210,6 +222,10 @@ async def asyncio(
 
     A **204** means there was no active VM by that name, but a defunct row from a failed create was
     squatting it — that row was purged synchronously and there is nothing left to watch.
+
+    An admin's delete of an unclaimed warm-pool standby (a `pool-…` name, which has no owner) also
+    answers **204**: the standby is drained synchronously and the pool's next refill replaces it. Anyone
+    else gets the 404.
 
     Args:
         name (str):
