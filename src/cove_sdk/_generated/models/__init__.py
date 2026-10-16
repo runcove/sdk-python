@@ -135,6 +135,8 @@ from .idle_kind_type_3_type import IdleKindType3Type
 from .idle_state import IdleState
 from .image_entry import ImageEntry
 from .image_pool import ImagePool
+from .image_update import ImageUpdate
+from .image_update_state import ImageUpdateState
 from .images_response import ImagesResponse
 from .import_entry import ImportEntry
 from .import_response import ImportResponse
@@ -252,6 +254,7 @@ from .test_delivery_result import TestDeliveryResult
 from .traffic_monitor_backend import TrafficMonitorBackend
 from .traffic_monitor_state import TrafficMonitorState
 from .traffic_monitor_status import TrafficMonitorStatus
+from .transfer_progress import TransferProgress
 from .try_reserve_body import TryReserveBody
 from .ttl_policy import TtlPolicy
 from .ttl_policy_view import TtlPolicyView
@@ -418,6 +421,8 @@ __all__ = (
     "IdleState",
     "ImageEntry",
     "ImagePool",
+    "ImageUpdate",
+    "ImageUpdateState",
     "ImagesResponse",
     "ImportEntry",
     "ImportResponse",
@@ -535,6 +540,7 @@ __all__ = (
     "TrafficMonitorBackend",
     "TrafficMonitorState",
     "TrafficMonitorStatus",
+    "TransferProgress",
     "TryReserveBody",
     "TtlPolicy",
     "TtlPolicyView",

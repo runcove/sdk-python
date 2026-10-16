@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.image_update import ImageUpdate
+
 
 T = TypeVar("T", bound="LocalStatus")
 
@@ -26,6 +30,7 @@ class LocalStatus:
                 mac_max_guest_ram_fraction` of this Mac's RAM, which create and start
                 are admitted against (VZ wires guest memory). Absent when the Mac's
                 RAM couldn't be read at daemon start.
+            image_update (ImageUpdate | None | Unset):
             network_owner_gateway (None | str | Unset): The network owner's gateway when it answers its control socket;
                 absent when it doesn't.
     """
@@ -33,10 +38,13 @@ class LocalStatus:
     bastion_ssh_port: int | None | Unset = UNSET
     bastion_unavailable: None | str | Unset = UNSET
     guest_ram_cap_mb: int | None | Unset = UNSET
+    image_update: ImageUpdate | None | Unset = UNSET
     network_owner_gateway: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.image_update import ImageUpdate
+
         bastion_ssh_port: int | None | Unset
         if isinstance(self.bastion_ssh_port, Unset):
             bastion_ssh_port = UNSET
@@ -55,6 +63,14 @@ class LocalStatus:
         else:
             guest_ram_cap_mb = self.guest_ram_cap_mb
 
+        image_update: dict[str, Any] | None | Unset
+        if isinstance(self.image_update, Unset):
+            image_update = UNSET
+        elif isinstance(self.image_update, ImageUpdate):
+            image_update = self.image_update.to_dict()
+        else:
+            image_update = self.image_update
+
         network_owner_gateway: None | str | Unset
         if isinstance(self.network_owner_gateway, Unset):
             network_owner_gateway = UNSET
@@ -70,6 +86,8 @@ class LocalStatus:
             field_dict["bastion_unavailable"] = bastion_unavailable
         if guest_ram_cap_mb is not UNSET:
             field_dict["guest_ram_cap_mb"] = guest_ram_cap_mb
+        if image_update is not UNSET:
+            field_dict["image_update"] = image_update
         if network_owner_gateway is not UNSET:
             field_dict["network_owner_gateway"] = network_owner_gateway
 
@@ -77,6 +95,8 @@ class LocalStatus:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.image_update import ImageUpdate
+
         d = dict(src_dict)
 
         def _parse_bastion_ssh_port(data: object) -> int | None | Unset:
@@ -108,6 +128,23 @@ class LocalStatus:
 
         guest_ram_cap_mb = _parse_guest_ram_cap_mb(d.pop("guest_ram_cap_mb", UNSET))
 
+        def _parse_image_update(data: object) -> ImageUpdate | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                image_update_type_1 = ImageUpdate.from_dict(data)
+
+                return image_update_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(ImageUpdate | None | Unset, data)
+
+        image_update = _parse_image_update(d.pop("image_update", UNSET))
+
         def _parse_network_owner_gateway(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -123,6 +160,7 @@ class LocalStatus:
             bastion_ssh_port=bastion_ssh_port,
             bastion_unavailable=bastion_unavailable,
             guest_ram_cap_mb=guest_ram_cap_mb,
+            image_update=image_update,
             network_owner_gateway=network_owner_gateway,
         )
 

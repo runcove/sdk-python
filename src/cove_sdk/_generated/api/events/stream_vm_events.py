@@ -96,9 +96,10 @@ def sync_detailed(
     state: treat `state` as idempotent and act on a change, not on a frame.
     - `progress`: a creation stage was reached, data `{"stage", "message"}`, plus `transfer` while a
     long stage runs (a Mac's first-run image download and unpack, sent about once a second): `{"done",
-    "total", "bytes_per_sec", "secs_left", "stalled_secs"}`, bytes and seconds, each of the last four
-    absent until known. `stalled_secs` is how long a download has had no data, once that is several
-    seconds; the rate and time left are absent then.
+    "total", "bytes_per_sec", "secs_left", "stalled_secs"}`, bytes and seconds. `total`, `bytes_per_sec`
+    and `secs_left` are absent until known. `stalled_secs` is present only while the download is
+    stalled: how long it has had no data, once that is several seconds; the rate and time left are
+    absent then.
     - `error`: creation failed, data `{"stage": "Failed", "message": "<error>"}`.
     - `lagged`: the server's broadcast channel dropped events because this connection fell behind, data
     `{"skipped": <int>}`. Reconnect to resync — the dropped events are not replayed.
@@ -158,9 +159,10 @@ def sync(
     state: treat `state` as idempotent and act on a change, not on a frame.
     - `progress`: a creation stage was reached, data `{"stage", "message"}`, plus `transfer` while a
     long stage runs (a Mac's first-run image download and unpack, sent about once a second): `{"done",
-    "total", "bytes_per_sec", "secs_left", "stalled_secs"}`, bytes and seconds, each of the last four
-    absent until known. `stalled_secs` is how long a download has had no data, once that is several
-    seconds; the rate and time left are absent then.
+    "total", "bytes_per_sec", "secs_left", "stalled_secs"}`, bytes and seconds. `total`, `bytes_per_sec`
+    and `secs_left` are absent until known. `stalled_secs` is present only while the download is
+    stalled: how long it has had no data, once that is several seconds; the rate and time left are
+    absent then.
     - `error`: creation failed, data `{"stage": "Failed", "message": "<error>"}`.
     - `lagged`: the server's broadcast channel dropped events because this connection fell behind, data
     `{"skipped": <int>}`. Reconnect to resync — the dropped events are not replayed.
@@ -215,9 +217,10 @@ async def asyncio_detailed(
     state: treat `state` as idempotent and act on a change, not on a frame.
     - `progress`: a creation stage was reached, data `{"stage", "message"}`, plus `transfer` while a
     long stage runs (a Mac's first-run image download and unpack, sent about once a second): `{"done",
-    "total", "bytes_per_sec", "secs_left", "stalled_secs"}`, bytes and seconds, each of the last four
-    absent until known. `stalled_secs` is how long a download has had no data, once that is several
-    seconds; the rate and time left are absent then.
+    "total", "bytes_per_sec", "secs_left", "stalled_secs"}`, bytes and seconds. `total`, `bytes_per_sec`
+    and `secs_left` are absent until known. `stalled_secs` is present only while the download is
+    stalled: how long it has had no data, once that is several seconds; the rate and time left are
+    absent then.
     - `error`: creation failed, data `{"stage": "Failed", "message": "<error>"}`.
     - `lagged`: the server's broadcast channel dropped events because this connection fell behind, data
     `{"skipped": <int>}`. Reconnect to resync — the dropped events are not replayed.
@@ -275,9 +278,10 @@ async def asyncio(
     state: treat `state` as idempotent and act on a change, not on a frame.
     - `progress`: a creation stage was reached, data `{"stage", "message"}`, plus `transfer` while a
     long stage runs (a Mac's first-run image download and unpack, sent about once a second): `{"done",
-    "total", "bytes_per_sec", "secs_left", "stalled_secs"}`, bytes and seconds, each of the last four
-    absent until known. `stalled_secs` is how long a download has had no data, once that is several
-    seconds; the rate and time left are absent then.
+    "total", "bytes_per_sec", "secs_left", "stalled_secs"}`, bytes and seconds. `total`, `bytes_per_sec`
+    and `secs_left` are absent until known. `stalled_secs` is present only while the download is
+    stalled: how long it has had no data, once that is several seconds; the rate and time left are
+    absent then.
     - `error`: creation failed, data `{"stage": "Failed", "message": "<error>"}`.
     - `lagged`: the server's broadcast channel dropped events because this connection fell behind, data
     `{"skipped": <int>}`. Reconnect to resync — the dropped events are not replayed.
