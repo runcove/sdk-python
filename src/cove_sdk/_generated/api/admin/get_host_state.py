@@ -88,10 +88,12 @@ def sync_detailed(
     has this process.
     - `broadcast_lag` — per (channel, consumer) counts of events dropped because that consumer fell
     behind. Names which consumer is lagging and by how much.
-    - `embedded_agent_version` — the version of the guest agent this daemon embeds for hot-patching, or
-    `null` when it cannot hot-patch: the build embeds none, or the daemon could not extract it at
-    startup (`POST /api/admin/update-agents` can still push an uploaded binary). A VM whose agent
+    - `embedded_agent_version` — the version of the guest agent this build embeds, or `null` when it
+    embeds none. It stays set when the daemon could not extract the agent at startup. A VM whose agent
     reports another version is not running the host's agent.
+    - `agent_hot_patch` — whether this daemon can hot-patch guests with the embedded agent: `false` when
+    the build embeds none or the daemon could not extract it at startup (`POST /api/admin/update-agents`
+    can still push an uploaded binary).
     - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means
@@ -142,10 +144,12 @@ def sync(
     has this process.
     - `broadcast_lag` — per (channel, consumer) counts of events dropped because that consumer fell
     behind. Names which consumer is lagging and by how much.
-    - `embedded_agent_version` — the version of the guest agent this daemon embeds for hot-patching, or
-    `null` when it cannot hot-patch: the build embeds none, or the daemon could not extract it at
-    startup (`POST /api/admin/update-agents` can still push an uploaded binary). A VM whose agent
+    - `embedded_agent_version` — the version of the guest agent this build embeds, or `null` when it
+    embeds none. It stays set when the daemon could not extract the agent at startup. A VM whose agent
     reports another version is not running the host's agent.
+    - `agent_hot_patch` — whether this daemon can hot-patch guests with the embedded agent: `false` when
+    the build embeds none or the daemon could not extract it at startup (`POST /api/admin/update-agents`
+    can still push an uploaded binary).
     - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means
@@ -192,10 +196,12 @@ async def asyncio_detailed(
     has this process.
     - `broadcast_lag` — per (channel, consumer) counts of events dropped because that consumer fell
     behind. Names which consumer is lagging and by how much.
-    - `embedded_agent_version` — the version of the guest agent this daemon embeds for hot-patching, or
-    `null` when it cannot hot-patch: the build embeds none, or the daemon could not extract it at
-    startup (`POST /api/admin/update-agents` can still push an uploaded binary). A VM whose agent
+    - `embedded_agent_version` — the version of the guest agent this build embeds, or `null` when it
+    embeds none. It stays set when the daemon could not extract the agent at startup. A VM whose agent
     reports another version is not running the host's agent.
+    - `agent_hot_patch` — whether this daemon can hot-patch guests with the embedded agent: `false` when
+    the build embeds none or the daemon could not extract it at startup (`POST /api/admin/update-agents`
+    can still push an uploaded binary).
     - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means
@@ -244,10 +250,12 @@ async def asyncio(
     has this process.
     - `broadcast_lag` — per (channel, consumer) counts of events dropped because that consumer fell
     behind. Names which consumer is lagging and by how much.
-    - `embedded_agent_version` — the version of the guest agent this daemon embeds for hot-patching, or
-    `null` when it cannot hot-patch: the build embeds none, or the daemon could not extract it at
-    startup (`POST /api/admin/update-agents` can still push an uploaded binary). A VM whose agent
+    - `embedded_agent_version` — the version of the guest agent this build embeds, or `null` when it
+    embeds none. It stays set when the daemon could not extract the agent at startup. A VM whose agent
     reports another version is not running the host's agent.
+    - `agent_hot_patch` — whether this daemon can hot-patch guests with the embedded agent: `false` when
+    the build embeds none or the daemon could not extract it at startup (`POST /api/admin/update-agents`
+    can still push an uploaded binary).
     - `key_presentations_ignored_total` — tokens presented to `POST /api/api-keys/revoke` this process
     that revoked nothing: not a key, no matching key, or a key already revoked. Those presentations
     write no audit row (only a revocation does), so this is where they show. A sudden climb means

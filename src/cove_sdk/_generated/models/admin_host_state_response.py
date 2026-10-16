@@ -46,10 +46,14 @@ class AdminHostStateResponse:
               `GET /admin/checkpoints[?orphaned=true]` closes.
           snapshot_images (list[SnapshotImageUsage]): Per-image snapshot disk usage (version-dir count + bytes).
           ttl_pending_count (int):
-          embedded_agent_version (None | str | Unset): Version of the guest agent this daemon hot-patches with, or `None`
-              when it cannot hot-patch: the build embeds none, or the daemon could
-              not extract it at startup (`hot_patch_agent_version`). The admin
-              Guest Agents page compares each VM's reported version against it.
+          agent_hot_patch (bool | Unset): Whether this daemon can hot-patch guests with the embedded agent:
+              false when the build embeds none or the daemon could not extract it
+              at startup.
+          embedded_agent_version (None | str | Unset): Version of the guest agent this build embeds, or `None` when it
+              embeds none. It stays set when the daemon could not extract the agent
+              at startup (`agent_hot_patch` then says so). The admin Guest Agents
+              page and the Overview's Out of date count compare each VM's reported
+              version against it.
           key_presentations_ignored_total (int | Unset): Presentations to `POST /api/api-keys/revoke` this process
               answered
               that revoked nothing (not a key, no matching key, already revoked).
@@ -71,6 +75,7 @@ class AdminHostStateResponse:
     orphaned_checkpoint_count: int
     snapshot_images: list[SnapshotImageUsage]
     ttl_pending_count: int
+    agent_hot_patch: bool | Unset = UNSET
     embedded_agent_version: None | str | Unset = UNSET
     key_presentations_ignored_total: int | Unset = UNSET
     request_refusals: list[RequestRefusalEntry] | Unset = UNSET
@@ -97,6 +102,8 @@ class AdminHostStateResponse:
             snapshot_images.append(snapshot_images_item)
 
         ttl_pending_count = self.ttl_pending_count
+
+        agent_hot_patch = self.agent_hot_patch
 
         embedded_agent_version: None | str | Unset
         if isinstance(self.embedded_agent_version, Unset):
@@ -133,6 +140,8 @@ class AdminHostStateResponse:
                 "ttl_pending_count": ttl_pending_count,
             }
         )
+        if agent_hot_patch is not UNSET:
+            field_dict["agent_hot_patch"] = agent_hot_patch
         if embedded_agent_version is not UNSET:
             field_dict["embedded_agent_version"] = embedded_agent_version
         if key_presentations_ignored_total is not UNSET:
@@ -177,6 +186,8 @@ class AdminHostStateResponse:
             snapshot_images.append(snapshot_images_item)
 
         ttl_pending_count = d.pop("ttl_pending_count")
+
+        agent_hot_patch = d.pop("agent_hot_patch", UNSET)
 
         def _parse_embedded_agent_version(data: object) -> None | str | Unset:
             if data is None:
@@ -232,6 +243,7 @@ class AdminHostStateResponse:
             orphaned_checkpoint_count=orphaned_checkpoint_count,
             snapshot_images=snapshot_images,
             ttl_pending_count=ttl_pending_count,
+            agent_hot_patch=agent_hot_patch,
             embedded_agent_version=embedded_agent_version,
             key_presentations_ignored_total=key_presentations_ignored_total,
             request_refusals=request_refusals,
