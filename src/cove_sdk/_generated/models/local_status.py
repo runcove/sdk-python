@@ -32,6 +32,9 @@ class LocalStatus:
                 are admitted against (VZ wires guest memory). Absent when the Mac's
                 RAM couldn't be read at daemon start.
             image_update (ImageUpdate | None | Unset):
+            low_disk_free_bytes (int | None | Unset): The data volume's free bytes, present only while they are below
+                10 GiB. A Mac's VM disks are thin: each takes space
+                as its guest writes, so a Mac running low can fail a guest's writes.
             network_owner_gateway (None | str | Unset): The network owner's gateway when it answers its control socket;
                 absent when it doesn't.
             shadowing_routes (list[ShadowingRoute] | Unset): Another program's routes that take some of the VM subnet away
@@ -45,6 +48,7 @@ class LocalStatus:
     bastion_unavailable: None | str | Unset = UNSET
     guest_ram_cap_mb: int | None | Unset = UNSET
     image_update: ImageUpdate | None | Unset = UNSET
+    low_disk_free_bytes: int | None | Unset = UNSET
     network_owner_gateway: None | str | Unset = UNSET
     shadowing_routes: list[ShadowingRoute] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -78,6 +82,12 @@ class LocalStatus:
         else:
             image_update = self.image_update
 
+        low_disk_free_bytes: int | None | Unset
+        if isinstance(self.low_disk_free_bytes, Unset):
+            low_disk_free_bytes = UNSET
+        else:
+            low_disk_free_bytes = self.low_disk_free_bytes
+
         network_owner_gateway: None | str | Unset
         if isinstance(self.network_owner_gateway, Unset):
             network_owner_gateway = UNSET
@@ -102,6 +112,8 @@ class LocalStatus:
             field_dict["guest_ram_cap_mb"] = guest_ram_cap_mb
         if image_update is not UNSET:
             field_dict["image_update"] = image_update
+        if low_disk_free_bytes is not UNSET:
+            field_dict["low_disk_free_bytes"] = low_disk_free_bytes
         if network_owner_gateway is not UNSET:
             field_dict["network_owner_gateway"] = network_owner_gateway
         if shadowing_routes is not UNSET:
@@ -162,6 +174,17 @@ class LocalStatus:
 
         image_update = _parse_image_update(d.pop("image_update", UNSET))
 
+        def _parse_low_disk_free_bytes(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        low_disk_free_bytes = _parse_low_disk_free_bytes(
+            d.pop("low_disk_free_bytes", UNSET)
+        )
+
         def _parse_network_owner_gateway(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -189,6 +212,7 @@ class LocalStatus:
             bastion_unavailable=bastion_unavailable,
             guest_ram_cap_mb=guest_ram_cap_mb,
             image_update=image_update,
+            low_disk_free_bytes=low_disk_free_bytes,
             network_owner_gateway=network_owner_gateway,
             shadowing_routes=shadowing_routes,
         )
