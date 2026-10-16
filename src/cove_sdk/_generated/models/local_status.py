@@ -11,6 +11,7 @@ from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.image_update import ImageUpdate
+    from ..models.shadowing_route import ShadowingRoute
 
 
 T = TypeVar("T", bound="LocalStatus")
@@ -33,6 +34,11 @@ class LocalStatus:
             image_update (ImageUpdate | None | Unset):
             network_owner_gateway (None | str | Unset): The network owner's gateway when it answers its control socket;
                 absent when it doesn't.
+            shadowing_routes (list[ShadowingRoute] | Unset): Another program's routes that take some of the VM subnet away
+                from
+                vmnet's interface, as the daemon last found them (after its startup
+                pass, then every 30 s). Empty when there are none, and from older
+                daemons.
     """
 
     bastion_ssh_port: int | None | Unset = UNSET
@@ -40,6 +46,7 @@ class LocalStatus:
     guest_ram_cap_mb: int | None | Unset = UNSET
     image_update: ImageUpdate | None | Unset = UNSET
     network_owner_gateway: None | str | Unset = UNSET
+    shadowing_routes: list[ShadowingRoute] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -77,6 +84,13 @@ class LocalStatus:
         else:
             network_owner_gateway = self.network_owner_gateway
 
+        shadowing_routes: list[dict[str, Any]] | Unset = UNSET
+        if not isinstance(self.shadowing_routes, Unset):
+            shadowing_routes = []
+            for shadowing_routes_item_data in self.shadowing_routes:
+                shadowing_routes_item = shadowing_routes_item_data.to_dict()
+                shadowing_routes.append(shadowing_routes_item)
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -90,12 +104,15 @@ class LocalStatus:
             field_dict["image_update"] = image_update
         if network_owner_gateway is not UNSET:
             field_dict["network_owner_gateway"] = network_owner_gateway
+        if shadowing_routes is not UNSET:
+            field_dict["shadowing_routes"] = shadowing_routes
 
         return field_dict
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.image_update import ImageUpdate
+        from ..models.shadowing_route import ShadowingRoute
 
         d = dict(src_dict)
 
@@ -156,12 +173,24 @@ class LocalStatus:
             d.pop("network_owner_gateway", UNSET)
         )
 
+        _shadowing_routes = d.pop("shadowing_routes", UNSET)
+        shadowing_routes: list[ShadowingRoute] | Unset = UNSET
+        if _shadowing_routes is not UNSET:
+            shadowing_routes = []
+            for shadowing_routes_item_data in _shadowing_routes:
+                shadowing_routes_item = ShadowingRoute.from_dict(
+                    shadowing_routes_item_data
+                )
+
+                shadowing_routes.append(shadowing_routes_item)
+
         local_status = cls(
             bastion_ssh_port=bastion_ssh_port,
             bastion_unavailable=bastion_unavailable,
             guest_ram_cap_mb=guest_ram_cap_mb,
             image_update=image_update,
             network_owner_gateway=network_owner_gateway,
+            shadowing_routes=shadowing_routes,
         )
 
         local_status.additional_properties = d

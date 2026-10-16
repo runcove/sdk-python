@@ -236,6 +236,7 @@ from .set_public_request import SetPublicRequest
 from .set_secret_request import SetSecretRequest
 from .set_tag_request import SetTagRequest
 from .set_vm_team_request import SetVmTeamRequest
+from .shadowing_route import ShadowingRoute
 from .share_entry import ShareEntry
 from .shared_vm_summary import SharedVmSummary
 from .snapshot_image_usage import SnapshotImageUsage
@@ -522,6 +523,7 @@ __all__ = (
     "SetSecretRequest",
     "SetTagRequest",
     "SetVmTeamRequest",
+    "ShadowingRoute",
     "ShareEntry",
     "SharedVmSummary",
     "SnapshotImageUsage",
