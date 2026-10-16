@@ -3,7 +3,7 @@
 Written once for the async client; ``scripts/sync-sdk-python.sh`` mirrors it to ``_sync/`` with
 unasync, so this module imports no colour-specific primitive (``tests/test_unit_static.py``).
 
-What lives here (spec section 3.3.1, each a port of the TypeScript SDK's ``http.ts``):
+What lives here (each a port of the TypeScript SDK's ``http.ts``):
 
 - the path-segment guard (:func:`check_segment`) and the one encoder of hand-written paths
   (:func:`api_path`);
