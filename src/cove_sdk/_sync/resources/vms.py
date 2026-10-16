@@ -276,7 +276,11 @@ class Vms:
         timeout: CallTimeout = CLIENT_DEFAULT,
         **fields: Any,
     ) -> ResizeResult:
-        """Resize ``cpus``/``memory_mb`` (running) or grow ``disk_size_gb`` (stopped). Scope ``vms:write``."""
+        """Resize ``cpus``/``memory_mb`` (running) or grow ``disk_size_gb`` (stopped). Scope ``vms:write``.
+
+        ``restart=True`` lets it reboot the VM to go below the vCPUs it booted with; without it
+        a resize never reboots.
+        """
         req = build_body(ResizeRequest, body, fields)
         result = self._t.call(resize_vm, path={"name": name}, body=req, timeout=timeout)
         return cast(ResizeResult, result)

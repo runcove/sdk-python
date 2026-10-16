@@ -212,6 +212,7 @@ from .request_refusal_entry import RequestRefusalEntry
 from .reservation_kind import ReservationKind
 from .reservation_ref import ReservationRef
 from .resize_request import ResizeRequest
+from .resize_restart import ResizeRestart
 from .resize_result import ResizeResult
 from .restore_vm_ref import RestoreVmRef
 from .restore_vm_result_dto import RestoreVmResultDto
@@ -499,6 +500,7 @@ __all__ = (
     "ReservationKind",
     "ReservationRef",
     "ResizeRequest",
+    "ResizeRestart",
     "ResizeResult",
     "RestoreVmRef",
     "RestoreVmResultDto",

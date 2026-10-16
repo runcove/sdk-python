@@ -7,6 +7,7 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
+from ..models.resize_restart import ResizeRestart
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="ResizeResult")
@@ -23,12 +24,14 @@ class ResizeResult:
             actual_memory_mb (int):
             partial (bool):
             reason (None | str | Unset):
+            restart (None | ResizeRestart | Unset):
     """
 
     actual_cpus: int
     actual_memory_mb: int
     partial: bool
     reason: None | str | Unset = UNSET
+    restart: None | ResizeRestart | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -44,6 +47,14 @@ class ResizeResult:
         else:
             reason = self.reason
 
+        restart: None | str | Unset
+        if isinstance(self.restart, Unset):
+            restart = UNSET
+        elif isinstance(self.restart, ResizeRestart):
+            restart = self.restart.value
+        else:
+            restart = self.restart
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -55,6 +66,8 @@ class ResizeResult:
         )
         if reason is not UNSET:
             field_dict["reason"] = reason
+        if restart is not UNSET:
+            field_dict["restart"] = restart
 
         return field_dict
 
@@ -76,11 +89,29 @@ class ResizeResult:
 
         reason = _parse_reason(d.pop("reason", UNSET))
 
+        def _parse_restart(data: object) -> None | ResizeRestart | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                restart_type_1 = ResizeRestart(data)
+
+                return restart_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | ResizeRestart | Unset, data)
+
+        restart = _parse_restart(d.pop("restart", UNSET))
+
         resize_result = cls(
             actual_cpus=actual_cpus,
             actual_memory_mb=actual_memory_mb,
             partial=partial,
             reason=reason,
+            restart=restart,
         )
 
         resize_result.additional_properties = d

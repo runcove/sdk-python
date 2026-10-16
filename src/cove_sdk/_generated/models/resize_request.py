@@ -25,11 +25,19 @@ class ResizeRequest:
             cpus (int | None | Unset):
             disk_size_gb (int | None | Unset):
             memory_mb (int | None | Unset):
+            restart (bool | Unset): Reboot the VM when the new vCPU count is below what its running boot
+                allows (both the vCPUs it runs now and the disk queues it booted
+                with), which a running VM cannot take live: Cove stops it gracefully,
+                sets the new boot size and starts it again. Off by default, and a
+                request without it never reboots. Any other change is made live with
+                no reboot; a stopped VM takes the new size and stays stopped. Not with
+                `disk_size_gb`.
     """
 
     cpus: int | None | Unset = UNSET
     disk_size_gb: int | None | Unset = UNSET
     memory_mb: int | None | Unset = UNSET
+    restart: bool | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -51,6 +59,8 @@ class ResizeRequest:
         else:
             memory_mb = self.memory_mb
 
+        restart = self.restart
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -60,6 +70,8 @@ class ResizeRequest:
             field_dict["disk_size_gb"] = disk_size_gb
         if memory_mb is not UNSET:
             field_dict["memory_mb"] = memory_mb
+        if restart is not UNSET:
+            field_dict["restart"] = restart
 
         return field_dict
 
@@ -94,10 +106,13 @@ class ResizeRequest:
 
         memory_mb = _parse_memory_mb(d.pop("memory_mb", UNSET))
 
+        restart = d.pop("restart", UNSET)
+
         resize_request = cls(
             cpus=cpus,
             disk_size_gb=disk_size_gb,
             memory_mb=memory_mb,
+            restart=restart,
         )
 
         resize_request.additional_properties = d

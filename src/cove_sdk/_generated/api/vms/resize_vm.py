@@ -363,6 +363,17 @@ def sync_detailed(
     disk grow returns a synthetic `ResizeResult` (`actual_cpus`/`actual_memory_mb` zeroed, `reason`
     describing the grow) rather than the real converged CPU/memory values.
 
+    `restart: true` lets the resize reboot the VM, and only when it must: a running VM cannot go below
+    both the vCPUs it runs and the disk queues its boot set up, so Cove stops it gracefully (forced
+    after the stop timeout), writes the new boot size and starts it cold. Any other change is resized
+    live with no reboot; a stopped VM takes the new size and stays stopped; any other state is refused
+    (409). Growth the quota or host cannot take is refused before the stop. The result's `restart` says
+    which (`restarted`, `not_needed`, `stopped`). Memory asked for in the same request is applied after
+    the start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps
+    the new size, is left as a failed start leaves it, and the 500 says it was resized but failed to
+    start. A request with `restart` can take a stop plus a cold start to answer. Without `restart` a
+    resize never reboots.
+
     Args:
         name (str):
         body (ResizeRequest): POST /vms/{name}/resize request body. Either field may be `None` to
@@ -429,6 +440,17 @@ def sync(
     disk grow returns a synthetic `ResizeResult` (`actual_cpus`/`actual_memory_mb` zeroed, `reason`
     describing the grow) rather than the real converged CPU/memory values.
 
+    `restart: true` lets the resize reboot the VM, and only when it must: a running VM cannot go below
+    both the vCPUs it runs and the disk queues its boot set up, so Cove stops it gracefully (forced
+    after the stop timeout), writes the new boot size and starts it cold. Any other change is resized
+    live with no reboot; a stopped VM takes the new size and stays stopped; any other state is refused
+    (409). Growth the quota or host cannot take is refused before the stop. The result's `restart` says
+    which (`restarted`, `not_needed`, `stopped`). Memory asked for in the same request is applied after
+    the start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps
+    the new size, is left as a failed start leaves it, and the 500 says it was resized but failed to
+    start. A request with `restart` can take a stop plus a cold start to answer. Without `restart` a
+    resize never reboots.
+
     Args:
         name (str):
         body (ResizeRequest): POST /vms/{name}/resize request body. Either field may be `None` to
@@ -488,6 +510,17 @@ async def asyncio_detailed(
     CPU/RAM resize is running-VM-only. `memory_mb` must be a multiple of 2 (virtio-mem block size). A
     disk grow returns a synthetic `ResizeResult` (`actual_cpus`/`actual_memory_mb` zeroed, `reason`
     describing the grow) rather than the real converged CPU/memory values.
+
+    `restart: true` lets the resize reboot the VM, and only when it must: a running VM cannot go below
+    both the vCPUs it runs and the disk queues its boot set up, so Cove stops it gracefully (forced
+    after the stop timeout), writes the new boot size and starts it cold. Any other change is resized
+    live with no reboot; a stopped VM takes the new size and stays stopped; any other state is refused
+    (409). Growth the quota or host cannot take is refused before the stop. The result's `restart` says
+    which (`restarted`, `not_needed`, `stopped`). Memory asked for in the same request is applied after
+    the start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps
+    the new size, is left as a failed start leaves it, and the 500 says it was resized but failed to
+    start. A request with `restart` can take a stop plus a cold start to answer. Without `restart` a
+    resize never reboots.
 
     Args:
         name (str):
@@ -552,6 +585,17 @@ async def asyncio(
     CPU/RAM resize is running-VM-only. `memory_mb` must be a multiple of 2 (virtio-mem block size). A
     disk grow returns a synthetic `ResizeResult` (`actual_cpus`/`actual_memory_mb` zeroed, `reason`
     describing the grow) rather than the real converged CPU/memory values.
+
+    `restart: true` lets the resize reboot the VM, and only when it must: a running VM cannot go below
+    both the vCPUs it runs and the disk queues its boot set up, so Cove stops it gracefully (forced
+    after the stop timeout), writes the new boot size and starts it cold. Any other change is resized
+    live with no reboot; a stopped VM takes the new size and stays stopped; any other state is refused
+    (409). Growth the quota or host cannot take is refused before the stop. The result's `restart` says
+    which (`restarted`, `not_needed`, `stopped`). Memory asked for in the same request is applied after
+    the start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps
+    the new size, is left as a failed start leaves it, and the 500 says it was resized but failed to
+    start. A request with `restart` can take a stop plus a cold start to answer. Without `restart` a
+    resize never reboots.
 
     Args:
         name (str):
