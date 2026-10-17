@@ -16,8 +16,12 @@ T = TypeVar("T", bound="ResizeResult")
 @_attrs_define
 class ResizeResult:
     """POST /vms/{name}/resize response body. `actual_cpus` / `actual_memory_mb`
-    reflect what the hypervisor + guest converged to (which may differ from
-    the request when shrink hits pinned pages — `partial=true`, `reason=Some`).
+    reflect what the hypervisor + guest converged to, which may differ from
+    the request: then `partial` is true and `reason` says why. That is a
+    memory shrink the guest could not give back (pinned pages), or, with
+    `restart`, a grow after the restart's start that failed (`restart` is
+    `restarted`, the VM runs at its new boot size, and the resize sent again
+    without `restart` retries the grow).
 
         Attributes:
             actual_cpus (int):

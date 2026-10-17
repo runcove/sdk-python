@@ -280,6 +280,11 @@ class Vms:
 
         ``restart=True`` lets it reboot the VM to go below the vCPUs it booted with; without it
         a resize never reboots.
+
+        ``partial`` true (with ``reason``) means the VM did not reach the size asked for: a
+        memory shrink the guest could not give back, or, with ``restart``, a grow after the
+        restart's start that failed (``restart`` is ``"restarted"``; resize again without
+        ``restart`` to retry the grow).
         """
         req = build_body(ResizeRequest, body, fields)
         result = self._t.call(resize_vm, path={"name": name}, body=req, timeout=timeout)

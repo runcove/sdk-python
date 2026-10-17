@@ -371,8 +371,18 @@ def sync_detailed(
     which (`restarted`, `not_needed`, `stopped`). Memory asked for in the same request is applied after
     the start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps
     the new size, is left as a failed start leaves it, and the 500 says it was resized but failed to
-    start. A request with `restart` can take a stop plus a cold start to answer. Without `restart` a
-    resize never reboots.
+    start. If the VM starts but the grow after the start (above its boot vCPUs or memory) fails, the
+    answer is still 200, with `restart: restarted`, `partial: true`, the size it runs now, and `reason`
+    saying the grow after the start failed and why; send the resize again without `restart` to retry the
+    grow. On a Mac, a reboot is refused with 503 when no network owner serves (409 while a VM runs on
+    the other datapath), as a start is: before the stop, nothing changes; if the check fails again after
+    the stop, the VM stays stopped at its new size and the error says so. A stopped VM, or a resize that
+    needs no reboot, is not checked.
+
+    A request with `restart` can take a stop plus a cold start to answer, longer than a proxy in front
+    of Cove may keep the request open; the resize goes on whether or not anyone waits. After a timeout
+    or a proxy's 502 to 504, read the VM (`GET /api/vms/{name}`) before sending it again. Without
+    `restart` a resize never reboots.
 
     Args:
         name (str):
@@ -448,8 +458,18 @@ def sync(
     which (`restarted`, `not_needed`, `stopped`). Memory asked for in the same request is applied after
     the start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps
     the new size, is left as a failed start leaves it, and the 500 says it was resized but failed to
-    start. A request with `restart` can take a stop plus a cold start to answer. Without `restart` a
-    resize never reboots.
+    start. If the VM starts but the grow after the start (above its boot vCPUs or memory) fails, the
+    answer is still 200, with `restart: restarted`, `partial: true`, the size it runs now, and `reason`
+    saying the grow after the start failed and why; send the resize again without `restart` to retry the
+    grow. On a Mac, a reboot is refused with 503 when no network owner serves (409 while a VM runs on
+    the other datapath), as a start is: before the stop, nothing changes; if the check fails again after
+    the stop, the VM stays stopped at its new size and the error says so. A stopped VM, or a resize that
+    needs no reboot, is not checked.
+
+    A request with `restart` can take a stop plus a cold start to answer, longer than a proxy in front
+    of Cove may keep the request open; the resize goes on whether or not anyone waits. After a timeout
+    or a proxy's 502 to 504, read the VM (`GET /api/vms/{name}`) before sending it again. Without
+    `restart` a resize never reboots.
 
     Args:
         name (str):
@@ -519,8 +539,18 @@ async def asyncio_detailed(
     which (`restarted`, `not_needed`, `stopped`). Memory asked for in the same request is applied after
     the start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps
     the new size, is left as a failed start leaves it, and the 500 says it was resized but failed to
-    start. A request with `restart` can take a stop plus a cold start to answer. Without `restart` a
-    resize never reboots.
+    start. If the VM starts but the grow after the start (above its boot vCPUs or memory) fails, the
+    answer is still 200, with `restart: restarted`, `partial: true`, the size it runs now, and `reason`
+    saying the grow after the start failed and why; send the resize again without `restart` to retry the
+    grow. On a Mac, a reboot is refused with 503 when no network owner serves (409 while a VM runs on
+    the other datapath), as a start is: before the stop, nothing changes; if the check fails again after
+    the stop, the VM stays stopped at its new size and the error says so. A stopped VM, or a resize that
+    needs no reboot, is not checked.
+
+    A request with `restart` can take a stop plus a cold start to answer, longer than a proxy in front
+    of Cove may keep the request open; the resize goes on whether or not anyone waits. After a timeout
+    or a proxy's 502 to 504, read the VM (`GET /api/vms/{name}`) before sending it again. Without
+    `restart` a resize never reboots.
 
     Args:
         name (str):
@@ -594,8 +624,18 @@ async def asyncio(
     which (`restarted`, `not_needed`, `stopped`). Memory asked for in the same request is applied after
     the start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps
     the new size, is left as a failed start leaves it, and the 500 says it was resized but failed to
-    start. A request with `restart` can take a stop plus a cold start to answer. Without `restart` a
-    resize never reboots.
+    start. If the VM starts but the grow after the start (above its boot vCPUs or memory) fails, the
+    answer is still 200, with `restart: restarted`, `partial: true`, the size it runs now, and `reason`
+    saying the grow after the start failed and why; send the resize again without `restart` to retry the
+    grow. On a Mac, a reboot is refused with 503 when no network owner serves (409 while a VM runs on
+    the other datapath), as a start is: before the stop, nothing changes; if the check fails again after
+    the stop, the VM stays stopped at its new size and the error says so. A stopped VM, or a resize that
+    needs no reboot, is not checked.
+
+    A request with `restart` can take a stop plus a cold start to answer, longer than a proxy in front
+    of Cove may keep the request open; the resize goes on whether or not anyone waits. After a timeout
+    or a proxy's 502 to 504, read the VM (`GET /api/vms/{name}`) before sending it again. Without
+    `restart` a resize never reboots.
 
     Args:
         name (str):
