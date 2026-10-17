@@ -40,7 +40,7 @@ class AdminHostStateResponse:
           orphaned_checkpoint_bytes (int): Total on-disk bytes for the orphaned checkpoints counted above
               (best-effort fs scan; same informational-gauge contract as
               `snapshot_images`).
-          orphaned_checkpoint_count (int): Count of `Available` checkpoints whose source VM is gone
+          orphaned_checkpoint_count (int): Count of checkpoints (any state) whose source VM is gone
               (`checkpoints.vm_id IS NULL`) — the disk cost of the
               admin-checkpoint-reclamation gap this handler's sibling
               `GET /admin/checkpoints[?orphaned=true]` closes.

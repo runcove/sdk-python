@@ -27,8 +27,8 @@ class Checkpoint:
             state (CheckpointState): Where a checkpoint is in its life. Lowercase on the wire, like a VM's
                 state.
 
-                The listings and lookups only ever return `available` checkpoints; the
-                other states exist so a client can name every value the field may hold.
+                Only the administrator's listing returns checkpoints in other states;
+                every other listing and lookup returns `available` checkpoints only.
             vm_id (str): VM the checkpoint was taken from.
             clone_refcount (int | Unset): Number of live clones depending on this checkpoint. `> 0` blocks
                 delete with 409.
