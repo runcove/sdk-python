@@ -131,6 +131,12 @@ def sync_detailed(
     it until its next lifecycle event (start, resume, wake). Use `POST /vms/{name}/secrets/{key}/rotate`
     instead for an acked, immediate push to a running VM.
 
+    A `file` secret appears inside the VM at `/run/cove/secrets/current/<key>` (tmpfs, mode 0400, root
+    only); a `fifo` secret is a named pipe at the same path (mode 0600, root only). `current` is a link
+    to a directory whose name changes every time the guest agent restarts, so always use the `current`
+    path; on a VM whose image predates that link, the secret is in a randomly named directory under
+    `/run/cove/secrets/`, and `ls /run/cove/secrets/*/<key>` finds it.
+
     `exposure` (`file` | `fifo` | `env`, default `file`) and `lifetime` (`persistent` | `setup_only` |
     `ttl`, default `persistent`) select how and how long the value stays reachable in the guest;
     `target_unit` is required when `exposure = env`, `ttl_seconds` when `lifetime = ttl`.
@@ -183,6 +189,12 @@ def sync(
     it until its next lifecycle event (start, resume, wake). Use `POST /vms/{name}/secrets/{key}/rotate`
     instead for an acked, immediate push to a running VM.
 
+    A `file` secret appears inside the VM at `/run/cove/secrets/current/<key>` (tmpfs, mode 0400, root
+    only); a `fifo` secret is a named pipe at the same path (mode 0600, root only). `current` is a link
+    to a directory whose name changes every time the guest agent restarts, so always use the `current`
+    path; on a VM whose image predates that link, the secret is in a randomly named directory under
+    `/run/cove/secrets/`, and `ls /run/cove/secrets/*/<key>` finds it.
+
     `exposure` (`file` | `fifo` | `env`, default `file`) and `lifetime` (`persistent` | `setup_only` |
     `ttl`, default `persistent`) select how and how long the value stays reachable in the guest;
     `target_unit` is required when `exposure = env`, `ttl_seconds` when `lifetime = ttl`.
@@ -229,6 +241,12 @@ async def asyncio_detailed(
     delivery: a fresh create/claim picks it up immediately, but an already-running VM does not receive
     it until its next lifecycle event (start, resume, wake). Use `POST /vms/{name}/secrets/{key}/rotate`
     instead for an acked, immediate push to a running VM.
+
+    A `file` secret appears inside the VM at `/run/cove/secrets/current/<key>` (tmpfs, mode 0400, root
+    only); a `fifo` secret is a named pipe at the same path (mode 0600, root only). `current` is a link
+    to a directory whose name changes every time the guest agent restarts, so always use the `current`
+    path; on a VM whose image predates that link, the secret is in a randomly named directory under
+    `/run/cove/secrets/`, and `ls /run/cove/secrets/*/<key>` finds it.
 
     `exposure` (`file` | `fifo` | `env`, default `file`) and `lifetime` (`persistent` | `setup_only` |
     `ttl`, default `persistent`) select how and how long the value stays reachable in the guest;
@@ -279,6 +297,12 @@ async def asyncio(
     delivery: a fresh create/claim picks it up immediately, but an already-running VM does not receive
     it until its next lifecycle event (start, resume, wake). Use `POST /vms/{name}/secrets/{key}/rotate`
     instead for an acked, immediate push to a running VM.
+
+    A `file` secret appears inside the VM at `/run/cove/secrets/current/<key>` (tmpfs, mode 0400, root
+    only); a `fifo` secret is a named pipe at the same path (mode 0600, root only). `current` is a link
+    to a directory whose name changes every time the guest agent restarts, so always use the `current`
+    path; on a VM whose image predates that link, the secret is in a randomly named directory under
+    `/run/cove/secrets/`, and `ls /run/cove/secrets/*/<key>` finds it.
 
     `exposure` (`file` | `fifo` | `env`, default `file`) and `lifetime` (`persistent` | `setup_only` |
     `ttl`, default `persistent`) select how and how long the value stays reachable in the guest;
