@@ -277,8 +277,10 @@ class Vms:
 
         ``partial`` true (with ``reason``) means the VM did not reach the size asked for: a
         memory shrink the guest could not give back, or, with ``restart``, a grow after the
-        restart's start that failed (``restart`` is ``"restarted"``; resize again without
-        ``restart`` to retry the grow).
+        restart's start that failed (``restart`` is ``"restarted"``; off a Mac, resize again
+        without ``restart`` to retry the grow). A Mac starts the VM at its new vCPU count and
+        keeps its memory, so nothing grows after the start there, and a resize without
+        ``restart`` cannot make up a size the VM came up without.
         """
         req = build_body(ResizeRequest, body, fields)
         result = await self._t.call(
