@@ -30,8 +30,10 @@ class ResizeRequest:
                 with), which a running VM cannot take live: Cove stops it gracefully,
                 sets the new boot size and starts it again. Off by default, and a
                 request without it never reboots. Any other change is made live with
-                no reboot; a stopped VM takes the new size and stays stopped. Not with
-                `disk_size_gb`.
+                no reboot; a stopped VM takes the new size and stays stopped. A Mac
+                has no live resize: there it reboots a running VM for any new vCPU
+                count, leaves one asked for the vCPUs it has as it is, and never
+                changes memory. Not with `disk_size_gb`.
     """
 
     cpus: int | None | Unset = UNSET

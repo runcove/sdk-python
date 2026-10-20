@@ -20,8 +20,11 @@ class ResizeResult:
     the request: then `partial` is true and `reason` says why. That is a
     memory shrink the guest could not give back (pinned pages), or, with
     `restart`, a grow after the restart's start that failed (`restart` is
-    `restarted`, the VM runs at its new boot size, and the resize sent again
-    without `restart` retries the grow).
+    `restarted` and the VM runs at its new boot size). Off a Mac, the resize
+    sent again without `restart` retries that grow; a Mac starts the VM at
+    its new vCPU count and keeps its memory, so it is partial only when the
+    VM comes up at another size, which its refusal of a live resize cannot
+    make up.
 
         Attributes:
             actual_cpus (int):
