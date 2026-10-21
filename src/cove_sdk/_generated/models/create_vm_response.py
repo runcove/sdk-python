@@ -19,10 +19,14 @@ class CreateVmResponse:
     Attributes:
         name (str):
         vm_id (None | str | Unset):
+        warnings (list[str] | Unset): Things the person should know about the create, which went ahead
+            anyway. On a Mac, a warning that the Mac is short of free memory.
+            Absent when there are none.
     """
 
     name: str
     vm_id: None | str | Unset = UNSET
+    warnings: list[str] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -34,6 +38,10 @@ class CreateVmResponse:
         else:
             vm_id = self.vm_id
 
+        warnings: list[str] | Unset = UNSET
+        if not isinstance(self.warnings, Unset):
+            warnings = self.warnings
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -43,6 +51,8 @@ class CreateVmResponse:
         )
         if vm_id is not UNSET:
             field_dict["vm_id"] = vm_id
+        if warnings is not UNSET:
+            field_dict["warnings"] = warnings
 
         return field_dict
 
@@ -60,9 +70,12 @@ class CreateVmResponse:
 
         vm_id = _parse_vm_id(d.pop("vm_id", UNSET))
 
+        warnings = cast(list[str], d.pop("warnings", UNSET))
+
         create_vm_response = cls(
             name=name,
             vm_id=vm_id,
+            warnings=warnings,
         )
 
         create_vm_response.additional_properties = d
