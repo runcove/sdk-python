@@ -24,6 +24,12 @@ class ResizeRequest:
         Attributes:
             cpus (int | None | Unset):
             disk_size_gb (int | None | Unset):
+            force (bool | Unset): Shrink a running VM's memory even below what its guest is using. A
+                memory shrink that would leave the guest less than its use plus
+                headroom, or whose guest memory cannot be read, is refused, naming
+                the smallest size allowed when it is known; with `force`
+                it goes ahead and the override is recorded in the VM's activity. Off
+                by default. Only with `memory_mb`, and not with `disk_size_gb`.
             memory_mb (int | None | Unset):
             restart (bool | Unset): Reboot the VM when the new vCPU count is below what its running boot
                 allows (both the vCPUs it runs now and the disk queues it booted
@@ -38,6 +44,7 @@ class ResizeRequest:
 
     cpus: int | None | Unset = UNSET
     disk_size_gb: int | None | Unset = UNSET
+    force: bool | Unset = UNSET
     memory_mb: int | None | Unset = UNSET
     restart: bool | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -55,6 +62,8 @@ class ResizeRequest:
         else:
             disk_size_gb = self.disk_size_gb
 
+        force = self.force
+
         memory_mb: int | None | Unset
         if isinstance(self.memory_mb, Unset):
             memory_mb = UNSET
@@ -70,6 +79,8 @@ class ResizeRequest:
             field_dict["cpus"] = cpus
         if disk_size_gb is not UNSET:
             field_dict["disk_size_gb"] = disk_size_gb
+        if force is not UNSET:
+            field_dict["force"] = force
         if memory_mb is not UNSET:
             field_dict["memory_mb"] = memory_mb
         if restart is not UNSET:
@@ -99,6 +110,8 @@ class ResizeRequest:
 
         disk_size_gb = _parse_disk_size_gb(d.pop("disk_size_gb", UNSET))
 
+        force = d.pop("force", UNSET)
+
         def _parse_memory_mb(data: object) -> int | None | Unset:
             if data is None:
                 return data
@@ -113,6 +126,7 @@ class ResizeRequest:
         resize_request = cls(
             cpus=cpus,
             disk_size_gb=disk_size_gb,
+            force=force,
             memory_mb=memory_mb,
             restart=restart,
         )
