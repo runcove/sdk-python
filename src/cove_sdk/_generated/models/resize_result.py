@@ -22,7 +22,7 @@ class ResizeResult:
     `restart`, a grow after the restart's start that failed (`restart` is
     `restarted` and the VM runs at its new boot size). Off a Mac, the resize
     sent again without `restart` retries that grow; a Mac starts the VM at
-    its new vCPU count and keeps its memory, so it is partial only when the
+    its new boot size (vCPUs and memory), so it is partial only when the
     VM comes up at another size, which its refusal of a live resize cannot
     make up.
 
@@ -32,6 +32,9 @@ class ResizeResult:
             partial (bool):
             reason (None | str | Unset):
             restart (None | ResizeRestart | Unset):
+            warnings (list[str] | Unset): Things the person should know about a resize that went ahead anyway.
+                On a Mac, a memory grow that leaves the Mac short of free memory.
+                Absent when there are none.
     """
 
     actual_cpus: int
@@ -39,6 +42,7 @@ class ResizeResult:
     partial: bool
     reason: None | str | Unset = UNSET
     restart: None | ResizeRestart | Unset = UNSET
+    warnings: list[str] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -62,6 +66,10 @@ class ResizeResult:
         else:
             restart = self.restart
 
+        warnings: list[str] | Unset = UNSET
+        if not isinstance(self.warnings, Unset):
+            warnings = self.warnings
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -75,6 +83,8 @@ class ResizeResult:
             field_dict["reason"] = reason
         if restart is not UNSET:
             field_dict["restart"] = restart
+        if warnings is not UNSET:
+            field_dict["warnings"] = warnings
 
         return field_dict
 
@@ -113,12 +123,15 @@ class ResizeResult:
 
         restart = _parse_restart(d.pop("restart", UNSET))
 
+        warnings = cast(list[str], d.pop("warnings", UNSET))
+
         resize_result = cls(
             actual_cpus=actual_cpus,
             actual_memory_mb=actual_memory_mb,
             partial=partial,
             reason=reason,
             restart=restart,
+            warnings=warnings,
         )
 
         resize_result.additional_properties = d

@@ -285,8 +285,10 @@ class Vms:
         memory shrink the guest could not give back, or, with ``restart``, a grow after the
         restart's start that failed (``restart`` is ``"restarted"``; off a Mac, resize again
         without ``restart`` to retry the grow). A Mac starts the VM at its new vCPU count and
-        keeps its memory, so nothing grows after the start there, and a resize without
-        ``restart`` cannot make up a size the VM came up without.
+        memory (its boot size), so nothing grows after the start there, and a resize without
+        ``restart`` cannot make up a size the VM came up without. On a Mac a running VM's
+        ``cpus`` or ``memory_mb`` change only with ``restart``; a memory grow that would leave
+        the Mac short of free memory is refused before the stop, and a warning is in ``warnings``.
         """
         req = build_body(ResizeRequest, body, fields)
         result = self._t.call(resize_vm, path={"name": name}, body=req, timeout=timeout)

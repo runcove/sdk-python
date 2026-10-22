@@ -367,21 +367,24 @@ def sync_detailed(
     both the vCPUs it runs and the disk queues its boot set up, so Cove stops it gracefully (forced
     after the stop timeout), writes the new boot size and starts it cold. Any other change is resized
     live with no reboot, except on a Mac, which has no live resize: there `restart` reboots a running VM
-    for any new vCPU count, leaves one asked for the vCPUs it has as it is, and memory never changes. A
-    stopped VM takes the new size and stays stopped; any other state is refused (409). Growth the quota
-    or host cannot take is refused before the stop. The result's `restart` says which (`restarted`,
+    for any new vCPU count or memory size, and leaves one asked for the size it has as it is. A stopped
+    VM takes the new size and stays stopped; any other state is refused (409). Growth the quota or host
+    cannot take is refused before the stop. The result's `restart` says which (`restarted`,
     `not_needed`, `stopped`). Off a Mac, memory asked for in the same request is applied after the
     start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps the
     new size, is left as a failed start leaves it, and the 500 says it was resized but failed to start.
     If the VM starts but the grow after the start (above its boot vCPUs or memory) fails, the answer is
     still 200, with `restart: restarted`, `partial: true`, the size it runs now, and `reason` saying the
     grow after the start failed and why; off a Mac, send the resize again without `restart` to retry the
-    grow. A Mac starts the VM at its new vCPU count and keeps its memory, so nothing grows after the
-    start there; should the VM come up at another size, the answer is the same `partial: true`, as the
-    live resize that would make it up is refused on a Mac. On a Mac, a reboot is refused with 503 when
-    no network owner serves (409 while a VM runs on the other datapath), as a start is: before the stop,
-    nothing changes; if the check fails again after the stop, the VM stays stopped at its new size and
-    the error says so. A stopped VM, or a resize that needs no reboot, is not checked.
+    grow. A Mac starts the VM at its new vCPU count and memory (its boot memory), so nothing grows after
+    the start there; should the VM come up at another size, the answer is the same `partial: true`, as
+    the live resize that would make it up is refused on a Mac. On a Mac, a reboot is refused with 503
+    when no network owner serves (409 while a VM runs on the other datapath), as a start is: before the
+    stop, nothing changes; if the check fails again after the stop, the VM stays stopped at its new size
+    and the error says so. A Mac's memory change on a running VM is also checked before the stop against
+    the wired-RAM cap and, for a grow, the Mac's free memory: refused with 503 `capacity_exhausted`,
+    nothing changes and the VM keeps running; under the warning level it goes ahead and the result's
+    `warnings` says so. A stopped VM, or a resize that needs no reboot, is not checked.
 
     A request with `restart` can take a stop plus a cold start to answer, longer than a proxy in front
     of Cove may keep the request open; the resize goes on whether or not anyone waits. After a timeout
@@ -458,21 +461,24 @@ def sync(
     both the vCPUs it runs and the disk queues its boot set up, so Cove stops it gracefully (forced
     after the stop timeout), writes the new boot size and starts it cold. Any other change is resized
     live with no reboot, except on a Mac, which has no live resize: there `restart` reboots a running VM
-    for any new vCPU count, leaves one asked for the vCPUs it has as it is, and memory never changes. A
-    stopped VM takes the new size and stays stopped; any other state is refused (409). Growth the quota
-    or host cannot take is refused before the stop. The result's `restart` says which (`restarted`,
+    for any new vCPU count or memory size, and leaves one asked for the size it has as it is. A stopped
+    VM takes the new size and stays stopped; any other state is refused (409). Growth the quota or host
+    cannot take is refused before the stop. The result's `restart` says which (`restarted`,
     `not_needed`, `stopped`). Off a Mac, memory asked for in the same request is applied after the
     start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps the
     new size, is left as a failed start leaves it, and the 500 says it was resized but failed to start.
     If the VM starts but the grow after the start (above its boot vCPUs or memory) fails, the answer is
     still 200, with `restart: restarted`, `partial: true`, the size it runs now, and `reason` saying the
     grow after the start failed and why; off a Mac, send the resize again without `restart` to retry the
-    grow. A Mac starts the VM at its new vCPU count and keeps its memory, so nothing grows after the
-    start there; should the VM come up at another size, the answer is the same `partial: true`, as the
-    live resize that would make it up is refused on a Mac. On a Mac, a reboot is refused with 503 when
-    no network owner serves (409 while a VM runs on the other datapath), as a start is: before the stop,
-    nothing changes; if the check fails again after the stop, the VM stays stopped at its new size and
-    the error says so. A stopped VM, or a resize that needs no reboot, is not checked.
+    grow. A Mac starts the VM at its new vCPU count and memory (its boot memory), so nothing grows after
+    the start there; should the VM come up at another size, the answer is the same `partial: true`, as
+    the live resize that would make it up is refused on a Mac. On a Mac, a reboot is refused with 503
+    when no network owner serves (409 while a VM runs on the other datapath), as a start is: before the
+    stop, nothing changes; if the check fails again after the stop, the VM stays stopped at its new size
+    and the error says so. A Mac's memory change on a running VM is also checked before the stop against
+    the wired-RAM cap and, for a grow, the Mac's free memory: refused with 503 `capacity_exhausted`,
+    nothing changes and the VM keeps running; under the warning level it goes ahead and the result's
+    `warnings` says so. A stopped VM, or a resize that needs no reboot, is not checked.
 
     A request with `restart` can take a stop plus a cold start to answer, longer than a proxy in front
     of Cove may keep the request open; the resize goes on whether or not anyone waits. After a timeout
@@ -543,21 +549,24 @@ async def asyncio_detailed(
     both the vCPUs it runs and the disk queues its boot set up, so Cove stops it gracefully (forced
     after the stop timeout), writes the new boot size and starts it cold. Any other change is resized
     live with no reboot, except on a Mac, which has no live resize: there `restart` reboots a running VM
-    for any new vCPU count, leaves one asked for the vCPUs it has as it is, and memory never changes. A
-    stopped VM takes the new size and stays stopped; any other state is refused (409). Growth the quota
-    or host cannot take is refused before the stop. The result's `restart` says which (`restarted`,
+    for any new vCPU count or memory size, and leaves one asked for the size it has as it is. A stopped
+    VM takes the new size and stays stopped; any other state is refused (409). Growth the quota or host
+    cannot take is refused before the stop. The result's `restart` says which (`restarted`,
     `not_needed`, `stopped`). Off a Mac, memory asked for in the same request is applied after the
     start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps the
     new size, is left as a failed start leaves it, and the 500 says it was resized but failed to start.
     If the VM starts but the grow after the start (above its boot vCPUs or memory) fails, the answer is
     still 200, with `restart: restarted`, `partial: true`, the size it runs now, and `reason` saying the
     grow after the start failed and why; off a Mac, send the resize again without `restart` to retry the
-    grow. A Mac starts the VM at its new vCPU count and keeps its memory, so nothing grows after the
-    start there; should the VM come up at another size, the answer is the same `partial: true`, as the
-    live resize that would make it up is refused on a Mac. On a Mac, a reboot is refused with 503 when
-    no network owner serves (409 while a VM runs on the other datapath), as a start is: before the stop,
-    nothing changes; if the check fails again after the stop, the VM stays stopped at its new size and
-    the error says so. A stopped VM, or a resize that needs no reboot, is not checked.
+    grow. A Mac starts the VM at its new vCPU count and memory (its boot memory), so nothing grows after
+    the start there; should the VM come up at another size, the answer is the same `partial: true`, as
+    the live resize that would make it up is refused on a Mac. On a Mac, a reboot is refused with 503
+    when no network owner serves (409 while a VM runs on the other datapath), as a start is: before the
+    stop, nothing changes; if the check fails again after the stop, the VM stays stopped at its new size
+    and the error says so. A Mac's memory change on a running VM is also checked before the stop against
+    the wired-RAM cap and, for a grow, the Mac's free memory: refused with 503 `capacity_exhausted`,
+    nothing changes and the VM keeps running; under the warning level it goes ahead and the result's
+    `warnings` says so. A stopped VM, or a resize that needs no reboot, is not checked.
 
     A request with `restart` can take a stop plus a cold start to answer, longer than a proxy in front
     of Cove may keep the request open; the resize goes on whether or not anyone waits. After a timeout
@@ -632,21 +641,24 @@ async def asyncio(
     both the vCPUs it runs and the disk queues its boot set up, so Cove stops it gracefully (forced
     after the stop timeout), writes the new boot size and starts it cold. Any other change is resized
     live with no reboot, except on a Mac, which has no live resize: there `restart` reboots a running VM
-    for any new vCPU count, leaves one asked for the vCPUs it has as it is, and memory never changes. A
-    stopped VM takes the new size and stays stopped; any other state is refused (409). Growth the quota
-    or host cannot take is refused before the stop. The result's `restart` says which (`restarted`,
+    for any new vCPU count or memory size, and leaves one asked for the size it has as it is. A stopped
+    VM takes the new size and stays stopped; any other state is refused (409). Growth the quota or host
+    cannot take is refused before the stop. The result's `restart` says which (`restarted`,
     `not_needed`, `stopped`). Off a Mac, memory asked for in the same request is applied after the
     start, within the VM's range and no lower than its boot memory. If the start fails, the VM keeps the
     new size, is left as a failed start leaves it, and the 500 says it was resized but failed to start.
     If the VM starts but the grow after the start (above its boot vCPUs or memory) fails, the answer is
     still 200, with `restart: restarted`, `partial: true`, the size it runs now, and `reason` saying the
     grow after the start failed and why; off a Mac, send the resize again without `restart` to retry the
-    grow. A Mac starts the VM at its new vCPU count and keeps its memory, so nothing grows after the
-    start there; should the VM come up at another size, the answer is the same `partial: true`, as the
-    live resize that would make it up is refused on a Mac. On a Mac, a reboot is refused with 503 when
-    no network owner serves (409 while a VM runs on the other datapath), as a start is: before the stop,
-    nothing changes; if the check fails again after the stop, the VM stays stopped at its new size and
-    the error says so. A stopped VM, or a resize that needs no reboot, is not checked.
+    grow. A Mac starts the VM at its new vCPU count and memory (its boot memory), so nothing grows after
+    the start there; should the VM come up at another size, the answer is the same `partial: true`, as
+    the live resize that would make it up is refused on a Mac. On a Mac, a reboot is refused with 503
+    when no network owner serves (409 while a VM runs on the other datapath), as a start is: before the
+    stop, nothing changes; if the check fails again after the stop, the VM stays stopped at its new size
+    and the error says so. A Mac's memory change on a running VM is also checked before the stop against
+    the wired-RAM cap and, for a grow, the Mac's free memory: refused with 503 `capacity_exhausted`,
+    nothing changes and the VM keeps running; under the warning level it goes ahead and the result's
+    `warnings` says so. A stopped VM, or a resize that needs no reboot, is not checked.
 
     A request with `restart` can take a stop plus a cold start to answer, longer than a proxy in front
     of Cove may keep the request open; the resize goes on whether or not anyone waits. After a timeout
