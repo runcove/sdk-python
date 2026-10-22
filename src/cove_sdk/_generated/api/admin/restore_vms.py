@@ -114,6 +114,10 @@ def sync_detailed(
     (`attempted_vms`), and this starts them again once the host is back. It is a normal start, not a
     restore from a checkpoint.
 
+    The server also starts the VMs that were running when the host went down by itself, once it is ready
+    after a boot, so nothing has to call this after a reboot. It stays for starting a named set of
+    stopped VMs by hand.
+
     It starts any stopped VM it is given, not only ones a drain stopped. Nothing here is an error. A VM
     that no longer exists is `not_found`; one that is already running or paused is `skipped_running`; a
     warm-pool VM is `skipped_pool`; one whose owner was offboarded and disabled is
@@ -165,6 +169,10 @@ def sync(
     (`attempted_vms`), and this starts them again once the host is back. It is a normal start, not a
     restore from a checkpoint.
 
+    The server also starts the VMs that were running when the host went down by itself, once it is ready
+    after a boot, so nothing has to call this after a reboot. It stays for starting a named set of
+    stopped VMs by hand.
+
     It starts any stopped VM it is given, not only ones a drain stopped. Nothing here is an error. A VM
     that no longer exists is `not_found`; one that is already running or paused is `skipped_running`; a
     warm-pool VM is `skipped_pool`; one whose owner was offboarded and disabled is
@@ -210,6 +218,10 @@ async def asyncio_detailed(
     is the second half of a host reboot: `drainHost` reports the VMs it set out to stop
     (`attempted_vms`), and this starts them again once the host is back. It is a normal start, not a
     restore from a checkpoint.
+
+    The server also starts the VMs that were running when the host went down by itself, once it is ready
+    after a boot, so nothing has to call this after a reboot. It stays for starting a named set of
+    stopped VMs by hand.
 
     It starts any stopped VM it is given, not only ones a drain stopped. Nothing here is an error. A VM
     that no longer exists is `not_found`; one that is already running or paused is `skipped_running`; a
@@ -259,6 +271,10 @@ async def asyncio(
     is the second half of a host reboot: `drainHost` reports the VMs it set out to stop
     (`attempted_vms`), and this starts them again once the host is back. It is a normal start, not a
     restore from a checkpoint.
+
+    The server also starts the VMs that were running when the host went down by itself, once it is ready
+    after a boot, so nothing has to call this after a reboot. It stays for starting a named set of
+    stopped VMs by hand.
 
     It starts any stopped VM it is given, not only ones a drain stopped. Nothing here is an error. A VM
     that no longer exists is `not_found`; one that is already running or paused is `skipped_running`; a
