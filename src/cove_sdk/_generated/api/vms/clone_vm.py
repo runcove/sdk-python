@@ -417,9 +417,9 @@ def sync_detailed(
     written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
-    letters, digits and hyphens, not starting or ending with a hyphen, and not starting with the
-    reserved `pool-` prefix. Any other name is refused with **400** `invalid_vm_name` before `source` is
-    looked up.
+    letters, digits and hyphens, not starting or ending with a hyphen, and not starting with a reserved
+    prefix (`pool-`, `capture-`, `oci-bootstrap-`) and not the reserved name `warpgate`. Any other name
+    is refused with **400** `invalid_vm_name` before `source` is looked up.
 
     Args:
         source (str):
@@ -508,9 +508,9 @@ def sync(
     written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
-    letters, digits and hyphens, not starting or ending with a hyphen, and not starting with the
-    reserved `pool-` prefix. Any other name is refused with **400** `invalid_vm_name` before `source` is
-    looked up.
+    letters, digits and hyphens, not starting or ending with a hyphen, and not starting with a reserved
+    prefix (`pool-`, `capture-`, `oci-bootstrap-`) and not the reserved name `warpgate`. Any other name
+    is refused with **400** `invalid_vm_name` before `source` is looked up.
 
     Args:
         source (str):
@@ -593,9 +593,9 @@ async def asyncio_detailed(
     written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
-    letters, digits and hyphens, not starting or ending with a hyphen, and not starting with the
-    reserved `pool-` prefix. Any other name is refused with **400** `invalid_vm_name` before `source` is
-    looked up.
+    letters, digits and hyphens, not starting or ending with a hyphen, and not starting with a reserved
+    prefix (`pool-`, `capture-`, `oci-bootstrap-`) and not the reserved name `warpgate`. Any other name
+    is refused with **400** `invalid_vm_name` before `source` is looked up.
 
     Args:
         source (str):
@@ -682,9 +682,9 @@ async def asyncio(
     written is removed and the request fails.
 
     `new_vm_name` follows the same rule as a created VM's name: **3-30 characters** of lowercase ASCII
-    letters, digits and hyphens, not starting or ending with a hyphen, and not starting with the
-    reserved `pool-` prefix. Any other name is refused with **400** `invalid_vm_name` before `source` is
-    looked up.
+    letters, digits and hyphens, not starting or ending with a hyphen, and not starting with a reserved
+    prefix (`pool-`, `capture-`, `oci-bootstrap-`) and not the reserved name `warpgate`. Any other name
+    is refused with **400** `invalid_vm_name` before `source` is looked up.
 
     Args:
         source (str):

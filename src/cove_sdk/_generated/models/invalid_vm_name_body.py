@@ -19,8 +19,9 @@ class InvalidVmNameBody:
 
     A name must be 3-30 characters of lowercase ASCII letters, digits and
     hyphens, and must not start or end with a hyphen; a name starting with
-    `pool-` (reserved for VMs Cove keeps ready in advance) and a name held by a
-    bastion target this server may not take over are refused too. `message`
+    `pool-`, `capture-` or `oci-bootstrap-` (reserved for Cove's own VMs), the
+    exact name `warpgate` (reserved for Warpgate's admin host) and a
+    name held by a bastion target this server may not take over are refused too. `message`
     says which rule the name broke, `field` is always `"name"`, and `name`
     echoes the rejected name so a caller that submitted several can tell which
     one failed.

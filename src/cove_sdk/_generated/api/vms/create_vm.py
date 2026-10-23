@@ -399,9 +399,10 @@ def sync_detailed(
 
     **Names.** `name` is optional; omit it and the server picks one. A name must be **3-30 characters**
     of lowercase ASCII letters, digits and hyphens (`[a-z0-9-]`), and must not start or end with a
-    hyphen: `web-1` is a name, `Web_1`, `ab` and `-web` are not. Names starting with `pool-` are
-    reserved for VMs Cove keeps ready in advance. A name outside the rule, one in the reserved prefix,
-    or one held by a bastion target this server may not take over, is refused with **400**
+    hyphen: `web-1` is a name, `Web_1`, `ab` and `-web` are not. Names starting with `pool-`, `capture-`
+    or `oci-bootstrap-` are reserved for Cove's own VMs, and the name `warpgate` is reserved for
+    Warpgate's admin host. A name outside the rule, one in the reserved prefix, the reserved name, or
+    one held by a bastion target this server may not take over, is refused with **400**
     `invalid_vm_name`, with `field: "name"` and the rejected name echoed in `name`.
 
     The **409** is never the usual `ApiError` envelope. It is one of two shapes, published as a union: a
@@ -480,9 +481,10 @@ def sync(
 
     **Names.** `name` is optional; omit it and the server picks one. A name must be **3-30 characters**
     of lowercase ASCII letters, digits and hyphens (`[a-z0-9-]`), and must not start or end with a
-    hyphen: `web-1` is a name, `Web_1`, `ab` and `-web` are not. Names starting with `pool-` are
-    reserved for VMs Cove keeps ready in advance. A name outside the rule, one in the reserved prefix,
-    or one held by a bastion target this server may not take over, is refused with **400**
+    hyphen: `web-1` is a name, `Web_1`, `ab` and `-web` are not. Names starting with `pool-`, `capture-`
+    or `oci-bootstrap-` are reserved for Cove's own VMs, and the name `warpgate` is reserved for
+    Warpgate's admin host. A name outside the rule, one in the reserved prefix, the reserved name, or
+    one held by a bastion target this server may not take over, is refused with **400**
     `invalid_vm_name`, with `field: "name"` and the rejected name echoed in `name`.
 
     The **409** is never the usual `ApiError` envelope. It is one of two shapes, published as a union: a
@@ -555,9 +557,10 @@ async def asyncio_detailed(
 
     **Names.** `name` is optional; omit it and the server picks one. A name must be **3-30 characters**
     of lowercase ASCII letters, digits and hyphens (`[a-z0-9-]`), and must not start or end with a
-    hyphen: `web-1` is a name, `Web_1`, `ab` and `-web` are not. Names starting with `pool-` are
-    reserved for VMs Cove keeps ready in advance. A name outside the rule, one in the reserved prefix,
-    or one held by a bastion target this server may not take over, is refused with **400**
+    hyphen: `web-1` is a name, `Web_1`, `ab` and `-web` are not. Names starting with `pool-`, `capture-`
+    or `oci-bootstrap-` are reserved for Cove's own VMs, and the name `warpgate` is reserved for
+    Warpgate's admin host. A name outside the rule, one in the reserved prefix, the reserved name, or
+    one held by a bastion target this server may not take over, is refused with **400**
     `invalid_vm_name`, with `field: "name"` and the rejected name echoed in `name`.
 
     The **409** is never the usual `ApiError` envelope. It is one of two shapes, published as a union: a
@@ -634,9 +637,10 @@ async def asyncio(
 
     **Names.** `name` is optional; omit it and the server picks one. A name must be **3-30 characters**
     of lowercase ASCII letters, digits and hyphens (`[a-z0-9-]`), and must not start or end with a
-    hyphen: `web-1` is a name, `Web_1`, `ab` and `-web` are not. Names starting with `pool-` are
-    reserved for VMs Cove keeps ready in advance. A name outside the rule, one in the reserved prefix,
-    or one held by a bastion target this server may not take over, is refused with **400**
+    hyphen: `web-1` is a name, `Web_1`, `ab` and `-web` are not. Names starting with `pool-`, `capture-`
+    or `oci-bootstrap-` are reserved for Cove's own VMs, and the name `warpgate` is reserved for
+    Warpgate's admin host. A name outside the rule, one in the reserved prefix, the reserved name, or
+    one held by a bastion target this server may not take over, is refused with **400**
     `invalid_vm_name`, with `field: "name"` and the rejected name echoed in `name`.
 
     The **409** is never the usual `ApiError` envelope. It is one of two shapes, published as a union: a

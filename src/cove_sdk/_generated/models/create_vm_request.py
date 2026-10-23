@@ -51,8 +51,10 @@ class CreateVmRequest:
         name (None | str | Unset): The new VM's name. Omit it and the server picks one. A name must be
             3-30 characters of lowercase ASCII letters, digits and hyphens, must
             not start or end with a hyphen, and must not start with `pool-`,
-            which is reserved for VMs Cove keeps ready in advance; any other name is
-            refused with 400 `invalid_vm_name`.
+            `capture-` or `oci-bootstrap-`, which are reserved for VMs Cove keeps
+            ready in advance, its saved-state capture VMs and its image-build VMs;
+            and must not be exactly `warpgate`, Warpgate's admin host. Any other
+            name is refused with 400 `invalid_vm_name`.
         nested_virt (bool | Unset): Expose nested virtualisation (VMX/SVM) to the
             new VM's guest. Off unless `true`; administrators only (anyone else is
             refused 403). An opted-in VM is always cold-booted, never claimed from
