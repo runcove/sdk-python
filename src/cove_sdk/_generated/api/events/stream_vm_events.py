@@ -89,8 +89,9 @@ def sync_detailed(
     - `state`: current or new lifecycle state, data `{"state", "timestamp"}` — emitted immediately on
     connect with the VM's state at that moment (or `creating` if the row does not exist yet because
     creation is still in flight), then again on every subsequent transition. The stream ends right after
-    the `deleted` state or a failed create's `error`: a later VM that reuses the name is a different VM,
-    and needs a new request. A `state` frame is also sent for an advisory about the VM that leaves its
+    the `deleted` state or a failed create's `error`, and with no further frame when the VM is renamed:
+    the stream does not follow it to its new name, and a later VM that takes the name is a different VM,
+    which needs a new request. A `state` frame is also sent for an advisory about the VM that leaves its
     state where it was (a health degrade or recovery, pause, clone and pool-claim details, the create-
     completed announcement; creation progress arrives as `progress`), so a frame can repeat the previous
     state: treat `state` as idempotent and act on a change, not on a frame.
@@ -152,8 +153,9 @@ def sync(
     - `state`: current or new lifecycle state, data `{"state", "timestamp"}` — emitted immediately on
     connect with the VM's state at that moment (or `creating` if the row does not exist yet because
     creation is still in flight), then again on every subsequent transition. The stream ends right after
-    the `deleted` state or a failed create's `error`: a later VM that reuses the name is a different VM,
-    and needs a new request. A `state` frame is also sent for an advisory about the VM that leaves its
+    the `deleted` state or a failed create's `error`, and with no further frame when the VM is renamed:
+    the stream does not follow it to its new name, and a later VM that takes the name is a different VM,
+    which needs a new request. A `state` frame is also sent for an advisory about the VM that leaves its
     state where it was (a health degrade or recovery, pause, clone and pool-claim details, the create-
     completed announcement; creation progress arrives as `progress`), so a frame can repeat the previous
     state: treat `state` as idempotent and act on a change, not on a frame.
@@ -210,8 +212,9 @@ async def asyncio_detailed(
     - `state`: current or new lifecycle state, data `{"state", "timestamp"}` — emitted immediately on
     connect with the VM's state at that moment (or `creating` if the row does not exist yet because
     creation is still in flight), then again on every subsequent transition. The stream ends right after
-    the `deleted` state or a failed create's `error`: a later VM that reuses the name is a different VM,
-    and needs a new request. A `state` frame is also sent for an advisory about the VM that leaves its
+    the `deleted` state or a failed create's `error`, and with no further frame when the VM is renamed:
+    the stream does not follow it to its new name, and a later VM that takes the name is a different VM,
+    which needs a new request. A `state` frame is also sent for an advisory about the VM that leaves its
     state where it was (a health degrade or recovery, pause, clone and pool-claim details, the create-
     completed announcement; creation progress arrives as `progress`), so a frame can repeat the previous
     state: treat `state` as idempotent and act on a change, not on a frame.
@@ -271,8 +274,9 @@ async def asyncio(
     - `state`: current or new lifecycle state, data `{"state", "timestamp"}` — emitted immediately on
     connect with the VM's state at that moment (or `creating` if the row does not exist yet because
     creation is still in flight), then again on every subsequent transition. The stream ends right after
-    the `deleted` state or a failed create's `error`: a later VM that reuses the name is a different VM,
-    and needs a new request. A `state` frame is also sent for an advisory about the VM that leaves its
+    the `deleted` state or a failed create's `error`, and with no further frame when the VM is renamed:
+    the stream does not follow it to its new name, and a later VM that takes the name is a different VM,
+    which needs a new request. A `state` frame is also sent for an advisory about the VM that leaves its
     state where it was (a health degrade or recovery, pause, clone and pool-claim details, the create-
     completed announcement; creation progress arrives as `progress`), so a frame can repeat the previous
     state: treat `state` as idempotent and act on a change, not on a frame.
