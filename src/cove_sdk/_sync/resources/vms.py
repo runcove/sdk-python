@@ -206,7 +206,14 @@ class Vms:
 
     @operation("getVm")
     def get(self, name: str, *, timeout: CallTimeout = CLIENT_DEFAULT) -> VmDetail:
-        """One VM. Scope ``vms:read``. A VM that exists but is not yours is a 404, like a missing one."""
+        """One VM. Scope ``vms:read``. A VM that exists but is not yours is a 404, like a missing one.
+
+        For 5 minutes after your own create of ``name`` was accepted and then failed, the failure's
+        own error is raised in place of the 404: :class:`~cove_sdk.ConflictError` for a refusal by
+        admission or a quota, :class:`~cove_sdk.ServerError` for a host with no room (503) or a
+        create that failed (500). The server marks that answer with the header
+        ``x-cove-create-failed: 1``.
+        """
         vm = self._t.call(get_vm, path={"name": name}, timeout=timeout)
         return cast(VmDetail, vm)
 
@@ -331,10 +338,11 @@ class Vms:
         """Poll :meth:`get` until the VM's state is one of ``states``; return that ``VmDetail``.
 
         ``timeout`` is the whole wait, in seconds, and bounds each poll too; when it passes,
-        :class:`~cove_sdk.CoveTimeoutError` names the last state seen. Errors from ``get`` (a 404
-        after a failed create, say) propagate at once. A VM that settles in a state not in
-        ``states`` -- ``failed`` or ``deleted``, say -- is not an error here: polling goes on
-        until the deadline, and the ``CoveTimeoutError`` then names that last state.
+        :class:`~cove_sdk.CoveTimeoutError` names the last state seen. Errors from ``get`` propagate
+        at once: a create that was accepted and then failed raises its own error, such as a
+        :class:`~cove_sdk.ServerError` for a host with no room, not a 404. A VM that settles in a
+        state not in ``states`` -- ``failed`` or ``deleted``, say -- is not an error here: polling
+        goes on until the deadline, and the ``CoveTimeoutError`` then names that last state.
         """
         wanted = {states} if isinstance(states, str) else set(states)
         deadline = monotonic() + timeout
