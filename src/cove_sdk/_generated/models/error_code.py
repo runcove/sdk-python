@@ -10,6 +10,7 @@ class ErrorCode(StrEnum):
     CLI_DISTRIBUTION_NOT_CONFIGURED = "cli_distribution_not_configured"
     CLI_TOO_OLD = "CLI_TOO_OLD"
     CLONE_SOURCE_NOT_FOUND = "clone_source_not_found"
+    CREATE_FAILED_VM_KEPT = "create_failed_vm_kept"
     CREDENTIAL_EXPIRED = "credential_expired"
     CREDENTIAL_INVALID = "credential_invalid"
     CREDENTIAL_MISSING = "credential_missing"
