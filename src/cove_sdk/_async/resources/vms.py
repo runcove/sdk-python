@@ -45,6 +45,7 @@ from ..._generated.api.vms import (
     list_vms,
     pause_vm,
     recover_vm,
+    rename_vm,
     resize_vm,
     resume_vm,
     revoke_vm_access,
@@ -68,6 +69,7 @@ from ..._generated.models import (
     ProxyPortInfo,
     ProxyUrlInfo,
     RemovalResponse,
+    RenameVmRequest,
     ResizeRequest,
     ResizeResult,
     RevokeShareOutcome,
@@ -314,6 +316,39 @@ class Vms:
             clone_vm, path={"source": source}, body=req, timeout=timeout
         )
         return cast(CloneResponse, result)
+
+    @operation("renameVm")
+    async def rename(
+        self,
+        name: str,
+        body: RenameVmRequest | Mapping[str, Any] | None = None,
+        *,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+        **fields: Any,
+    ) -> VmDetail:
+        """Rename VM ``name`` to ``new_name``. Scope ``vms:write``.
+
+        The caller needs the permission to delete the VM (otherwise 404, like a missing VM). The VM
+        keeps its id, disk, state and everything attached to it, and a running VM keeps running;
+        its SSH and HTTP addresses, DNS name and hostname move to the new name, and the old name
+        goes into the same cooldown a deleted VM's name does. Returns the VM's detail under its new
+        name. When the new name no longer leads the caller to the VM by the time the rename is
+        done, the body is partial: ``vm_id``, ``name`` and ``state`` (and the degraded flags) are
+        set, and every other field is an empty string, zero or its default.
+
+        400 ``invalid_vm_name`` when ``new_name`` breaks the name rule, is the VM's own name or is
+        held by a bastion target. A 409 :class:`~cove_sdk.ConflictError` is either a taken name
+        (``code == "vm_name_taken"``, ``retry_after_secs`` set while the name is in its cooldown,
+        ``None`` when another VM holds it) or ``invalid_state_transition`` (the VM is being created
+        or deleted, or another operation or an earlier rename is still running on it: retry
+        shortly). 502 means the rename was undone and the VM keeps its name; 503 that it failed and
+        was undone, or is being undone in the background: read the VM's name before retrying.
+        """
+        req = build_body(RenameVmRequest, body, fields)
+        vm = await self._t.call(
+            rename_vm, path={"name": name}, body=req, timeout=timeout
+        )
+        return cast(VmDetail, vm)
 
     @operation("connectVm")
     async def connect(

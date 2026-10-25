@@ -29,7 +29,7 @@ from cove_sdk._generated.models import (
     VmTelemetrySeries,
 )
 from cove_sdk.auth import BearerAuth
-from cove_sdk.errors import CoveError, CoveTimeoutError, NotFoundError
+from cove_sdk.errors import ConflictError, CoveError, CoveTimeoutError, NotFoundError
 
 
 def _vms(api: Api) -> Vms:
@@ -225,6 +225,58 @@ def test_component_vms_wake_resize_clone_connect() -> None:
     info = vms.connect("v")
     assert api.last.method == "POST" and isinstance(info, ConnectionInfo)
     assert info.ticket_secret == "t"
+
+
+def test_component_vms_rename_posts_new_name_and_returns_the_detail() -> None:
+    api = Api().on("POST", "/api/vms/v/rename", (200, {**VM, "name": "api-server"}))
+    vms = _vms(api)
+    renamed = vms.rename("v", new_name="api-server")
+    assert api.last.method == "POST" and api.last.url.path == "/api/vms/v/rename"
+    assert api.last_json() == {"new_name": "api-server"}
+    assert isinstance(renamed, VmDetail) and renamed.name == "api-server"
+    vms.rename("v", {"new_name": "other"})
+    assert api.last_json() == {"new_name": "other"}
+
+
+def test_component_vms_rename_409_cooldown_carries_retry_after_secs() -> None:
+    body = {
+        "code": "vm_name_taken",
+        "message": "in cooldown",
+        "name": "api-server",
+        "retry_after_secs": 240,
+    }
+    api = Api().on("POST", "/api/vms/v/rename", (409, body))
+    with pytest.raises(ConflictError) as info:
+        _vms(api).rename("v", new_name="api-server")
+    assert info.value.code == "vm_name_taken" and info.value.retry_after_secs == 240
+    assert info.value.deny is None
+
+
+def test_component_vms_rename_409_taken_has_no_retry_after_secs() -> None:
+    body = {"code": "vm_name_taken", "message": "taken", "name": "api-server"}
+    api = Api().on("POST", "/api/vms/v/rename", (409, body))
+    with pytest.raises(ConflictError) as info:
+        _vms(api).rename("v", new_name="api-server")
+    assert info.value.code == "vm_name_taken" and info.value.retry_after_secs is None
+
+
+def test_component_vms_rename_409_busy_vm_is_a_state_conflict() -> None:
+    body = {"code": "invalid_state_transition", "message": "busy"}
+    api = Api().on("POST", "/api/vms/v/rename", (409, body))
+    with pytest.raises(ConflictError) as info:
+        _vms(api).rename("v", new_name="api-server")
+    assert info.value.code == "invalid_state_transition"
+    assert info.value.retry_after_secs is None and info.value.deny is None
+
+
+def test_component_vms_rename_404_raises_not_found() -> None:
+    api = Api().on(
+        "POST",
+        "/api/vms/x/rename",
+        (404, {"message": "not found", "code": "vm_not_found"}),
+    )
+    with pytest.raises(NotFoundError):
+        _vms(api).rename("x", new_name="api-server")
 
 
 def test_component_vms_port_publish_and_unpublish_say_what_they_did() -> None:

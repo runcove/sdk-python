@@ -131,7 +131,7 @@ mapping. Each method's docstring names the API-key scope it needs (`vms:read`, `
 VM names: `create()` without a `name` lets the server pick one. A name you choose must be 3-30
 characters of lowercase ASCII letters, digits and hyphens, and must not start or end with a hyphen
 (`web-1`, not `Web_1`, `ab` or `-web`), and must not start with `pool-`, `capture-` or `oci-bootstrap-`, and must not be exactly `warpgate`; these
-are reserved for Cove's own VMs and Warpgate's admin host; a clone's `new_vm_name` follows the same rule. Any other
+are reserved for Cove's own VMs and Warpgate's admin host; a clone's `new_vm_name` and a rename's `new_name` follow the same rule. Any other
 name raises `CoveAPIError` with `status == 400` and `code == "invalid_vm_name"`, before anything is
 created, and `err.body["name"]` echoes the refused name.
 
@@ -279,6 +279,12 @@ own. `body` is the parsed JSON body, or the text when it is not JSON.
   `vms.resize`, `host.reserve`, ...) sets `ConflictError.deny` to a `DenyReason(code, details)`,
   e.g. `ram_headroom_exceeded` with its numeric fields in `details`. A name still taken, or in its
   cooldown after a delete or rename, is `code == "vm_name_taken"` with `retry_after_secs`.
+- **`vms.rename(name, new_name=...)` refuses in a few ways.** A 409 is a taken `new_name`
+  (`code == "vm_name_taken"`, `retry_after_secs` set while the name is in its cooldown, `None`
+  when another VM holds it) or a VM that cannot be renamed now (`invalid_state_transition`: being
+  created or deleted, or another operation is running on it; retry shortly). A 502 means the
+  rename was undone and the VM keeps its name; a 503 that it failed and was undone or is being
+  undone in the background, so read the VM's name before retrying.
 - **503** with `feature_disabled` means the feature (secrets, webhooks) is off on that host, not
   that the server is down.
 - **429 `rate_limited` means this source IP is over its request budget.** The bearer listener
@@ -514,8 +520,7 @@ received, never re-serialised JSON.
 ## What is covered
 
 Both clients have a method for every operation the external bearer listener serves, except the
-two operations in `tests/coverage_allowlist.py` that no method wraps yet: `listMyConnectedApps`
-and `renameVm`.
+operation in `tests/coverage_allowlist.py` that no method wraps yet: `listMyConnectedApps`.
 `tests/test_unit_coverage.py` fails when an operation
 is added to the contract without a method or an allowlist entry. Operations the bearer listener
 does not serve have no method.
