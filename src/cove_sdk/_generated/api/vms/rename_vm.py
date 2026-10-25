@@ -11,6 +11,7 @@ from ...models.cli_too_old_body import CliTooOldBody
 from ...models.invalid_vm_name_body import InvalidVmNameBody
 from ...models.rename_vm_request import RenameVmRequest
 from ...models.scope_denied_body import ScopeDeniedBody
+from ...models.sudo_required_body import SudoRequiredBody
 from ...models.vm_detail import VmDetail
 from ...models.vm_name_taken_body import VmNameTakenBody
 from ...types import Response
@@ -43,6 +44,7 @@ def _parse_response(
 ) -> (
     ApiError
     | InvalidVmNameBody
+    | SudoRequiredBody
     | VmNameTakenBody
     | CliTooOldBody
     | ScopeDeniedBody
@@ -80,7 +82,27 @@ def _parse_response(
         return response_400
 
     if response.status_code == 401:
-        response_401 = ApiError.from_dict(response.json())
+
+        def _parse_response_401(data: object) -> ApiError | SudoRequiredBody:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                componentsschemas_sensitive_op_unauthorized_response_type_0 = (
+                    ApiError.from_dict(data)
+                )
+
+                return componentsschemas_sensitive_op_unauthorized_response_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            if not isinstance(data, dict):
+                raise TypeError()
+            componentsschemas_sensitive_op_unauthorized_response_type_1 = (
+                SudoRequiredBody.from_dict(data)
+            )
+
+            return componentsschemas_sensitive_op_unauthorized_response_type_1
+
+        response_401 = _parse_response_401(response.json())
 
         return response_401
 
@@ -150,6 +172,7 @@ def _build_response(
 ) -> Response[
     ApiError
     | InvalidVmNameBody
+    | SudoRequiredBody
     | VmNameTakenBody
     | CliTooOldBody
     | ScopeDeniedBody
@@ -171,6 +194,7 @@ def sync_detailed(
 ) -> Response[
     ApiError
     | InvalidVmNameBody
+    | SudoRequiredBody
     | VmNameTakenBody
     | CliTooOldBody
     | ScopeDeniedBody
@@ -183,8 +207,10 @@ def sync_detailed(
     running VM keeps running. The old name goes into the same cooldown a deleted VM's name does, so
     another VM cannot take it at once.
 
-    Renaming needs the permission to delete the VM. The answer is the VM's detail under its new name,
-    the same body `GET /api/vms/{name}` returns.
+    Renaming needs the permission to delete the VM, and the same recent sign-in deleting it needs: a
+    caller signed in with `cove login` longer ago than the server's re-authentication window is answered
+    401 `sudo_required` (an API key is exempt, as for a delete). The answer is the VM's detail under its
+    new name, the same body `GET /api/vms/{name}` returns.
 
     A VM that is being created or deleted, or a pool standby, is refused (409); so is one with another
     operation running on it, or whose last rename is still being finished: retry shortly. A failed VM
@@ -199,7 +225,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | ApiError | InvalidVmNameBody | ApiError | VmNameTakenBody | CliTooOldBody | ScopeDeniedBody | VmDetail]
+        Response[ApiError | ApiError | InvalidVmNameBody | ApiError | SudoRequiredBody | ApiError | VmNameTakenBody | CliTooOldBody | ScopeDeniedBody | VmDetail]
     """
 
     kwargs = _get_kwargs(
@@ -222,6 +248,7 @@ def sync(
 ) -> (
     ApiError
     | InvalidVmNameBody
+    | SudoRequiredBody
     | VmNameTakenBody
     | CliTooOldBody
     | ScopeDeniedBody
@@ -235,8 +262,10 @@ def sync(
     running VM keeps running. The old name goes into the same cooldown a deleted VM's name does, so
     another VM cannot take it at once.
 
-    Renaming needs the permission to delete the VM. The answer is the VM's detail under its new name,
-    the same body `GET /api/vms/{name}` returns.
+    Renaming needs the permission to delete the VM, and the same recent sign-in deleting it needs: a
+    caller signed in with `cove login` longer ago than the server's re-authentication window is answered
+    401 `sudo_required` (an API key is exempt, as for a delete). The answer is the VM's detail under its
+    new name, the same body `GET /api/vms/{name}` returns.
 
     A VM that is being created or deleted, or a pool standby, is refused (409); so is one with another
     operation running on it, or whose last rename is still being finished: retry shortly. A failed VM
@@ -251,7 +280,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | ApiError | InvalidVmNameBody | ApiError | VmNameTakenBody | CliTooOldBody | ScopeDeniedBody | VmDetail
+        ApiError | ApiError | InvalidVmNameBody | ApiError | SudoRequiredBody | ApiError | VmNameTakenBody | CliTooOldBody | ScopeDeniedBody | VmDetail
     """
 
     return sync_detailed(
@@ -269,6 +298,7 @@ async def asyncio_detailed(
 ) -> Response[
     ApiError
     | InvalidVmNameBody
+    | SudoRequiredBody
     | VmNameTakenBody
     | CliTooOldBody
     | ScopeDeniedBody
@@ -281,8 +311,10 @@ async def asyncio_detailed(
     running VM keeps running. The old name goes into the same cooldown a deleted VM's name does, so
     another VM cannot take it at once.
 
-    Renaming needs the permission to delete the VM. The answer is the VM's detail under its new name,
-    the same body `GET /api/vms/{name}` returns.
+    Renaming needs the permission to delete the VM, and the same recent sign-in deleting it needs: a
+    caller signed in with `cove login` longer ago than the server's re-authentication window is answered
+    401 `sudo_required` (an API key is exempt, as for a delete). The answer is the VM's detail under its
+    new name, the same body `GET /api/vms/{name}` returns.
 
     A VM that is being created or deleted, or a pool standby, is refused (409); so is one with another
     operation running on it, or whose last rename is still being finished: retry shortly. A failed VM
@@ -297,7 +329,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | ApiError | InvalidVmNameBody | ApiError | VmNameTakenBody | CliTooOldBody | ScopeDeniedBody | VmDetail]
+        Response[ApiError | ApiError | InvalidVmNameBody | ApiError | SudoRequiredBody | ApiError | VmNameTakenBody | CliTooOldBody | ScopeDeniedBody | VmDetail]
     """
 
     kwargs = _get_kwargs(
@@ -318,6 +350,7 @@ async def asyncio(
 ) -> (
     ApiError
     | InvalidVmNameBody
+    | SudoRequiredBody
     | VmNameTakenBody
     | CliTooOldBody
     | ScopeDeniedBody
@@ -331,8 +364,10 @@ async def asyncio(
     running VM keeps running. The old name goes into the same cooldown a deleted VM's name does, so
     another VM cannot take it at once.
 
-    Renaming needs the permission to delete the VM. The answer is the VM's detail under its new name,
-    the same body `GET /api/vms/{name}` returns.
+    Renaming needs the permission to delete the VM, and the same recent sign-in deleting it needs: a
+    caller signed in with `cove login` longer ago than the server's re-authentication window is answered
+    401 `sudo_required` (an API key is exempt, as for a delete). The answer is the VM's detail under its
+    new name, the same body `GET /api/vms/{name}` returns.
 
     A VM that is being created or deleted, or a pool standby, is refused (409); so is one with another
     operation running on it, or whose last rename is still being finished: retry shortly. A failed VM
@@ -347,7 +382,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | ApiError | InvalidVmNameBody | ApiError | VmNameTakenBody | CliTooOldBody | ScopeDeniedBody | VmDetail
+        ApiError | ApiError | InvalidVmNameBody | ApiError | SudoRequiredBody | ApiError | VmNameTakenBody | CliTooOldBody | ScopeDeniedBody | VmDetail
     """
 
     return (
