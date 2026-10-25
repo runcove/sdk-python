@@ -129,6 +129,7 @@ from ._generated.models import (
     RemovalResponse,
     RemoveMemberOutcome,
     RenameBody,
+    RenameVmRequest,
     ReplayWebhookDeliveryResponse,
     RequestRefusalEntry,
     ReservationKind,
@@ -268,6 +269,7 @@ VmBadRequestResponse: _t.TypeAlias = _t.Union[ApiError, InvalidVmNameBody]
 VmCloneConflictResponse: _t.TypeAlias = _t.Union[VmNameTakenBody, ApiError, DenyReason]
 VmConflictResponse: _t.TypeAlias = _t.Union[ApiError, DenyReason]
 VmCreateConflictResponse: _t.TypeAlias = _t.Union[VmNameTakenBody, DenyReason, ApiError]
+VmRenameConflictResponse: _t.TypeAlias = _t.Union[VmNameTakenBody, ApiError]
 
 __all__ = [
     "AddMemberRequest",
@@ -402,6 +404,7 @@ __all__ = [
     "RemovalResponse",
     "RemoveMemberOutcome",
     "RenameBody",
+    "RenameVmRequest",
     "ReplayWebhookDeliveryResponse",
     "RequestRefusalEntry",
     "ReservationKind",
@@ -470,6 +473,7 @@ __all__ = [
     "VmEventsPage",
     "VmNameTakenBody",
     "VmProcess",
+    "VmRenameConflictResponse",
     "VmState",
     "VmStats",
     "VmSummary",

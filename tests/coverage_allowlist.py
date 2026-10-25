@@ -10,5 +10,7 @@ named here.
 NOT_YET_WRAPPED: frozenset[str] = frozenset(
     {
         "listMyConnectedApps",
+        # The rename wrappers land in a follow-up pull request.
+        "renameVm",
     }
 )

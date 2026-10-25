@@ -278,7 +278,7 @@ own. `body` is the parsed JSON body, or the text when it is not JSON.
 - **409 with a `DenyReason`.** An admission or quota refusal (`vms.create`, `vms.start`,
   `vms.resize`, `host.reserve`, ...) sets `ConflictError.deny` to a `DenyReason(code, details)`,
   e.g. `ram_headroom_exceeded` with its numeric fields in `details`. A name still taken, or in its
-  post-delete cooldown, is `code == "vm_name_taken"` with `retry_after_secs`.
+  cooldown after a delete or rename, is `code == "vm_name_taken"` with `retry_after_secs`.
 - **503** with `feature_disabled` means the feature (secrets, webhooks) is off on that host, not
   that the server is down.
 - **429 `rate_limited` means this source IP is over its request budget.** The bearer listener
@@ -514,7 +514,8 @@ received, never re-serialised JSON.
 ## What is covered
 
 Both clients have a method for every operation the external bearer listener serves, except the
-operation in `tests/coverage_allowlist.py` that no method wraps yet: `listMyConnectedApps`.
+two operations in `tests/coverage_allowlist.py` that no method wraps yet: `listMyConnectedApps`
+and `renameVm`.
 `tests/test_unit_coverage.py` fails when an operation
 is added to the contract without a method or an allowlist entry. Operations the bearer listener
 does not serve have no method.

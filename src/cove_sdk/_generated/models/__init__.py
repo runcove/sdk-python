@@ -207,6 +207,7 @@ from .ram_capacity import RamCapacity
 from .removal_response import RemovalResponse
 from .remove_member_outcome import RemoveMemberOutcome
 from .rename_body import RenameBody
+from .rename_vm_request import RenameVmRequest
 from .replay_webhook_delivery_response import ReplayWebhookDeliveryResponse
 from .request_refusal_entry import RequestRefusalEntry
 from .reservation_kind import ReservationKind
@@ -495,6 +496,7 @@ __all__ = (
     "RemovalResponse",
     "RemoveMemberOutcome",
     "RenameBody",
+    "RenameVmRequest",
     "ReplayWebhookDeliveryResponse",
     "RequestRefusalEntry",
     "ReservationKind",

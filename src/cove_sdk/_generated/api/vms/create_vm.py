@@ -406,10 +406,10 @@ def sync_detailed(
     `invalid_vm_name`, with `field: "name"` and the rejected name echoed in `name`.
 
     The **409** is never the usual `ApiError` envelope. It is one of two shapes, published as a union: a
-    **taken name** answers `vm_name_taken` with the rejected name and, when the name is in post-delete
-    cooldown, the `retry_after_secs` left on it; an **admission or quota denial** answers a
-    `DenyReason`, carrying the numbers behind the refusal (what is in use, what was asked for, what the
-    cap is) so a caller can decide whether to retry smaller or wait.
+    **taken name** answers `vm_name_taken` with the rejected name and, when the name is in cooldown
+    after a delete or rename, the `retry_after_secs` left on it; an **admission or quota denial**
+    answers a `DenyReason`, carrying the numbers behind the refusal (what is in use, what was asked for,
+    what the cap is) so a caller can decide whether to retry smaller or wait.
 
     `nested_virt: true` is refused synchronously with **403** `admin_required` unless the caller is in
     the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
@@ -488,10 +488,10 @@ def sync(
     `invalid_vm_name`, with `field: "name"` and the rejected name echoed in `name`.
 
     The **409** is never the usual `ApiError` envelope. It is one of two shapes, published as a union: a
-    **taken name** answers `vm_name_taken` with the rejected name and, when the name is in post-delete
-    cooldown, the `retry_after_secs` left on it; an **admission or quota denial** answers a
-    `DenyReason`, carrying the numbers behind the refusal (what is in use, what was asked for, what the
-    cap is) so a caller can decide whether to retry smaller or wait.
+    **taken name** answers `vm_name_taken` with the rejected name and, when the name is in cooldown
+    after a delete or rename, the `retry_after_secs` left on it; an **admission or quota denial**
+    answers a `DenyReason`, carrying the numbers behind the refusal (what is in use, what was asked for,
+    what the cap is) so a caller can decide whether to retry smaller or wait.
 
     `nested_virt: true` is refused synchronously with **403** `admin_required` unless the caller is in
     the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
@@ -564,10 +564,10 @@ async def asyncio_detailed(
     `invalid_vm_name`, with `field: "name"` and the rejected name echoed in `name`.
 
     The **409** is never the usual `ApiError` envelope. It is one of two shapes, published as a union: a
-    **taken name** answers `vm_name_taken` with the rejected name and, when the name is in post-delete
-    cooldown, the `retry_after_secs` left on it; an **admission or quota denial** answers a
-    `DenyReason`, carrying the numbers behind the refusal (what is in use, what was asked for, what the
-    cap is) so a caller can decide whether to retry smaller or wait.
+    **taken name** answers `vm_name_taken` with the rejected name and, when the name is in cooldown
+    after a delete or rename, the `retry_after_secs` left on it; an **admission or quota denial**
+    answers a `DenyReason`, carrying the numbers behind the refusal (what is in use, what was asked for,
+    what the cap is) so a caller can decide whether to retry smaller or wait.
 
     `nested_virt: true` is refused synchronously with **403** `admin_required` unless the caller is in
     the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
@@ -644,10 +644,10 @@ async def asyncio(
     `invalid_vm_name`, with `field: "name"` and the rejected name echoed in `name`.
 
     The **409** is never the usual `ApiError` envelope. It is one of two shapes, published as a union: a
-    **taken name** answers `vm_name_taken` with the rejected name and, when the name is in post-delete
-    cooldown, the `retry_after_secs` left on it; an **admission or quota denial** answers a
-    `DenyReason`, carrying the numbers behind the refusal (what is in use, what was asked for, what the
-    cap is) so a caller can decide whether to retry smaller or wait.
+    **taken name** answers `vm_name_taken` with the rejected name and, when the name is in cooldown
+    after a delete or rename, the `retry_after_secs` left on it; an **admission or quota denial**
+    answers a `DenyReason`, carrying the numbers behind the refusal (what is in use, what was asked for,
+    what the cap is) so a caller can decide whether to retry smaller or wait.
 
     `nested_virt: true` is refused synchronously with **403** `admin_required` unless the caller is in
     the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
