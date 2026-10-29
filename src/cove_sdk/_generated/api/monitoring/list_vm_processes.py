@@ -69,6 +69,11 @@ def _parse_response(
 
         return response_404
 
+    if response.status_code == 409:
+        response_409 = ApiError.from_dict(response.json())
+
+        return response_409
+
     if response.status_code == 426:
         response_426 = CliTooOldBody.from_dict(response.json())
 
