@@ -100,6 +100,8 @@ def sync_detailed(
     deletes an orphan on its own once `[service] orphan_checkpoint_reclaim_days` (default 14) have
     passed since then, unless a clone of it still exists; `reclaim_at` says when, and is absent while a
     clone exists. With that setting at `0` nothing is reclaimed and no checkpoint carries `reclaim_at`.
+    A hibernate's checkpoint is the exception: it is deleted with its VM, whatever the setting, and
+    shows as an orphan only while something still reads its disk.
 
     Cursor-paginated, with the same envelope, parameters and ordering as the per-VM `GET
     /api/vms/{name}/checkpoints`: at most `limit` rows come back, and `next_cursor` is non-null whenever
@@ -146,6 +148,8 @@ def sync(
     deletes an orphan on its own once `[service] orphan_checkpoint_reclaim_days` (default 14) have
     passed since then, unless a clone of it still exists; `reclaim_at` says when, and is absent while a
     clone exists. With that setting at `0` nothing is reclaimed and no checkpoint carries `reclaim_at`.
+    A hibernate's checkpoint is the exception: it is deleted with its VM, whatever the setting, and
+    shows as an orphan only while something still reads its disk.
 
     Cursor-paginated, with the same envelope, parameters and ordering as the per-VM `GET
     /api/vms/{name}/checkpoints`: at most `limit` rows come back, and `next_cursor` is non-null whenever
@@ -187,6 +191,8 @@ async def asyncio_detailed(
     deletes an orphan on its own once `[service] orphan_checkpoint_reclaim_days` (default 14) have
     passed since then, unless a clone of it still exists; `reclaim_at` says when, and is absent while a
     clone exists. With that setting at `0` nothing is reclaimed and no checkpoint carries `reclaim_at`.
+    A hibernate's checkpoint is the exception: it is deleted with its VM, whatever the setting, and
+    shows as an orphan only while something still reads its disk.
 
     Cursor-paginated, with the same envelope, parameters and ordering as the per-VM `GET
     /api/vms/{name}/checkpoints`: at most `limit` rows come back, and `next_cursor` is non-null whenever
@@ -231,6 +237,8 @@ async def asyncio(
     deletes an orphan on its own once `[service] orphan_checkpoint_reclaim_days` (default 14) have
     passed since then, unless a clone of it still exists; `reclaim_at` says when, and is absent while a
     clone exists. With that setting at `0` nothing is reclaimed and no checkpoint carries `reclaim_at`.
+    A hibernate's checkpoint is the exception: it is deleted with its VM, whatever the setting, and
+    shows as an orphan only while something still reads its disk.
 
     Cursor-paginated, with the same envelope, parameters and ordering as the per-VM `GET
     /api/vms/{name}/checkpoints`: at most `limit` rows come back, and `next_cursor` is non-null whenever
