@@ -23,7 +23,8 @@ class ProxyUrlInfo:
 
         Attributes:
             ports (list[ProxyPortInfo]):
-            ssh_url (str):
+            ssh_url (str): The VM's SSH address through the bastion. Empty when the server has
+                no bastion (a Mac cove built without the embedded Warpgate).
             vm_name (str):
             web_url (None | str | Unset): The address Cove's web app is served on, as the server is configured
                 (`[daemon.cli_releases] public_url`, else `https://<api_external_host>`):
