@@ -81,6 +81,16 @@ class OffboardUserReport:
                 sessions are closed failed: anything a still-open session created in
                 between may still be live, so run the offboarding again. A failed
                 item. Never set in a dry run.
+            tickets_left_on_other_instances (int | Unset): How many Warpgate tickets in the user's name this run saw on
+                targets
+                another Cove instance owns, on a Warpgate shared with other Cove
+                instances, counted over all its passes (one that instance removed
+                during the run is still counted). They are left for that instance's
+                offboarding, and while any remain Warpgate refuses to delete the
+                user. A count only, and not a failed item. Only passes that could list
+                the targets at Warpgate count (a pass that could not reports a failed
+                ticket item). 0 from a server that predates it, when Cove runs without
+                Warpgate, or when no pass could list the targets.
             warpgate_role (None | OffboardWarpgateRole | Unset):
             warpgate_user (None | OffboardWarpgateUser | Unset):
     """
@@ -104,6 +114,7 @@ class OffboardUserReport:
     disabled: bool | Unset = UNSET
     left_behind: None | OffboardLeftBehind | Unset = UNSET
     second_sweep_error: None | str | Unset = UNSET
+    tickets_left_on_other_instances: int | Unset = UNSET
     warpgate_role: None | OffboardWarpgateRole | Unset = UNSET
     warpgate_user: None | OffboardWarpgateUser | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -197,6 +208,8 @@ class OffboardUserReport:
         else:
             second_sweep_error = self.second_sweep_error
 
+        tickets_left_on_other_instances = self.tickets_left_on_other_instances
+
         warpgate_role: dict[str, Any] | None | Unset
         if isinstance(self.warpgate_role, Unset):
             warpgate_role = UNSET
@@ -241,6 +254,10 @@ class OffboardUserReport:
             field_dict["left_behind"] = left_behind
         if second_sweep_error is not UNSET:
             field_dict["second_sweep_error"] = second_sweep_error
+        if tickets_left_on_other_instances is not UNSET:
+            field_dict["tickets_left_on_other_instances"] = (
+                tickets_left_on_other_instances
+            )
         if warpgate_role is not UNSET:
             field_dict["warpgate_role"] = warpgate_role
         if warpgate_user is not UNSET:
@@ -401,6 +418,10 @@ class OffboardUserReport:
             d.pop("second_sweep_error", UNSET)
         )
 
+        tickets_left_on_other_instances = d.pop(
+            "tickets_left_on_other_instances", UNSET
+        )
+
         def _parse_warpgate_role(data: object) -> None | OffboardWarpgateRole | Unset:
             if data is None:
                 return data
@@ -455,6 +476,7 @@ class OffboardUserReport:
             disabled=disabled,
             left_behind=left_behind,
             second_sweep_error=second_sweep_error,
+            tickets_left_on_other_instances=tickets_left_on_other_instances,
             warpgate_role=warpgate_role,
             warpgate_user=warpgate_user,
         )
