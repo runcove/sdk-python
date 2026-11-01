@@ -143,21 +143,24 @@ def sync_detailed(
     failed item (delete it in Warpgate, then run the call again); so is, deleting nothing, the user that
     owns Cove's own Warpgate token, or a name several users share regardless of case. Then, belt and
     braces, every SSH public key of theirs at Warpgate is deleted (`ssh_keys_deleted`), every Warpgate
-    ticket in their name, whatever minted it, and every port invite they minted on any VM, including one
-    on a VM someone else owns (a ticket in the owner's name, found by the `vm.invite.created` audit row
-    naming them), is deleted (`tickets_deleted`), and every live Warpgate session of theirs is closed,
-    on every target: the shell, the web UI and each VM (`sessions_closed`), since a key or a ticket
-    signs in without the identity provider and an open session never asks it again. A session open until
-    the close could add a key or mint a ticket, so keys, tickets and sessions are handled again until a
-    pass finds nothing new, three passes at most; every pass's items are reported, and a list still
-    finding new ones in the third pass gets a failed `*` entry. The credential step then runs once more,
-    so a key, webhook or share such a session created in between is ended and reported too; if that
-    sweep fails, `second_sweep_error` says why, a failed item. Then they are removed from every team
-    they belong to, every secret in their own (user) scope is deleted (team, project and VM secrets stay
-    with the team, project or VM), and every VM they own is stopped, under its lifecycle lock and as
-    read again under it: one in the middle of a transition then is not touched and is a failed item. VMs
-    are never deleted or reassigned. On a host with the secrets feature off, the secrets entry is one
-    failed item (`name` `*`, `secrets feature disabled; nothing deleted`). A failure of one of these
+    ticket in their name on a target this Cove instance owns, whatever minted it, and every port invite
+    they minted on any VM this instance owns, including one on a VM someone else owns (a ticket in the
+    owner's name, found by the `vm.invite.created` audit row naming them), is deleted
+    (`tickets_deleted`; on a Warpgate shared with other Cove instances, a ticket of theirs on another
+    instance's target is left, and Warpgate refuses to delete their user until that instance's
+    offboarding removes it, then run the call again), and every live Warpgate session of theirs is
+    closed, on every target: the shell, the web UI and each VM (`sessions_closed`), since a key or a
+    ticket signs in without the identity provider and an open session never asks it again. A session
+    open until the close could add a key or mint a ticket, so keys, tickets and sessions are handled
+    again until a pass finds nothing new, three passes at most; every pass's items are reported, and a
+    list still finding new ones in the third pass gets a failed `*` entry. The credential step then runs
+    once more, so a key, webhook or share such a session created in between is ended and reported too;
+    if that sweep fails, `second_sweep_error` says why, a failed item. Then they are removed from every
+    team they belong to, every secret in their own (user) scope is deleted (team, project and VM secrets
+    stay with the team, project or VM), and every VM they own is stopped, under its lifecycle lock and
+    as read again under it: one in the middle of a transition then is not touched and is a failed item.
+    VMs are never deleted or reassigned. On a host with the secrets feature off, the secrets entry is
+    one failed item (`name` `*`, `secrets feature disabled; nothing deleted`). A failure of one of these
     items is reported in its entry and does not stop the others, so the response is 200 even when some
     items failed; run the call again to retry them. A failed item is an entry with `ok` false, a VM
     whose `outcome` is `failed`, a `warpgate_role` or `warpgate_user` whose `outcome` is `failed`, any
@@ -239,21 +242,24 @@ def sync(
     failed item (delete it in Warpgate, then run the call again); so is, deleting nothing, the user that
     owns Cove's own Warpgate token, or a name several users share regardless of case. Then, belt and
     braces, every SSH public key of theirs at Warpgate is deleted (`ssh_keys_deleted`), every Warpgate
-    ticket in their name, whatever minted it, and every port invite they minted on any VM, including one
-    on a VM someone else owns (a ticket in the owner's name, found by the `vm.invite.created` audit row
-    naming them), is deleted (`tickets_deleted`), and every live Warpgate session of theirs is closed,
-    on every target: the shell, the web UI and each VM (`sessions_closed`), since a key or a ticket
-    signs in without the identity provider and an open session never asks it again. A session open until
-    the close could add a key or mint a ticket, so keys, tickets and sessions are handled again until a
-    pass finds nothing new, three passes at most; every pass's items are reported, and a list still
-    finding new ones in the third pass gets a failed `*` entry. The credential step then runs once more,
-    so a key, webhook or share such a session created in between is ended and reported too; if that
-    sweep fails, `second_sweep_error` says why, a failed item. Then they are removed from every team
-    they belong to, every secret in their own (user) scope is deleted (team, project and VM secrets stay
-    with the team, project or VM), and every VM they own is stopped, under its lifecycle lock and as
-    read again under it: one in the middle of a transition then is not touched and is a failed item. VMs
-    are never deleted or reassigned. On a host with the secrets feature off, the secrets entry is one
-    failed item (`name` `*`, `secrets feature disabled; nothing deleted`). A failure of one of these
+    ticket in their name on a target this Cove instance owns, whatever minted it, and every port invite
+    they minted on any VM this instance owns, including one on a VM someone else owns (a ticket in the
+    owner's name, found by the `vm.invite.created` audit row naming them), is deleted
+    (`tickets_deleted`; on a Warpgate shared with other Cove instances, a ticket of theirs on another
+    instance's target is left, and Warpgate refuses to delete their user until that instance's
+    offboarding removes it, then run the call again), and every live Warpgate session of theirs is
+    closed, on every target: the shell, the web UI and each VM (`sessions_closed`), since a key or a
+    ticket signs in without the identity provider and an open session never asks it again. A session
+    open until the close could add a key or mint a ticket, so keys, tickets and sessions are handled
+    again until a pass finds nothing new, three passes at most; every pass's items are reported, and a
+    list still finding new ones in the third pass gets a failed `*` entry. The credential step then runs
+    once more, so a key, webhook or share such a session created in between is ended and reported too;
+    if that sweep fails, `second_sweep_error` says why, a failed item. Then they are removed from every
+    team they belong to, every secret in their own (user) scope is deleted (team, project and VM secrets
+    stay with the team, project or VM), and every VM they own is stopped, under its lifecycle lock and
+    as read again under it: one in the middle of a transition then is not touched and is a failed item.
+    VMs are never deleted or reassigned. On a host with the secrets feature off, the secrets entry is
+    one failed item (`name` `*`, `secrets feature disabled; nothing deleted`). A failure of one of these
     items is reported in its entry and does not stop the others, so the response is 200 even when some
     items failed; run the call again to retry them. A failed item is an entry with `ok` false, a VM
     whose `outcome` is `failed`, a `warpgate_role` or `warpgate_user` whose `outcome` is `failed`, any
@@ -330,21 +336,24 @@ async def asyncio_detailed(
     failed item (delete it in Warpgate, then run the call again); so is, deleting nothing, the user that
     owns Cove's own Warpgate token, or a name several users share regardless of case. Then, belt and
     braces, every SSH public key of theirs at Warpgate is deleted (`ssh_keys_deleted`), every Warpgate
-    ticket in their name, whatever minted it, and every port invite they minted on any VM, including one
-    on a VM someone else owns (a ticket in the owner's name, found by the `vm.invite.created` audit row
-    naming them), is deleted (`tickets_deleted`), and every live Warpgate session of theirs is closed,
-    on every target: the shell, the web UI and each VM (`sessions_closed`), since a key or a ticket
-    signs in without the identity provider and an open session never asks it again. A session open until
-    the close could add a key or mint a ticket, so keys, tickets and sessions are handled again until a
-    pass finds nothing new, three passes at most; every pass's items are reported, and a list still
-    finding new ones in the third pass gets a failed `*` entry. The credential step then runs once more,
-    so a key, webhook or share such a session created in between is ended and reported too; if that
-    sweep fails, `second_sweep_error` says why, a failed item. Then they are removed from every team
-    they belong to, every secret in their own (user) scope is deleted (team, project and VM secrets stay
-    with the team, project or VM), and every VM they own is stopped, under its lifecycle lock and as
-    read again under it: one in the middle of a transition then is not touched and is a failed item. VMs
-    are never deleted or reassigned. On a host with the secrets feature off, the secrets entry is one
-    failed item (`name` `*`, `secrets feature disabled; nothing deleted`). A failure of one of these
+    ticket in their name on a target this Cove instance owns, whatever minted it, and every port invite
+    they minted on any VM this instance owns, including one on a VM someone else owns (a ticket in the
+    owner's name, found by the `vm.invite.created` audit row naming them), is deleted
+    (`tickets_deleted`; on a Warpgate shared with other Cove instances, a ticket of theirs on another
+    instance's target is left, and Warpgate refuses to delete their user until that instance's
+    offboarding removes it, then run the call again), and every live Warpgate session of theirs is
+    closed, on every target: the shell, the web UI and each VM (`sessions_closed`), since a key or a
+    ticket signs in without the identity provider and an open session never asks it again. A session
+    open until the close could add a key or mint a ticket, so keys, tickets and sessions are handled
+    again until a pass finds nothing new, three passes at most; every pass's items are reported, and a
+    list still finding new ones in the third pass gets a failed `*` entry. The credential step then runs
+    once more, so a key, webhook or share such a session created in between is ended and reported too;
+    if that sweep fails, `second_sweep_error` says why, a failed item. Then they are removed from every
+    team they belong to, every secret in their own (user) scope is deleted (team, project and VM secrets
+    stay with the team, project or VM), and every VM they own is stopped, under its lifecycle lock and
+    as read again under it: one in the middle of a transition then is not touched and is a failed item.
+    VMs are never deleted or reassigned. On a host with the secrets feature off, the secrets entry is
+    one failed item (`name` `*`, `secrets feature disabled; nothing deleted`). A failure of one of these
     items is reported in its entry and does not stop the others, so the response is 200 even when some
     items failed; run the call again to retry them. A failed item is an entry with `ok` false, a VM
     whose `outcome` is `failed`, a `warpgate_role` or `warpgate_user` whose `outcome` is `failed`, any
@@ -424,21 +433,24 @@ async def asyncio(
     failed item (delete it in Warpgate, then run the call again); so is, deleting nothing, the user that
     owns Cove's own Warpgate token, or a name several users share regardless of case. Then, belt and
     braces, every SSH public key of theirs at Warpgate is deleted (`ssh_keys_deleted`), every Warpgate
-    ticket in their name, whatever minted it, and every port invite they minted on any VM, including one
-    on a VM someone else owns (a ticket in the owner's name, found by the `vm.invite.created` audit row
-    naming them), is deleted (`tickets_deleted`), and every live Warpgate session of theirs is closed,
-    on every target: the shell, the web UI and each VM (`sessions_closed`), since a key or a ticket
-    signs in without the identity provider and an open session never asks it again. A session open until
-    the close could add a key or mint a ticket, so keys, tickets and sessions are handled again until a
-    pass finds nothing new, three passes at most; every pass's items are reported, and a list still
-    finding new ones in the third pass gets a failed `*` entry. The credential step then runs once more,
-    so a key, webhook or share such a session created in between is ended and reported too; if that
-    sweep fails, `second_sweep_error` says why, a failed item. Then they are removed from every team
-    they belong to, every secret in their own (user) scope is deleted (team, project and VM secrets stay
-    with the team, project or VM), and every VM they own is stopped, under its lifecycle lock and as
-    read again under it: one in the middle of a transition then is not touched and is a failed item. VMs
-    are never deleted or reassigned. On a host with the secrets feature off, the secrets entry is one
-    failed item (`name` `*`, `secrets feature disabled; nothing deleted`). A failure of one of these
+    ticket in their name on a target this Cove instance owns, whatever minted it, and every port invite
+    they minted on any VM this instance owns, including one on a VM someone else owns (a ticket in the
+    owner's name, found by the `vm.invite.created` audit row naming them), is deleted
+    (`tickets_deleted`; on a Warpgate shared with other Cove instances, a ticket of theirs on another
+    instance's target is left, and Warpgate refuses to delete their user until that instance's
+    offboarding removes it, then run the call again), and every live Warpgate session of theirs is
+    closed, on every target: the shell, the web UI and each VM (`sessions_closed`), since a key or a
+    ticket signs in without the identity provider and an open session never asks it again. A session
+    open until the close could add a key or mint a ticket, so keys, tickets and sessions are handled
+    again until a pass finds nothing new, three passes at most; every pass's items are reported, and a
+    list still finding new ones in the third pass gets a failed `*` entry. The credential step then runs
+    once more, so a key, webhook or share such a session created in between is ended and reported too;
+    if that sweep fails, `second_sweep_error` says why, a failed item. Then they are removed from every
+    team they belong to, every secret in their own (user) scope is deleted (team, project and VM secrets
+    stay with the team, project or VM), and every VM they own is stopped, under its lifecycle lock and
+    as read again under it: one in the middle of a transition then is not touched and is a failed item.
+    VMs are never deleted or reassigned. On a host with the secrets feature off, the secrets entry is
+    one failed item (`name` `*`, `secrets feature disabled; nothing deleted`). A failure of one of these
     items is reported in its entry and does not stop the others, so the response is 200 even when some
     items failed; run the call again to retry them. A failed item is an entry with `ok` false, a VM
     whose `outcome` is `failed`, a `warpgate_role` or `warpgate_user` whose `outcome` is `failed`, any

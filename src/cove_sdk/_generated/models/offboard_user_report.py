@@ -60,9 +60,11 @@ class OffboardUserReport:
                 user, one result each (deleting the user normally takes them with
                 it, so this is usually empty). Empty when Cove runs without Warpgate.
             teams_left (list[OffboardTeam]): The teams the user was removed from, one result each.
-            tickets_deleted (list[OffboardTicket]): The Warpgate tickets in the user's name, and every port invite the
-                user minted on any VM (on a VM someone else owns it is a ticket in
-                the owner's name; its `vm.invite.created` audit row names the user),
+            tickets_deleted (list[OffboardTicket]): The Warpgate tickets in the user's name on targets this Cove instance
+                owns (tickets on another Cove instance's targets on a shared Warpgate
+                are left), and every port invite the user minted on any VM this
+                instance owns (on a VM someone else owns it is a ticket in the
+                owner's name; its `vm.invite.created` audit row names the user),
                 deleted after the keys, one result each. Empty when Cove runs without
                 Warpgate.
             username (str): Whose account this is.
