@@ -416,8 +416,9 @@ class Admin:
         item is an entry with ``ok`` false and an ``error``, a VM, a ``warpgate_role`` or a
         ``warpgate_user`` with ``outcome`` ``failed``, any
         entry of ``cli_sessions_failed`` (a CLI session Warpgate could not delete; it has no
-        ``ok``), or a set ``second_sweep_error`` (the sweep after the sessions closed failed):
-        run the call again. ``dry_run=True`` returns the same report and changes nothing; the
+        ``ok``), a set ``second_sweep_error`` (the sweep after the sessions closed failed):
+        run the call again; or a set ``warpgate_admin_roles_error`` (a kept Warpgate user holds
+        a Warpgate admin role, which a Warpgate admin must remove). ``dry_run=True`` returns the same report and changes nothing; the
         body always carries an explicit ``dry_run`` (the server refuses any other body but an
         empty one). 404 only for a user Cove knows nothing of (never signed in, and no
         membership, share, binding, key, webhook or VM names them).

@@ -15,7 +15,9 @@ T = TypeVar("T", bound="OffboardWarpgateUser")
 
 @_attrs_define
 class OffboardWarpgateUser:
-    """The person's Warpgate user, deleted first in the Warpgate step. A user
+    """The person's Warpgate user, deleted last in the Warpgate step, and kept
+    while tickets in their name remain on another Cove instance's targets
+    (deleting it would delete those too). A user
     API token, password, one-time code or certificate of theirs signs in
     without the identity provider, and their roles reach every target; all
     of it goes with the user. If they sign in again through the identity
