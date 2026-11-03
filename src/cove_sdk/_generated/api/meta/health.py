@@ -75,6 +75,11 @@ def sync_detailed(
     hibernated VM then waits while the VM wakes. It is absent when the jump is off or not registered,
     and from servers that predate it.
 
+    `oci_refused` is set while this daemon refuses every OCI image reference because it could not build
+    its registry client, and says why. `status` stays `ok`: its VMs and golden images still work, so
+    deploy checks that care about OCI images should fail on the field. It is absent when the client is
+    built, and from servers that predate it.
+
     Root `GET /health` (no `/api` prefix) answers the identical handler on every listener, for
     infrastructure that cannot be pointed at a prefixed path — it carries no public description (see the
     exclusion list in `crate::openapi`). This `/api/health` operation is the described one, and it is
@@ -117,6 +122,11 @@ def sync(
     hibernated VM then waits while the VM wakes. It is absent when the jump is off or not registered,
     and from servers that predate it.
 
+    `oci_refused` is set while this daemon refuses every OCI image reference because it could not build
+    its registry client, and says why. `status` stays `ok`: its VMs and golden images still work, so
+    deploy checks that care about OCI images should fail on the field. It is absent when the client is
+    built, and from servers that predate it.
+
     Root `GET /health` (no `/api` prefix) answers the identical handler on every listener, for
     infrastructure that cannot be pointed at a prefixed path — it carries no public description (see the
     exclusion list in `crate::openapi`). This `/api/health` operation is the described one, and it is
@@ -154,6 +164,11 @@ async def asyncio_detailed(
     `wake_jump` is `true` while this server's wake jump is active: a plain `ssh` through Warpgate to a
     hibernated VM then waits while the VM wakes. It is absent when the jump is off or not registered,
     and from servers that predate it.
+
+    `oci_refused` is set while this daemon refuses every OCI image reference because it could not build
+    its registry client, and says why. `status` stays `ok`: its VMs and golden images still work, so
+    deploy checks that care about OCI images should fail on the field. It is absent when the client is
+    built, and from servers that predate it.
 
     Root `GET /health` (no `/api` prefix) answers the identical handler on every listener, for
     infrastructure that cannot be pointed at a prefixed path — it carries no public description (see the
@@ -194,6 +209,11 @@ async def asyncio(
     `wake_jump` is `true` while this server's wake jump is active: a plain `ssh` through Warpgate to a
     hibernated VM then waits while the VM wakes. It is absent when the jump is off or not registered,
     and from servers that predate it.
+
+    `oci_refused` is set while this daemon refuses every OCI image reference because it could not build
+    its registry client, and says why. `status` stays `ok`: its VMs and golden images still work, so
+    deploy checks that care about OCI images should fail on the field. It is absent when the client is
+    built, and from servers that predate it.
 
     Root `GET /health` (no `/api` prefix) answers the identical handler on every listener, for
     infrastructure that cannot be pointed at a prefixed path — it carries no public description (see the

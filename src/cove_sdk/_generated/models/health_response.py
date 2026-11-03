@@ -28,6 +28,10 @@ class HealthResponse:
         api_version (int | Unset):
         build_info (BuildInfo | None | Unset):
         min_cli_version (str | Unset):
+        oci_refused (None | str | Unset): Set while this daemon refuses every OCI image reference because it
+            could not build its registry client, saying so and why. `status`
+            stays `ok`: its VMs and golden images still work. Absent otherwise, and
+            from servers that predate the field.
         server_version (str | Unset):
         traffic_monitor (None | TrafficMonitorStatus | Unset):
         wake_jump (bool | None | Unset): `true` while this daemon's wake jump is active: Warpgate then sends a
@@ -43,6 +47,7 @@ class HealthResponse:
     api_version: int | Unset = UNSET
     build_info: BuildInfo | None | Unset = UNSET
     min_cli_version: str | Unset = UNSET
+    oci_refused: None | str | Unset = UNSET
     server_version: str | Unset = UNSET
     traffic_monitor: None | TrafficMonitorStatus | Unset = UNSET
     wake_jump: bool | None | Unset = UNSET
@@ -73,6 +78,12 @@ class HealthResponse:
             build_info = self.build_info
 
         min_cli_version = self.min_cli_version
+
+        oci_refused: None | str | Unset
+        if isinstance(self.oci_refused, Unset):
+            oci_refused = UNSET
+        else:
+            oci_refused = self.oci_refused
 
         server_version = self.server_version
 
@@ -106,6 +117,8 @@ class HealthResponse:
             field_dict["build_info"] = build_info
         if min_cli_version is not UNSET:
             field_dict["min_cli_version"] = min_cli_version
+        if oci_refused is not UNSET:
+            field_dict["oci_refused"] = oci_refused
         if server_version is not UNSET:
             field_dict["server_version"] = server_version
         if traffic_monitor is not UNSET:
@@ -152,6 +165,15 @@ class HealthResponse:
 
         min_cli_version = d.pop("min_cli_version", UNSET)
 
+        def _parse_oci_refused(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        oci_refused = _parse_oci_refused(d.pop("oci_refused", UNSET))
+
         server_version = d.pop("server_version", UNSET)
 
         def _parse_traffic_monitor(data: object) -> None | TrafficMonitorStatus | Unset:
@@ -188,6 +210,7 @@ class HealthResponse:
             api_version=api_version,
             build_info=build_info,
             min_cli_version=min_cli_version,
+            oci_refused=oci_refused,
             server_version=server_version,
             traffic_monitor=traffic_monitor,
             wake_jump=wake_jump,
