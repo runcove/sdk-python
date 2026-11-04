@@ -106,7 +106,8 @@ def sync_detailed(
      Revokes the key at once: requests with it are refused, and streams already open with it end within
     the server's 15 s re-check interval. You can revoke your own personal keys. An administrator can
     revoke anyone's key, personal, team or service, when signed in or through an admin key (`cove key
-    create --admin`); an ordinary key of an administrator cannot. The audit record (`keys.revoked`, or
+    create --admin`); an ordinary key of an administrator cannot. A team's admin can revoke that team's
+    keys (not its service keys), signed in or from a personal key. The audit record (`keys.revoked`, or
     `keys.team_revoked` for a team key) names who revoked it and, for a personal key, its owner. A key
     you may not revoke returns 404, identically to a missing one (existence non-leak).
 
@@ -142,7 +143,8 @@ def sync(
      Revokes the key at once: requests with it are refused, and streams already open with it end within
     the server's 15 s re-check interval. You can revoke your own personal keys. An administrator can
     revoke anyone's key, personal, team or service, when signed in or through an admin key (`cove key
-    create --admin`); an ordinary key of an administrator cannot. The audit record (`keys.revoked`, or
+    create --admin`); an ordinary key of an administrator cannot. A team's admin can revoke that team's
+    keys (not its service keys), signed in or from a personal key. The audit record (`keys.revoked`, or
     `keys.team_revoked` for a team key) names who revoked it and, for a personal key, its owner. A key
     you may not revoke returns 404, identically to a missing one (existence non-leak).
 
@@ -173,7 +175,8 @@ async def asyncio_detailed(
      Revokes the key at once: requests with it are refused, and streams already open with it end within
     the server's 15 s re-check interval. You can revoke your own personal keys. An administrator can
     revoke anyone's key, personal, team or service, when signed in or through an admin key (`cove key
-    create --admin`); an ordinary key of an administrator cannot. The audit record (`keys.revoked`, or
+    create --admin`); an ordinary key of an administrator cannot. A team's admin can revoke that team's
+    keys (not its service keys), signed in or from a personal key. The audit record (`keys.revoked`, or
     `keys.team_revoked` for a team key) names who revoked it and, for a personal key, its owner. A key
     you may not revoke returns 404, identically to a missing one (existence non-leak).
 
@@ -207,7 +210,8 @@ async def asyncio(
      Revokes the key at once: requests with it are refused, and streams already open with it end within
     the server's 15 s re-check interval. You can revoke your own personal keys. An administrator can
     revoke anyone's key, personal, team or service, when signed in or through an admin key (`cove key
-    create --admin`); an ordinary key of an administrator cannot. The audit record (`keys.revoked`, or
+    create --admin`); an ordinary key of an administrator cannot. A team's admin can revoke that team's
+    keys (not its service keys), signed in or from a personal key. The audit record (`keys.revoked`, or
     `keys.team_revoked` for a team key) names who revoked it and, for a personal key, its owner. A key
     you may not revoke returns 404, identically to a missing one (existence non-leak).
 

@@ -87,6 +87,10 @@ def sync_detailed(
     Carries **no** `x-required-scope`: the only data returned is about the caller themselves, so any
     valid bearer may read it. `scope_table::lookup` maps every GET under `/api/me` to no specific scope.
 
+    The body also carries `team_admin_of`: the names of the teams whose keys the caller can manage as
+    the team's admin. Filled for a person (a signed-in session or a personal key); empty for a team key,
+    a service key or a connected app. It answers where to go, it is not a permission.
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
@@ -130,6 +134,10 @@ def sync(
     Carries **no** `x-required-scope`: the only data returned is about the caller themselves, so any
     valid bearer may read it. `scope_table::lookup` maps every GET under `/api/me` to no specific scope.
 
+    The body also carries `team_admin_of`: the names of the teams whose keys the caller can manage as
+    the team's admin. Filled for a person (a signed-in session or a personal key); empty for a team key,
+    a service key or a connected app. It answers where to go, it is not a permission.
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
@@ -168,6 +176,10 @@ async def asyncio_detailed(
 
     Carries **no** `x-required-scope`: the only data returned is about the caller themselves, so any
     valid bearer may read it. `scope_table::lookup` maps every GET under `/api/me` to no specific scope.
+
+    The body also carries `team_admin_of`: the names of the teams whose keys the caller can manage as
+    the team's admin. Filled for a person (a signed-in session or a personal key); empty for a team key,
+    a service key or a connected app. It answers where to go, it is not a permission.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -209,6 +221,10 @@ async def asyncio(
 
     Carries **no** `x-required-scope`: the only data returned is about the caller themselves, so any
     valid bearer may read it. `scope_table::lookup` maps every GET under `/api/me` to no specific scope.
+
+    The body also carries `team_admin_of`: the names of the teams whose keys the caller can manage as
+    the team's admin. Filled for a person (a signed-in session or a personal key); empty for a team key,
+    a service key or a connected app. It answers where to go, it is not a permission.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

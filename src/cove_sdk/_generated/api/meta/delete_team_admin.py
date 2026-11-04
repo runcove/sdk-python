@@ -8,7 +8,7 @@ from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.api_error import ApiError
 from ...models.cli_too_old_body import CliTooOldBody
-from ...models.team_role_change_response import TeamRoleChangeResponse
+from ...models.team_admin_revoke_response import TeamAdminRevokeResponse
 from ...types import Response
 
 
@@ -30,9 +30,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ApiError | CliTooOldBody | TeamRoleChangeResponse | None:
+) -> ApiError | CliTooOldBody | TeamAdminRevokeResponse | None:
     if response.status_code == 200:
-        response_200 = TeamRoleChangeResponse.from_dict(response.json())
+        response_200 = TeamAdminRevokeResponse.from_dict(response.json())
 
         return response_200
 
@@ -74,7 +74,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ApiError | CliTooOldBody | TeamRoleChangeResponse]:
+) -> Response[ApiError | CliTooOldBody | TeamAdminRevokeResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -88,7 +88,7 @@ def sync_detailed(
     username: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[ApiError | CliTooOldBody | TeamRoleChangeResponse]:
+) -> Response[ApiError | CliTooOldBody | TeamAdminRevokeResponse]:
     """Make a team admin a plain member again
 
      Admin only (an admin key with `teams:write`, or an administrator's session). The person stays a
@@ -105,7 +105,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | CliTooOldBody | TeamRoleChangeResponse]
+        Response[ApiError | CliTooOldBody | TeamAdminRevokeResponse]
     """
 
     kwargs = _get_kwargs(
@@ -125,7 +125,7 @@ def sync(
     username: str,
     *,
     client: AuthenticatedClient | Client,
-) -> ApiError | CliTooOldBody | TeamRoleChangeResponse | None:
+) -> ApiError | CliTooOldBody | TeamAdminRevokeResponse | None:
     """Make a team admin a plain member again
 
      Admin only (an admin key with `teams:write`, or an administrator's session). The person stays a
@@ -142,7 +142,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | CliTooOldBody | TeamRoleChangeResponse
+        ApiError | CliTooOldBody | TeamAdminRevokeResponse
     """
 
     return sync_detailed(
@@ -157,7 +157,7 @@ async def asyncio_detailed(
     username: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[ApiError | CliTooOldBody | TeamRoleChangeResponse]:
+) -> Response[ApiError | CliTooOldBody | TeamAdminRevokeResponse]:
     """Make a team admin a plain member again
 
      Admin only (an admin key with `teams:write`, or an administrator's session). The person stays a
@@ -174,7 +174,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | CliTooOldBody | TeamRoleChangeResponse]
+        Response[ApiError | CliTooOldBody | TeamAdminRevokeResponse]
     """
 
     kwargs = _get_kwargs(
@@ -192,7 +192,7 @@ async def asyncio(
     username: str,
     *,
     client: AuthenticatedClient | Client,
-) -> ApiError | CliTooOldBody | TeamRoleChangeResponse | None:
+) -> ApiError | CliTooOldBody | TeamAdminRevokeResponse | None:
     """Make a team admin a plain member again
 
      Admin only (an admin key with `teams:write`, or an administrator's session). The person stays a
@@ -209,7 +209,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | CliTooOldBody | TeamRoleChangeResponse
+        ApiError | CliTooOldBody | TeamAdminRevokeResponse
     """
 
     return (

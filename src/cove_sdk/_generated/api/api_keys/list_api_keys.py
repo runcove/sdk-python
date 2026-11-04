@@ -107,11 +107,11 @@ def sync_detailed(
 ) -> Response[ApiError | CliTooOldBody | list[KeySummary]]:
     """List API keys
 
-     Default scope is the caller's own keys; `?team=<slug>` lists a team's keys instead (admin only — the
-    admin gate runs BEFORE the team lookup so a non-admin cannot distinguish a nonexistent team from an
-    existing one); `?service=true` lists every service key instead (admin only; not with `team`). Each
-    summary carries `subject_type` and, for a service key, `bound_team` or `bound_member`. Never
-    includes raw tokens.
+     Default scope is the caller's own keys; `?team=<slug>` lists a team's keys instead (a fleet admin or
+    that team's admin, also from a personal key — the gate runs BEFORE the team lookup so anyone else
+    cannot distinguish a nonexistent team from an existing one); `?service=true` lists every service key
+    instead (admin only; not with `team`). Each summary carries `subject_type` and, for a service key,
+    `bound_team` or `bound_member`. Never includes raw tokens.
 
     Args:
         team (str | Unset):
@@ -145,11 +145,11 @@ def sync(
 ) -> ApiError | CliTooOldBody | list[KeySummary] | None:
     """List API keys
 
-     Default scope is the caller's own keys; `?team=<slug>` lists a team's keys instead (admin only — the
-    admin gate runs BEFORE the team lookup so a non-admin cannot distinguish a nonexistent team from an
-    existing one); `?service=true` lists every service key instead (admin only; not with `team`). Each
-    summary carries `subject_type` and, for a service key, `bound_team` or `bound_member`. Never
-    includes raw tokens.
+     Default scope is the caller's own keys; `?team=<slug>` lists a team's keys instead (a fleet admin or
+    that team's admin, also from a personal key — the gate runs BEFORE the team lookup so anyone else
+    cannot distinguish a nonexistent team from an existing one); `?service=true` lists every service key
+    instead (admin only; not with `team`). Each summary carries `subject_type` and, for a service key,
+    `bound_team` or `bound_member`. Never includes raw tokens.
 
     Args:
         team (str | Unset):
@@ -178,11 +178,11 @@ async def asyncio_detailed(
 ) -> Response[ApiError | CliTooOldBody | list[KeySummary]]:
     """List API keys
 
-     Default scope is the caller's own keys; `?team=<slug>` lists a team's keys instead (admin only — the
-    admin gate runs BEFORE the team lookup so a non-admin cannot distinguish a nonexistent team from an
-    existing one); `?service=true` lists every service key instead (admin only; not with `team`). Each
-    summary carries `subject_type` and, for a service key, `bound_team` or `bound_member`. Never
-    includes raw tokens.
+     Default scope is the caller's own keys; `?team=<slug>` lists a team's keys instead (a fleet admin or
+    that team's admin, also from a personal key — the gate runs BEFORE the team lookup so anyone else
+    cannot distinguish a nonexistent team from an existing one); `?service=true` lists every service key
+    instead (admin only; not with `team`). Each summary carries `subject_type` and, for a service key,
+    `bound_team` or `bound_member`. Never includes raw tokens.
 
     Args:
         team (str | Unset):
@@ -214,11 +214,11 @@ async def asyncio(
 ) -> ApiError | CliTooOldBody | list[KeySummary] | None:
     """List API keys
 
-     Default scope is the caller's own keys; `?team=<slug>` lists a team's keys instead (admin only — the
-    admin gate runs BEFORE the team lookup so a non-admin cannot distinguish a nonexistent team from an
-    existing one); `?service=true` lists every service key instead (admin only; not with `team`). Each
-    summary carries `subject_type` and, for a service key, `bound_team` or `bound_member`. Never
-    includes raw tokens.
+     Default scope is the caller's own keys; `?team=<slug>` lists a team's keys instead (a fleet admin or
+    that team's admin, also from a personal key — the gate runs BEFORE the team lookup so anyone else
+    cannot distinguish a nonexistent team from an existing one); `?service=true` lists every service key
+    instead (admin only; not with `team`). Each summary carries `subject_type` and, for a service key,
+    `bound_team` or `bound_member`. Never includes raw tokens.
 
     Args:
         team (str | Unset):

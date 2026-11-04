@@ -111,10 +111,10 @@ def sync_detailed(
 
      Atomically creates a replacement key and revokes the original. A non-owned key returns 404,
     identically to a missing one. An admin key is rotated only from a signed-in session: an API key
-    caller, admin key or not, gets 403 `admin_required`. The replacement keeps the original's expiry, so
-    an API key caller that expires may rotate only a key that expires no later than it does (a key
-    rotating itself always may); otherwise 422 `validation_failed` with `field: "id"`. A signed-in
-    session is not affected.
+    caller, admin key or not, gets 403 `admin_required`. So is a team key rotated by that team's admin.
+    The replacement keeps the original's expiry, so an API key caller that expires may rotate only a key
+    that expires no later than it does (a key rotating itself always may); otherwise 422
+    `validation_failed` with `field: "id"`. A signed-in session is not affected.
 
     Args:
         id (str):
@@ -147,10 +147,10 @@ def sync(
 
      Atomically creates a replacement key and revokes the original. A non-owned key returns 404,
     identically to a missing one. An admin key is rotated only from a signed-in session: an API key
-    caller, admin key or not, gets 403 `admin_required`. The replacement keeps the original's expiry, so
-    an API key caller that expires may rotate only a key that expires no later than it does (a key
-    rotating itself always may); otherwise 422 `validation_failed` with `field: "id"`. A signed-in
-    session is not affected.
+    caller, admin key or not, gets 403 `admin_required`. So is a team key rotated by that team's admin.
+    The replacement keeps the original's expiry, so an API key caller that expires may rotate only a key
+    that expires no later than it does (a key rotating itself always may); otherwise 422
+    `validation_failed` with `field: "id"`. A signed-in session is not affected.
 
     Args:
         id (str):
@@ -178,10 +178,10 @@ async def asyncio_detailed(
 
      Atomically creates a replacement key and revokes the original. A non-owned key returns 404,
     identically to a missing one. An admin key is rotated only from a signed-in session: an API key
-    caller, admin key or not, gets 403 `admin_required`. The replacement keeps the original's expiry, so
-    an API key caller that expires may rotate only a key that expires no later than it does (a key
-    rotating itself always may); otherwise 422 `validation_failed` with `field: "id"`. A signed-in
-    session is not affected.
+    caller, admin key or not, gets 403 `admin_required`. So is a team key rotated by that team's admin.
+    The replacement keeps the original's expiry, so an API key caller that expires may rotate only a key
+    that expires no later than it does (a key rotating itself always may); otherwise 422
+    `validation_failed` with `field: "id"`. A signed-in session is not affected.
 
     Args:
         id (str):
@@ -212,10 +212,10 @@ async def asyncio(
 
      Atomically creates a replacement key and revokes the original. A non-owned key returns 404,
     identically to a missing one. An admin key is rotated only from a signed-in session: an API key
-    caller, admin key or not, gets 403 `admin_required`. The replacement keeps the original's expiry, so
-    an API key caller that expires may rotate only a key that expires no later than it does (a key
-    rotating itself always may); otherwise 422 `validation_failed` with `field: "id"`. A signed-in
-    session is not affected.
+    caller, admin key or not, gets 403 `admin_required`. So is a team key rotated by that team's admin.
+    The replacement keeps the original's expiry, so an API key caller that expires may rotate only a key
+    that expires no later than it does (a key rotating itself always may); otherwise 422
+    `validation_failed` with `field: "id"`. A signed-in session is not affected.
 
     Args:
         id (str):

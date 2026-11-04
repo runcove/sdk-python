@@ -249,6 +249,7 @@ from .system_status import SystemStatus
 from .tag_entry import TagEntry
 from .tag_filter import TagFilter
 from .tag_summary import TagSummary
+from .team_admin_revoke_response import TeamAdminRevokeResponse
 from .team_delete_outcome import TeamDeleteOutcome
 from .team_member_entry import TeamMemberEntry
 from .team_quota import TeamQuota
@@ -539,6 +540,7 @@ __all__ = (
     "TagEntry",
     "TagFilter",
     "TagSummary",
+    "TeamAdminRevokeResponse",
     "TeamDeleteOutcome",
     "TeamMemberEntry",
     "TeamQuota",

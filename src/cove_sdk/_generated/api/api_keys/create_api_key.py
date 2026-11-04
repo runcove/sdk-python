@@ -119,8 +119,9 @@ def sync_detailed(
 ) -> Response[ApiError | SudoRequiredBody | CliTooOldBody | CreatedKey]:
     """Create an API key
 
-     The `raw_token` in the response is shown exactly once. Team keys (admin-only, `team` field set)
-    require an expiry and cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
+     The `raw_token` in the response is shown exactly once. Team keys (`team` field set; minted by a
+    fleet admin or that team's admin, who mints only from a signed-in session) require an expiry and
+    cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
 
     **Admin keys:** a key may hold `admin` or any `admin:*` permission only when `admin_key` is `true`
     (`cove key create --admin`), and such a key must expire within `[auth] admin_max_key_lifetime_days`
@@ -185,8 +186,9 @@ def sync(
 ) -> ApiError | SudoRequiredBody | CliTooOldBody | CreatedKey | None:
     """Create an API key
 
-     The `raw_token` in the response is shown exactly once. Team keys (admin-only, `team` field set)
-    require an expiry and cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
+     The `raw_token` in the response is shown exactly once. Team keys (`team` field set; minted by a
+    fleet admin or that team's admin, who mints only from a signed-in session) require an expiry and
+    cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
 
     **Admin keys:** a key may hold `admin` or any `admin:*` permission only when `admin_key` is `true`
     (`cove key create --admin`), and such a key must expire within `[auth] admin_max_key_lifetime_days`
@@ -246,8 +248,9 @@ async def asyncio_detailed(
 ) -> Response[ApiError | SudoRequiredBody | CliTooOldBody | CreatedKey]:
     """Create an API key
 
-     The `raw_token` in the response is shown exactly once. Team keys (admin-only, `team` field set)
-    require an expiry and cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
+     The `raw_token` in the response is shown exactly once. Team keys (`team` field set; minted by a
+    fleet admin or that team's admin, who mints only from a signed-in session) require an expiry and
+    cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
 
     **Admin keys:** a key may hold `admin` or any `admin:*` permission only when `admin_key` is `true`
     (`cove key create --admin`), and such a key must expire within `[auth] admin_max_key_lifetime_days`
@@ -310,8 +313,9 @@ async def asyncio(
 ) -> ApiError | SudoRequiredBody | CliTooOldBody | CreatedKey | None:
     """Create an API key
 
-     The `raw_token` in the response is shown exactly once. Team keys (admin-only, `team` field set)
-    require an expiry and cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
+     The `raw_token` in the response is shown exactly once. Team keys (`team` field set; minted by a
+    fleet admin or that team's admin, who mints only from a signed-in session) require an expiry and
+    cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
 
     **Admin keys:** a key may hold `admin` or any `admin:*` permission only when `admin_key` is `true`
     (`cove key create --admin`), and such a key must expire within `[auth] admin_max_key_lifetime_days`
