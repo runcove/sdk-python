@@ -31,6 +31,9 @@ class LocalStatus:
                 mac_max_guest_ram_fraction` of this Mac's RAM, which create and start
                 are admitted against (VZ wires guest memory). Absent when the Mac's
                 RAM couldn't be read at daemon start.
+            guest_ram_held_mb (int | None | Unset): The memory wired on this Mac now, in MB: what the cap counts against
+                (VZ wires running guests' memory, and the Mac's own wired memory is in
+                it too). Absent when it couldn't be read, and from older daemons.
             image_update (ImageUpdate | None | Unset):
             low_disk_free_bytes (int | None | Unset): The data volume's free bytes, present only while they are below
                 10 GiB. A Mac's VM disks are thin: each takes space
@@ -47,6 +50,7 @@ class LocalStatus:
     bastion_ssh_port: int | None | Unset = UNSET
     bastion_unavailable: None | str | Unset = UNSET
     guest_ram_cap_mb: int | None | Unset = UNSET
+    guest_ram_held_mb: int | None | Unset = UNSET
     image_update: ImageUpdate | None | Unset = UNSET
     low_disk_free_bytes: int | None | Unset = UNSET
     network_owner_gateway: None | str | Unset = UNSET
@@ -73,6 +77,12 @@ class LocalStatus:
             guest_ram_cap_mb = UNSET
         else:
             guest_ram_cap_mb = self.guest_ram_cap_mb
+
+        guest_ram_held_mb: int | None | Unset
+        if isinstance(self.guest_ram_held_mb, Unset):
+            guest_ram_held_mb = UNSET
+        else:
+            guest_ram_held_mb = self.guest_ram_held_mb
 
         image_update: dict[str, Any] | None | Unset
         if isinstance(self.image_update, Unset):
@@ -110,6 +120,8 @@ class LocalStatus:
             field_dict["bastion_unavailable"] = bastion_unavailable
         if guest_ram_cap_mb is not UNSET:
             field_dict["guest_ram_cap_mb"] = guest_ram_cap_mb
+        if guest_ram_held_mb is not UNSET:
+            field_dict["guest_ram_held_mb"] = guest_ram_held_mb
         if image_update is not UNSET:
             field_dict["image_update"] = image_update
         if low_disk_free_bytes is not UNSET:
@@ -156,6 +168,15 @@ class LocalStatus:
             return cast(int | None | Unset, data)
 
         guest_ram_cap_mb = _parse_guest_ram_cap_mb(d.pop("guest_ram_cap_mb", UNSET))
+
+        def _parse_guest_ram_held_mb(data: object) -> int | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(int | None | Unset, data)
+
+        guest_ram_held_mb = _parse_guest_ram_held_mb(d.pop("guest_ram_held_mb", UNSET))
 
         def _parse_image_update(data: object) -> ImageUpdate | None | Unset:
             if data is None:
@@ -211,6 +232,7 @@ class LocalStatus:
             bastion_ssh_port=bastion_ssh_port,
             bastion_unavailable=bastion_unavailable,
             guest_ram_cap_mb=guest_ram_cap_mb,
+            guest_ram_held_mb=guest_ram_held_mb,
             image_update=image_update,
             low_disk_free_bytes=low_disk_free_bytes,
             network_owner_gateway=network_owner_gateway,
