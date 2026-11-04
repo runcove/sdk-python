@@ -520,7 +520,8 @@ received, never re-serialised JSON.
 ## What is covered
 
 Both clients have a method for every operation the external bearer listener serves, except the
-operation in `tests/coverage_allowlist.py` that no method wraps yet: `listMyConnectedApps`.
+three operations in `tests/coverage_allowlist.py` that no method wraps yet: `listMyConnectedApps`,
+`deleteTeamAdmin` and `putTeamAdmin`.
 `tests/test_unit_coverage.py` fails when an operation
 is added to the contract without a method or an allowlist entry. Operations the bearer listener
 does not serve have no method.

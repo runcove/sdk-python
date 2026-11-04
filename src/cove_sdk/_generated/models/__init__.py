@@ -252,6 +252,7 @@ from .tag_summary import TagSummary
 from .team_delete_outcome import TeamDeleteOutcome
 from .team_member_entry import TeamMemberEntry
 from .team_quota import TeamQuota
+from .team_role_change_response import TeamRoleChangeResponse
 from .team_summary import TeamSummary
 from .test_delivery_result import TestDeliveryResult
 from .traffic_monitor_backend import TrafficMonitorBackend
@@ -541,6 +542,7 @@ __all__ = (
     "TeamDeleteOutcome",
     "TeamMemberEntry",
     "TeamQuota",
+    "TeamRoleChangeResponse",
     "TeamSummary",
     "TestDeliveryResult",
     "TrafficMonitorBackend",
