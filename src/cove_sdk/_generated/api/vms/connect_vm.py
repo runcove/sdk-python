@@ -93,8 +93,9 @@ def sync_detailed(
     `warpgate_host` / `warpgate_port` to connect; pin `warpgate_ssh_host_pubkey` before the first
     connection to avoid a TOFU prompt.
 
-    Mint the ticket when you are about to connect: one not spent within five minutes of the mint
-    expires. The expiry bounds only the login; a session it opened is not cut off.
+    Mint the ticket when you are about to connect: one not spent within 12 hours of the mint expires.
+    The same expiry ends a session the ticket opened: Warpgate closes it once the ticket expires, so a
+    session lasts at most 12 hours.
 
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
@@ -139,8 +140,9 @@ def sync(
     `warpgate_host` / `warpgate_port` to connect; pin `warpgate_ssh_host_pubkey` before the first
     connection to avoid a TOFU prompt.
 
-    Mint the ticket when you are about to connect: one not spent within five minutes of the mint
-    expires. The expiry bounds only the login; a session it opened is not cut off.
+    Mint the ticket when you are about to connect: one not spent within 12 hours of the mint expires.
+    The same expiry ends a session the ticket opened: Warpgate closes it once the ticket expires, so a
+    session lasts at most 12 hours.
 
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
@@ -180,8 +182,9 @@ async def asyncio_detailed(
     `warpgate_host` / `warpgate_port` to connect; pin `warpgate_ssh_host_pubkey` before the first
     connection to avoid a TOFU prompt.
 
-    Mint the ticket when you are about to connect: one not spent within five minutes of the mint
-    expires. The expiry bounds only the login; a session it opened is not cut off.
+    Mint the ticket when you are about to connect: one not spent within 12 hours of the mint expires.
+    The same expiry ends a session the ticket opened: Warpgate closes it once the ticket expires, so a
+    session lasts at most 12 hours.
 
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
@@ -224,8 +227,9 @@ async def asyncio(
     `warpgate_host` / `warpgate_port` to connect; pin `warpgate_ssh_host_pubkey` before the first
     connection to avoid a TOFU prompt.
 
-    Mint the ticket when you are about to connect: one not spent within five minutes of the mint
-    expires. The expiry bounds only the login; a session it opened is not cut off.
+    Mint the ticket when you are about to connect: one not spent within 12 hours of the mint expires.
+    The same expiry ends a session the ticket opened: Warpgate closes it once the ticket expires, so a
+    session lasts at most 12 hours.
 
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from

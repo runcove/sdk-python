@@ -92,7 +92,7 @@ def sync_detailed(
     REPL it connects to is itself per-user-scoped, so the ticket grants no privilege beyond the caller's
     existing scope. Every attempt — reached or not — is recorded via
     `LifecycleEventKind::ManagementConnectAttempted`. Like a VM connect ticket, the ticket is single-use
-    and expires if it is not spent within five minutes of the mint.
+    and expires 12 hours after the mint, which also ends a session it opened.
 
     Not served on the external bearer-key listener: this is a browser/SSH-session concept, not an
     orchestrator surface, so it carries no `x-required-scope`.
@@ -125,7 +125,7 @@ def sync(
     REPL it connects to is itself per-user-scoped, so the ticket grants no privilege beyond the caller's
     existing scope. Every attempt — reached or not — is recorded via
     `LifecycleEventKind::ManagementConnectAttempted`. Like a VM connect ticket, the ticket is single-use
-    and expires if it is not spent within five minutes of the mint.
+    and expires 12 hours after the mint, which also ends a session it opened.
 
     Not served on the external bearer-key listener: this is a browser/SSH-session concept, not an
     orchestrator surface, so it carries no `x-required-scope`.
@@ -154,7 +154,7 @@ async def asyncio_detailed(
     REPL it connects to is itself per-user-scoped, so the ticket grants no privilege beyond the caller's
     existing scope. Every attempt — reached or not — is recorded via
     `LifecycleEventKind::ManagementConnectAttempted`. Like a VM connect ticket, the ticket is single-use
-    and expires if it is not spent within five minutes of the mint.
+    and expires 12 hours after the mint, which also ends a session it opened.
 
     Not served on the external bearer-key listener: this is a browser/SSH-session concept, not an
     orchestrator surface, so it carries no `x-required-scope`.
@@ -185,7 +185,7 @@ async def asyncio(
     REPL it connects to is itself per-user-scoped, so the ticket grants no privilege beyond the caller's
     existing scope. Every attempt — reached or not — is recorded via
     `LifecycleEventKind::ManagementConnectAttempted`. Like a VM connect ticket, the ticket is single-use
-    and expires if it is not spent within five minutes of the mint.
+    and expires 12 hours after the mint, which also ends a session it opened.
 
     Not served on the external bearer-key listener: this is a browser/SSH-session concept, not an
     orchestrator surface, so it carries no `x-required-scope`.
