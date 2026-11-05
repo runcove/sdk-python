@@ -121,7 +121,11 @@ def sync_detailed(
 
      The `raw_token` in the response is shown exactly once. Team keys (`team` field set; minted by a
     fleet admin or that team's admin, who mints only from a signed-in session) require an expiry and
-    cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
+    cannot hold `keys:manage`, `access:write`, `vms:nested-virt`, `admin`, or any `admin:*` scope.
+
+    **`vms:nested-virt`** is minted only from a signed-in session: an API key caller asking for it gets
+    403. So does a session of someone who is not in `[auth] nested_virt_users`, administrators included
+    (they use `admin:vms:nested-virt`). A service key never holds it.
 
     **Admin keys:** a key may hold `admin` or any `admin:*` permission only when `admin_key` is `true`
     (`cove key create --admin`), and such a key must expire within `[auth] admin_max_key_lifetime_days`
@@ -130,11 +134,11 @@ def sync_detailed(
     admin key or not, gets 403. An admin key can still mint ordinary keys.
 
     **Service keys:** `service` (with exactly one of `team` or `member`) mints a **service key**,
-    `svc:<service>`: admin only, expiry required, never `keys:manage`, `access:write`, `admin` or
-    `admin:*`, and never an admin key. `team` binds it to a team (its VMs count against the team's
-    quota); `member` binds it to one person (its VMs count against theirs, and they control them). A
-    name is bound once: re-minting it with a different binding, or after its binding ended, is refused.
-    `member` without `service` is refused.
+    `svc:<service>`: admin only, expiry required, never `keys:manage`, `access:write`, `vms:nested-
+    virt`, `admin` or `admin:*`, and never an admin key. `team` binds it to a team (its VMs count
+    against the team's quota); `member` binds it to one person (its VMs count against theirs, and they
+    control them). A name is bound once: re-minting it with a different binding, or after its binding
+    ended, is refused. `member` without `service` is refused.
 
     **A key never outlives the API key minting it:** when the caller is an API key that expires, any key
     it mints (personal, team or service) expires no later than the caller does. A mint that leaves
@@ -188,7 +192,11 @@ def sync(
 
      The `raw_token` in the response is shown exactly once. Team keys (`team` field set; minted by a
     fleet admin or that team's admin, who mints only from a signed-in session) require an expiry and
-    cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
+    cannot hold `keys:manage`, `access:write`, `vms:nested-virt`, `admin`, or any `admin:*` scope.
+
+    **`vms:nested-virt`** is minted only from a signed-in session: an API key caller asking for it gets
+    403. So does a session of someone who is not in `[auth] nested_virt_users`, administrators included
+    (they use `admin:vms:nested-virt`). A service key never holds it.
 
     **Admin keys:** a key may hold `admin` or any `admin:*` permission only when `admin_key` is `true`
     (`cove key create --admin`), and such a key must expire within `[auth] admin_max_key_lifetime_days`
@@ -197,11 +205,11 @@ def sync(
     admin key or not, gets 403. An admin key can still mint ordinary keys.
 
     **Service keys:** `service` (with exactly one of `team` or `member`) mints a **service key**,
-    `svc:<service>`: admin only, expiry required, never `keys:manage`, `access:write`, `admin` or
-    `admin:*`, and never an admin key. `team` binds it to a team (its VMs count against the team's
-    quota); `member` binds it to one person (its VMs count against theirs, and they control them). A
-    name is bound once: re-minting it with a different binding, or after its binding ended, is refused.
-    `member` without `service` is refused.
+    `svc:<service>`: admin only, expiry required, never `keys:manage`, `access:write`, `vms:nested-
+    virt`, `admin` or `admin:*`, and never an admin key. `team` binds it to a team (its VMs count
+    against the team's quota); `member` binds it to one person (its VMs count against theirs, and they
+    control them). A name is bound once: re-minting it with a different binding, or after its binding
+    ended, is refused. `member` without `service` is refused.
 
     **A key never outlives the API key minting it:** when the caller is an API key that expires, any key
     it mints (personal, team or service) expires no later than the caller does. A mint that leaves
@@ -250,7 +258,11 @@ async def asyncio_detailed(
 
      The `raw_token` in the response is shown exactly once. Team keys (`team` field set; minted by a
     fleet admin or that team's admin, who mints only from a signed-in session) require an expiry and
-    cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
+    cannot hold `keys:manage`, `access:write`, `vms:nested-virt`, `admin`, or any `admin:*` scope.
+
+    **`vms:nested-virt`** is minted only from a signed-in session: an API key caller asking for it gets
+    403. So does a session of someone who is not in `[auth] nested_virt_users`, administrators included
+    (they use `admin:vms:nested-virt`). A service key never holds it.
 
     **Admin keys:** a key may hold `admin` or any `admin:*` permission only when `admin_key` is `true`
     (`cove key create --admin`), and such a key must expire within `[auth] admin_max_key_lifetime_days`
@@ -259,11 +271,11 @@ async def asyncio_detailed(
     admin key or not, gets 403. An admin key can still mint ordinary keys.
 
     **Service keys:** `service` (with exactly one of `team` or `member`) mints a **service key**,
-    `svc:<service>`: admin only, expiry required, never `keys:manage`, `access:write`, `admin` or
-    `admin:*`, and never an admin key. `team` binds it to a team (its VMs count against the team's
-    quota); `member` binds it to one person (its VMs count against theirs, and they control them). A
-    name is bound once: re-minting it with a different binding, or after its binding ended, is refused.
-    `member` without `service` is refused.
+    `svc:<service>`: admin only, expiry required, never `keys:manage`, `access:write`, `vms:nested-
+    virt`, `admin` or `admin:*`, and never an admin key. `team` binds it to a team (its VMs count
+    against the team's quota); `member` binds it to one person (its VMs count against theirs, and they
+    control them). A name is bound once: re-minting it with a different binding, or after its binding
+    ended, is refused. `member` without `service` is refused.
 
     **A key never outlives the API key minting it:** when the caller is an API key that expires, any key
     it mints (personal, team or service) expires no later than the caller does. A mint that leaves
@@ -315,7 +327,11 @@ async def asyncio(
 
      The `raw_token` in the response is shown exactly once. Team keys (`team` field set; minted by a
     fleet admin or that team's admin, who mints only from a signed-in session) require an expiry and
-    cannot hold `keys:manage`, `admin`, or any `admin:*` scope.
+    cannot hold `keys:manage`, `access:write`, `vms:nested-virt`, `admin`, or any `admin:*` scope.
+
+    **`vms:nested-virt`** is minted only from a signed-in session: an API key caller asking for it gets
+    403. So does a session of someone who is not in `[auth] nested_virt_users`, administrators included
+    (they use `admin:vms:nested-virt`). A service key never holds it.
 
     **Admin keys:** a key may hold `admin` or any `admin:*` permission only when `admin_key` is `true`
     (`cove key create --admin`), and such a key must expire within `[auth] admin_max_key_lifetime_days`
@@ -324,11 +340,11 @@ async def asyncio(
     admin key or not, gets 403. An admin key can still mint ordinary keys.
 
     **Service keys:** `service` (with exactly one of `team` or `member`) mints a **service key**,
-    `svc:<service>`: admin only, expiry required, never `keys:manage`, `access:write`, `admin` or
-    `admin:*`, and never an admin key. `team` binds it to a team (its VMs count against the team's
-    quota); `member` binds it to one person (its VMs count against theirs, and they control them). A
-    name is bound once: re-minting it with a different binding, or after its binding ended, is refused.
-    `member` without `service` is refused.
+    `svc:<service>`: admin only, expiry required, never `keys:manage`, `access:write`, `vms:nested-
+    virt`, `admin` or `admin:*`, and never an admin key. `team` binds it to a team (its VMs count
+    against the team's quota); `member` binds it to one person (its VMs count against theirs, and they
+    control them). A name is bound once: re-minting it with a different binding, or after its binding
+    ended, is refused. `member` without `service` is refused.
 
     **A key never outlives the API key minting it:** when the caller is an API key that expires, any key
     it mints (personal, team or service) expires no later than the caller does. A mint that leaves

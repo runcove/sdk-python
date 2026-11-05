@@ -56,8 +56,9 @@ class CreateVmRequest:
             and must not be exactly `warpgate`, Warpgate's admin host. Any other
             name is refused with 400 `invalid_vm_name`.
         nested_virt (bool | Unset): Expose nested virtualisation (VMX/SVM) to the
-            new VM's guest. Off unless `true`; administrators only (anyone else is
-            refused 403). An opted-in VM is always cold-booted, never claimed from
+            new VM's guest. Off unless `true`; administrators and the accounts in
+            `[auth] nested_virt_users` only (anyone else is refused 403). An opted-in VM is always cold-booted, never
+            claimed from
             the warm pool, and keeps the setting across every later cold boot.
             Additive, backward-compatible: older clients omit the field and get
             `false`, and `false` is not serialised.

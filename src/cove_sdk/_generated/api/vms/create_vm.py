@@ -412,8 +412,9 @@ def sync_detailed(
     what the cap is) so a caller can decide whether to retry smaller or wait.
 
     `nested_virt: true` is refused synchronously with **403** `admin_required` unless the caller is in
-    the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
-    admitted opt-in always cold-boots, so it never takes a VM from the warm pool.
+    the server's `[auth] admins` (an API key must also hold `admin:vms:nested-virt`) or in its `[auth]
+    nested_virt_users` (an API key must also hold `vms:nested-virt`). An admitted opt-in always cold-
+    boots, so it never takes a VM from the warm pool.
 
     **Tags.** `initial_tags` are all on the VM before it first reads as `running`, or none are: a create
     whose tags cannot be written fails after the 202 like any other late failure, and the VM is removed
@@ -494,8 +495,9 @@ def sync(
     what the cap is) so a caller can decide whether to retry smaller or wait.
 
     `nested_virt: true` is refused synchronously with **403** `admin_required` unless the caller is in
-    the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
-    admitted opt-in always cold-boots, so it never takes a VM from the warm pool.
+    the server's `[auth] admins` (an API key must also hold `admin:vms:nested-virt`) or in its `[auth]
+    nested_virt_users` (an API key must also hold `vms:nested-virt`). An admitted opt-in always cold-
+    boots, so it never takes a VM from the warm pool.
 
     **Tags.** `initial_tags` are all on the VM before it first reads as `running`, or none are: a create
     whose tags cannot be written fails after the 202 like any other late failure, and the VM is removed
@@ -570,8 +572,9 @@ async def asyncio_detailed(
     what the cap is) so a caller can decide whether to retry smaller or wait.
 
     `nested_virt: true` is refused synchronously with **403** `admin_required` unless the caller is in
-    the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
-    admitted opt-in always cold-boots, so it never takes a VM from the warm pool.
+    the server's `[auth] admins` (an API key must also hold `admin:vms:nested-virt`) or in its `[auth]
+    nested_virt_users` (an API key must also hold `vms:nested-virt`). An admitted opt-in always cold-
+    boots, so it never takes a VM from the warm pool.
 
     **Tags.** `initial_tags` are all on the VM before it first reads as `running`, or none are: a create
     whose tags cannot be written fails after the 202 like any other late failure, and the VM is removed
@@ -650,8 +653,9 @@ async def asyncio(
     what the cap is) so a caller can decide whether to retry smaller or wait.
 
     `nested_virt: true` is refused synchronously with **403** `admin_required` unless the caller is in
-    the server's `[auth] admins` and, for an API key, the key also holds `admin:vms:nested-virt`. An
-    admitted opt-in always cold-boots, so it never takes a VM from the warm pool.
+    the server's `[auth] admins` (an API key must also hold `admin:vms:nested-virt`) or in its `[auth]
+    nested_virt_users` (an API key must also hold `vms:nested-virt`). An admitted opt-in always cold-
+    boots, so it never takes a VM from the warm pool.
 
     **Tags.** `initial_tags` are all on the VM before it first reads as `running`, or none are: a create
     whose tags cannot be written fails after the 202 like any other late failure, and the VM is removed
