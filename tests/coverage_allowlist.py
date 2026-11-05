@@ -10,7 +10,8 @@ named here.
 NOT_YET_WRAPPED: frozenset[str] = frozenset(
     {
         "listMyConnectedApps",
-        # The pull request that gives the Cove shell and laptop CLI `team admin add|rm` wraps these two.
+        # The shell and CLI `team admin add|rm` shipped without these two: each needs a method in both clients,
+        # generated types and tests, which is a pull request of its own.
         "deleteTeamAdmin",
         "putTeamAdmin",
     }

@@ -24,17 +24,24 @@ class RemoveMemberOutcome:
 
         Attributes:
             removed (bool):
+            team_keys_minted (list[str] | Unset): When the removed person was the team's admin: the ids of the active
+                team keys they minted. They keep working. Absent from an older server.
             unconfirmed_edges (list[str] | Unset):
             unconfirmed_sessions (list[str] | Unset):
     """
 
     removed: bool
+    team_keys_minted: list[str] | Unset = UNSET
     unconfirmed_edges: list[str] | Unset = UNSET
     unconfirmed_sessions: list[str] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         removed = self.removed
+
+        team_keys_minted: list[str] | Unset = UNSET
+        if not isinstance(self.team_keys_minted, Unset):
+            team_keys_minted = self.team_keys_minted
 
         unconfirmed_edges: list[str] | Unset = UNSET
         if not isinstance(self.unconfirmed_edges, Unset):
@@ -51,6 +58,8 @@ class RemoveMemberOutcome:
                 "removed": removed,
             }
         )
+        if team_keys_minted is not UNSET:
+            field_dict["team_keys_minted"] = team_keys_minted
         if unconfirmed_edges is not UNSET:
             field_dict["unconfirmed_edges"] = unconfirmed_edges
         if unconfirmed_sessions is not UNSET:
@@ -63,12 +72,15 @@ class RemoveMemberOutcome:
         d = dict(src_dict)
         removed = d.pop("removed")
 
+        team_keys_minted = cast(list[str], d.pop("team_keys_minted", UNSET))
+
         unconfirmed_edges = cast(list[str], d.pop("unconfirmed_edges", UNSET))
 
         unconfirmed_sessions = cast(list[str], d.pop("unconfirmed_sessions", UNSET))
 
         remove_member_outcome = cls(
             removed=removed,
+            team_keys_minted=team_keys_minted,
             unconfirmed_edges=unconfirmed_edges,
             unconfirmed_sessions=unconfirmed_sessions,
         )

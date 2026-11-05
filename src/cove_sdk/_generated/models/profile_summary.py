@@ -51,6 +51,10 @@ class ProfileSummary:
                 API impls, and `unwrap_or_else` fallbacks construct via `Default` to keep
                 boilerplate down at the seven `ProfileSummary { … }` sites; the real
                 values flow from cove-service.
+            team_admin_of (list[str] | Unset): The teams whose keys the caller can manage as the team's admin: filled
+                for a person (a session or a personal key), empty for a team key, a
+                service key or a connected app. It says where to go; it is not a
+                permission. Absent from servers before API version 9.
             team_quotas (list[TeamQuota] | Unset): Quota envelopes for every team the caller has a
                 team-attributed VM under (NOT full team membership — see
                 `CoveService::team_quotas_for_user`). Empty for users with no
@@ -68,6 +72,7 @@ class ProfileSummary:
     is_admin: bool | None | Unset = UNSET
     permissions: None | SelfPermissionsType0 | SelfPermissionsType1 | Unset = UNSET
     quota: UserQuota | Unset = UNSET
+    team_admin_of: list[str] | Unset = UNSET
     team_quotas: list[TeamQuota] | Unset = UNSET
     user_id: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -112,6 +117,10 @@ class ProfileSummary:
         if not isinstance(self.quota, Unset):
             quota = self.quota.to_dict()
 
+        team_admin_of: list[str] | Unset = UNSET
+        if not isinstance(self.team_admin_of, Unset):
+            team_admin_of = self.team_admin_of
+
         team_quotas: list[dict[str, Any]] | Unset = UNSET
         if not isinstance(self.team_quotas, Unset):
             team_quotas = []
@@ -143,6 +152,8 @@ class ProfileSummary:
             field_dict["permissions"] = permissions
         if quota is not UNSET:
             field_dict["quota"] = quota
+        if team_admin_of is not UNSET:
+            field_dict["team_admin_of"] = team_admin_of
         if team_quotas is not UNSET:
             field_dict["team_quotas"] = team_quotas
         if user_id is not UNSET:
@@ -223,6 +234,8 @@ class ProfileSummary:
         else:
             quota = UserQuota.from_dict(_quota)
 
+        team_admin_of = cast(list[str], d.pop("team_admin_of", UNSET))
+
         _team_quotas = d.pop("team_quotas", UNSET)
         team_quotas: list[TeamQuota] | Unset = UNSET
         if _team_quotas is not UNSET:
@@ -251,6 +264,7 @@ class ProfileSummary:
             is_admin=is_admin,
             permissions=permissions,
             quota=quota,
+            team_admin_of=team_admin_of,
             team_quotas=team_quotas,
             user_id=user_id,
         )

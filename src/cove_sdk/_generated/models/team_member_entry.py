@@ -28,11 +28,14 @@ class TeamMemberEntry:
                 sends it only to an administrator (a session, or an admin key, of an
                 `[auth] admins` user): to a member it would name who the administrators
                 are, so the field is absent.
+            role (None | str | Unset): `"admin"` for a team admin, `"member"` otherwise. Absent from a server
+                that predates team admins (before API version 9).
     """
 
     added_at: datetime.datetime
     username: str
     added_by: None | str | Unset = UNSET
+    role: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -46,6 +49,12 @@ class TeamMemberEntry:
         else:
             added_by = self.added_by
 
+        role: None | str | Unset
+        if isinstance(self.role, Unset):
+            role = UNSET
+        else:
+            role = self.role
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -56,6 +65,8 @@ class TeamMemberEntry:
         )
         if added_by is not UNSET:
             field_dict["added_by"] = added_by
+        if role is not UNSET:
+            field_dict["role"] = role
 
         return field_dict
 
@@ -75,10 +86,20 @@ class TeamMemberEntry:
 
         added_by = _parse_added_by(d.pop("added_by", UNSET))
 
+        def _parse_role(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        role = _parse_role(d.pop("role", UNSET))
+
         team_member_entry = cls(
             added_at=added_at,
             username=username,
             added_by=added_by,
+            role=role,
         )
 
         team_member_entry.additional_properties = d
