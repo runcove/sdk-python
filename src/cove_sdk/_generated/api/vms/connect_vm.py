@@ -93,9 +93,13 @@ def sync_detailed(
     `warpgate_host` / `warpgate_port` to connect; pin `warpgate_ssh_host_pubkey` before the first
     connection to avoid a TOFU prompt.
 
-    Mint the ticket when you are about to connect: one not spent within 12 hours of the mint expires.
-    The same expiry ends a session the ticket opened: Warpgate closes it once the ticket expires, so a
-    session lasts at most 12 hours.
+    Mint the ticket when you are about to connect: one not spent within 5 minutes of the mint is
+    deleted, and the connect must be made again. A spent ticket expires 12 hours after the mint, and
+    Warpgate then closes the session it opened, so a session lasts at most 12 hours. Revoking the
+    caller's access to the VM (a share withdrawn, a team membership removed), revoking their sessions or
+    offboarding them deletes their tickets, spent or not, and closes their sessions; signing out deletes
+    only their unspent tickets, so a live session stays open. A connect is refused once access is
+    revoked.
 
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
@@ -140,9 +144,13 @@ def sync(
     `warpgate_host` / `warpgate_port` to connect; pin `warpgate_ssh_host_pubkey` before the first
     connection to avoid a TOFU prompt.
 
-    Mint the ticket when you are about to connect: one not spent within 12 hours of the mint expires.
-    The same expiry ends a session the ticket opened: Warpgate closes it once the ticket expires, so a
-    session lasts at most 12 hours.
+    Mint the ticket when you are about to connect: one not spent within 5 minutes of the mint is
+    deleted, and the connect must be made again. A spent ticket expires 12 hours after the mint, and
+    Warpgate then closes the session it opened, so a session lasts at most 12 hours. Revoking the
+    caller's access to the VM (a share withdrawn, a team membership removed), revoking their sessions or
+    offboarding them deletes their tickets, spent or not, and closes their sessions; signing out deletes
+    only their unspent tickets, so a live session stays open. A connect is refused once access is
+    revoked.
 
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
@@ -182,9 +190,13 @@ async def asyncio_detailed(
     `warpgate_host` / `warpgate_port` to connect; pin `warpgate_ssh_host_pubkey` before the first
     connection to avoid a TOFU prompt.
 
-    Mint the ticket when you are about to connect: one not spent within 12 hours of the mint expires.
-    The same expiry ends a session the ticket opened: Warpgate closes it once the ticket expires, so a
-    session lasts at most 12 hours.
+    Mint the ticket when you are about to connect: one not spent within 5 minutes of the mint is
+    deleted, and the connect must be made again. A spent ticket expires 12 hours after the mint, and
+    Warpgate then closes the session it opened, so a session lasts at most 12 hours. Revoking the
+    caller's access to the VM (a share withdrawn, a team membership removed), revoking their sessions or
+    offboarding them deletes their tickets, spent or not, and closes their sessions; signing out deletes
+    only their unspent tickets, so a live session stays open. A connect is refused once access is
+    revoked.
 
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
@@ -227,9 +239,13 @@ async def asyncio(
     `warpgate_host` / `warpgate_port` to connect; pin `warpgate_ssh_host_pubkey` before the first
     connection to avoid a TOFU prompt.
 
-    Mint the ticket when you are about to connect: one not spent within 12 hours of the mint expires.
-    The same expiry ends a session the ticket opened: Warpgate closes it once the ticket expires, so a
-    session lasts at most 12 hours.
+    Mint the ticket when you are about to connect: one not spent within 5 minutes of the mint is
+    deleted, and the connect must be made again. A spent ticket expires 12 hours after the mint, and
+    Warpgate then closes the session it opened, so a session lasts at most 12 hours. Revoking the
+    caller's access to the VM (a share withdrawn, a team membership removed), revoking their sessions or
+    offboarding them deletes their tickets, spent or not, and closes their sessions; signing out deletes
+    only their unspent tickets, so a live session stays open. A connect is refused once access is
+    revoked.
 
     A paused VM is resumed and a `hibernated` one is woken before the ticket is minted, with the same
     permission the connect needs. A wake restores the VM from its latest checkpoint and can take from
