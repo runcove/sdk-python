@@ -130,6 +130,9 @@ def sync_detailed(
     `true` when the command ran past `timeout_secs` (default 30): the guest SIGKILLs the command's whole
     process group — the command and everything it started that stayed in its group — and `code` is 124,
     as `timeout(1)` reports. A command that exits 124 on its own has `timed_out: false`.
+      On a `?encoding=base64` exec whose guest agent predates protocol 17 (it ran the exec as text, so
+    the base64 holds lossy text) the data also carries `"exact": false`; the field is absent when the
+    bytes are exact.
     - `error`: terminal, data `{"error": "<message>"}`.
     - `paused`: terminal, data `{"reason": "...", "new_state": "..."}` — the VM left the running state
     mid-exec (elastic-pause reaper, manual pause, checkpoint, stop, ...), so the stream was cut with an
@@ -234,6 +237,9 @@ def sync(
     `true` when the command ran past `timeout_secs` (default 30): the guest SIGKILLs the command's whole
     process group — the command and everything it started that stayed in its group — and `code` is 124,
     as `timeout(1)` reports. A command that exits 124 on its own has `timed_out: false`.
+      On a `?encoding=base64` exec whose guest agent predates protocol 17 (it ran the exec as text, so
+    the base64 holds lossy text) the data also carries `"exact": false`; the field is absent when the
+    bytes are exact.
     - `error`: terminal, data `{"error": "<message>"}`.
     - `paused`: terminal, data `{"reason": "...", "new_state": "..."}` — the VM left the running state
     mid-exec (elastic-pause reaper, manual pause, checkpoint, stop, ...), so the stream was cut with an
@@ -333,6 +339,9 @@ async def asyncio_detailed(
     `true` when the command ran past `timeout_secs` (default 30): the guest SIGKILLs the command's whole
     process group — the command and everything it started that stayed in its group — and `code` is 124,
     as `timeout(1)` reports. A command that exits 124 on its own has `timed_out: false`.
+      On a `?encoding=base64` exec whose guest agent predates protocol 17 (it ran the exec as text, so
+    the base64 holds lossy text) the data also carries `"exact": false`; the field is absent when the
+    bytes are exact.
     - `error`: terminal, data `{"error": "<message>"}`.
     - `paused`: terminal, data `{"reason": "...", "new_state": "..."}` — the VM left the running state
     mid-exec (elastic-pause reaper, manual pause, checkpoint, stop, ...), so the stream was cut with an
@@ -435,6 +444,9 @@ async def asyncio(
     `true` when the command ran past `timeout_secs` (default 30): the guest SIGKILLs the command's whole
     process group — the command and everything it started that stayed in its group — and `code` is 124,
     as `timeout(1)` reports. A command that exits 124 on its own has `timed_out: false`.
+      On a `?encoding=base64` exec whose guest agent predates protocol 17 (it ran the exec as text, so
+    the base64 holds lossy text) the data also carries `"exact": false`; the field is absent when the
+    bytes are exact.
     - `error`: terminal, data `{"error": "<message>"}`.
     - `paused`: terminal, data `{"reason": "...", "new_state": "..."}` — the VM left the running state
     mid-exec (elastic-pause reaper, manual pause, checkpoint, stop, ...), so the stream was cut with an

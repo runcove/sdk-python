@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -21,18 +21,31 @@ class ExecExit:
     that exits 124 on its own has `timed_out: false`. A server built before
     the field sends `{"code": N}` only; read its absence as `false`.
 
+    `exact` is `false` on a `?encoding=base64` exec whose guest agent predates
+    protocol 17: it ran the exec as text, so the base64 holds lossy text, not
+    the command's exact bytes. It is absent when the bytes are exact.
+
         Attributes:
             code (int): The command's exit status; 124 when `timed_out`, -1 when it was
                 killed by a signal for any other reason.
+            exact (bool | None | Unset): `false` when the output of a base64 exec is lossy text, not the exact
+                bytes (a guest agent older than protocol 17). Absent when exact.
             timed_out (bool | Unset): The exec deadline killed the command.
     """
 
     code: int
+    exact: bool | None | Unset = UNSET
     timed_out: bool | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         code = self.code
+
+        exact: bool | None | Unset
+        if isinstance(self.exact, Unset):
+            exact = UNSET
+        else:
+            exact = self.exact
 
         timed_out = self.timed_out
 
@@ -43,6 +56,8 @@ class ExecExit:
                 "code": code,
             }
         )
+        if exact is not UNSET:
+            field_dict["exact"] = exact
         if timed_out is not UNSET:
             field_dict["timed_out"] = timed_out
 
@@ -53,10 +68,20 @@ class ExecExit:
         d = dict(src_dict)
         code = d.pop("code")
 
+        def _parse_exact(data: object) -> bool | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(bool | None | Unset, data)
+
+        exact = _parse_exact(d.pop("exact", UNSET))
+
         timed_out = d.pop("timed_out", UNSET)
 
         exec_exit = cls(
             code=code,
+            exact=exact,
             timed_out=timed_out,
         )
 
