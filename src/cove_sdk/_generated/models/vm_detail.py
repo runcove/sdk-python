@@ -89,6 +89,10 @@ class VmDetail:
                 has. A stop and a start boots at `vcpus` and then grows the VM back to
                 `current_vcpus`.
             vm_id (str):
+            activity (None | str | Unset): What a VM in a steady stored state is doing right now. `"starting"`
+                while a cold start is waiting for the guest agent, when `state` still
+                reads `stopped`. Absent otherwise and from older daemons. Read-only
+                label: it is not a `VmState` and never a state to wait for.
             agent_capabilities (list[str] | Unset): Capability tokens from the last handshake (`vms.capabilities`).
             agent_handshake_at (None | str | Unset): RFC 3339 time of the last completed agent handshake
                 (`vms.agent_handshake_at`). Absent before the first one, and from a
@@ -144,6 +148,7 @@ class VmDetail:
     updated_at: str
     vcpus: int
     vm_id: str
+    activity: None | str | Unset = UNSET
     agent_capabilities: list[str] | Unset = UNSET
     agent_handshake_at: None | str | Unset = UNSET
     agent_protocol_version: int | None | Unset = UNSET
@@ -197,6 +202,12 @@ class VmDetail:
         vcpus = self.vcpus
 
         vm_id = self.vm_id
+
+        activity: None | str | Unset
+        if isinstance(self.activity, Unset):
+            activity = UNSET
+        else:
+            activity = self.activity
 
         agent_capabilities: list[str] | Unset = UNSET
         if not isinstance(self.agent_capabilities, Unset):
@@ -299,6 +310,8 @@ class VmDetail:
                 "vm_id": vm_id,
             }
         )
+        if activity is not UNSET:
+            field_dict["activity"] = activity
         if agent_capabilities is not UNSET:
             field_dict["agent_capabilities"] = agent_capabilities
         if agent_handshake_at is not UNSET:
@@ -399,6 +412,15 @@ class VmDetail:
         vcpus = d.pop("vcpus")
 
         vm_id = d.pop("vm_id")
+
+        def _parse_activity(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        activity = _parse_activity(d.pop("activity", UNSET))
 
         agent_capabilities = cast(list[str], d.pop("agent_capabilities", UNSET))
 
@@ -531,6 +553,7 @@ class VmDetail:
             updated_at=updated_at,
             vcpus=vcpus,
             vm_id=vm_id,
+            activity=activity,
             agent_capabilities=agent_capabilities,
             agent_handshake_at=agent_handshake_at,
             agent_protocol_version=agent_protocol_version,

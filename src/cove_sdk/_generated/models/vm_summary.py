@@ -58,6 +58,10 @@ class VmSummary:
             `forcekilling` are **rejected** on the way in, by serde and by `FromStr`
             alike. Migration 035 rewrites every stored row, so the retired spellings
             exist nowhere after it runs and nothing has to be read in two spellings.
+        activity (None | str | Unset): What a VM in a steady stored state is doing right now. `"starting"`
+            while a cold start is waiting for the guest agent, when `state` still
+            reads `stopped`. Absent otherwise and from older daemons. Read-only
+            label: it is not a `VmState` and never a state to wait for.
         created_at (None | str | Unset):
         degraded (bool | Unset):
         degraded_reason (None | str | Unset):
@@ -72,6 +76,7 @@ class VmSummary:
     image: str
     name: str
     state: VmState
+    activity: None | str | Unset = UNSET
     created_at: None | str | Unset = UNSET
     degraded: bool | Unset = UNSET
     degraded_reason: None | str | Unset = UNSET
@@ -86,6 +91,12 @@ class VmSummary:
         name = self.name
 
         state = self.state.value
+
+        activity: None | str | Unset
+        if isinstance(self.activity, Unset):
+            activity = UNSET
+        else:
+            activity = self.activity
 
         created_at: None | str | Unset
         if isinstance(self.created_at, Unset):
@@ -122,6 +133,8 @@ class VmSummary:
                 "state": state,
             }
         )
+        if activity is not UNSET:
+            field_dict["activity"] = activity
         if created_at is not UNSET:
             field_dict["created_at"] = created_at
         if degraded is not UNSET:
@@ -147,6 +160,15 @@ class VmSummary:
         name = d.pop("name")
 
         state = VmState(d.pop("state"))
+
+        def _parse_activity(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        activity = _parse_activity(d.pop("activity", UNSET))
 
         def _parse_created_at(data: object) -> None | str | Unset:
             if data is None:
@@ -190,6 +212,7 @@ class VmSummary:
             image=image,
             name=name,
             state=state,
+            activity=activity,
             created_at=created_at,
             degraded=degraded,
             degraded_reason=degraded_reason,
