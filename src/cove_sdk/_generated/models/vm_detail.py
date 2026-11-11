@@ -120,6 +120,11 @@ class VmDetail:
             max_life_expires_in_secs (int | None | Unset):
             memory_max_mb (int | Unset): Most memory in MiB a resize can give the VM while it runs.
             memory_min_mb (int | Unset): Least memory in MiB a resize can take the VM down to.
+            network_policy_needs_restart (bool | Unset): Whether this VM must be restarted before its stored network policy
+                takes effect: it is under an allowlist its Mac helper does not hold or
+                does not say it holds, or the stored policy could not be read. Restart
+                the VM, then set the policy again. Present only for a running or paused
+                VM on a Mac that needs it.
             permissions (list[str] | Unset): What the caller may do to this VM: owner and administrator hold every
                 permission, a share or team grant holds its role's. The web UI shows
                 an action only when this lists its permission (`vm.power` for
@@ -165,6 +170,7 @@ class VmDetail:
     max_life_expires_in_secs: int | None | Unset = UNSET
     memory_max_mb: int | Unset = UNSET
     memory_min_mb: int | Unset = UNSET
+    network_policy_needs_restart: bool | Unset = UNSET
     permissions: list[str] | Unset = UNSET
     tags: VmDetailTags | Unset = UNSET
     ttl_policy: TtlPolicy | Unset = UNSET
@@ -277,6 +283,8 @@ class VmDetail:
 
         memory_min_mb = self.memory_min_mb
 
+        network_policy_needs_restart = self.network_policy_needs_restart
+
         permissions: list[str] | Unset = UNSET
         if not isinstance(self.permissions, Unset):
             permissions = self.permissions
@@ -344,6 +352,8 @@ class VmDetail:
             field_dict["memory_max_mb"] = memory_max_mb
         if memory_min_mb is not UNSET:
             field_dict["memory_min_mb"] = memory_min_mb
+        if network_policy_needs_restart is not UNSET:
+            field_dict["network_policy_needs_restart"] = network_policy_needs_restart
         if permissions is not UNSET:
             field_dict["permissions"] = permissions
         if tags is not UNSET:
@@ -521,6 +531,8 @@ class VmDetail:
 
         memory_min_mb = d.pop("memory_min_mb", UNSET)
 
+        network_policy_needs_restart = d.pop("network_policy_needs_restart", UNSET)
+
         permissions = cast(list[str], d.pop("permissions", UNSET))
 
         _tags = d.pop("tags", UNSET)
@@ -570,6 +582,7 @@ class VmDetail:
             max_life_expires_in_secs=max_life_expires_in_secs,
             memory_max_mb=memory_max_mb,
             memory_min_mb=memory_min_mb,
+            network_policy_needs_restart=network_policy_needs_restart,
             permissions=permissions,
             tags=tags,
             ttl_policy=ttl_policy,
