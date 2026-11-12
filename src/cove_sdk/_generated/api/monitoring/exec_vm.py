@@ -148,6 +148,12 @@ def sync_detailed(
     ends early for any other reason kills the command the same way: the client disconnected, or the API
     key that opened it was revoked mid-run.
 
+    **A background job that keeps the output open.** A job the command starts without redirecting its
+    output (`sleep 100 &`) holds the stream open after the command exits, so the guest waits up to 2
+    seconds for it before it sends `exit`; give such a job `>file 2>&1 </dev/null` to avoid the wait.
+    When it stops waiting at that point, the last `stderr` chunk is a line starting `[cove-agent: output
+    may be cut short:`, because a process the command started still held its output open.
+
     **The command's environment.** It runs as root, or as `user`, with a login-like environment: `HOME`,
     `USER`, `LOGNAME` and `SHELL` of that account, the variables in the VM's `/etc/environment`, a
     `LANG`, and a `PATH` of the usual profile directories (mise's shims, `~/.local/bin`,
@@ -255,6 +261,12 @@ def sync(
     ends early for any other reason kills the command the same way: the client disconnected, or the API
     key that opened it was revoked mid-run.
 
+    **A background job that keeps the output open.** A job the command starts without redirecting its
+    output (`sleep 100 &`) holds the stream open after the command exits, so the guest waits up to 2
+    seconds for it before it sends `exit`; give such a job `>file 2>&1 </dev/null` to avoid the wait.
+    When it stops waiting at that point, the last `stderr` chunk is a line starting `[cove-agent: output
+    may be cut short:`, because a process the command started still held its output open.
+
     **The command's environment.** It runs as root, or as `user`, with a login-like environment: `HOME`,
     `USER`, `LOGNAME` and `SHELL` of that account, the variables in the VM's `/etc/environment`, a
     `LANG`, and a `PATH` of the usual profile directories (mise's shims, `~/.local/bin`,
@@ -356,6 +368,12 @@ async def asyncio_detailed(
     enforce, so a long-running command should not see the stream cut by a quiet middlebox. A stream that
     ends early for any other reason kills the command the same way: the client disconnected, or the API
     key that opened it was revoked mid-run.
+
+    **A background job that keeps the output open.** A job the command starts without redirecting its
+    output (`sleep 100 &`) holds the stream open after the command exits, so the guest waits up to 2
+    seconds for it before it sends `exit`; give such a job `>file 2>&1 </dev/null` to avoid the wait.
+    When it stops waiting at that point, the last `stderr` chunk is a line starting `[cove-agent: output
+    may be cut short:`, because a process the command started still held its output open.
 
     **The command's environment.** It runs as root, or as `user`, with a login-like environment: `HOME`,
     `USER`, `LOGNAME` and `SHELL` of that account, the variables in the VM's `/etc/environment`, a
@@ -461,6 +479,12 @@ async def asyncio(
     enforce, so a long-running command should not see the stream cut by a quiet middlebox. A stream that
     ends early for any other reason kills the command the same way: the client disconnected, or the API
     key that opened it was revoked mid-run.
+
+    **A background job that keeps the output open.** A job the command starts without redirecting its
+    output (`sleep 100 &`) holds the stream open after the command exits, so the guest waits up to 2
+    seconds for it before it sends `exit`; give such a job `>file 2>&1 </dev/null` to avoid the wait.
+    When it stops waiting at that point, the last `stderr` chunk is a line starting `[cove-agent: output
+    may be cut short:`, because a process the command started still held its output open.
 
     **The command's environment.** It runs as root, or as `user`, with a login-like environment: `HOME`,
     `USER`, `LOGNAME` and `SHELL` of that account, the variables in the VM's `/etc/environment`, a
