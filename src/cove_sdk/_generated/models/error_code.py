@@ -40,6 +40,7 @@ class ErrorCode(StrEnum):
     RATE_LIMITED = "rate_limited"
     RESOURCE_NOT_FOUND = "resource_not_found"
     SCOPE_DENIED = "scope_denied"
+    SECRETS_RESTORING = "secrets_restoring"
     SECRET_NAME_INVALID = "secret_name_invalid"
     STORAGE_ERROR = "storage_error"
     SUDO_REQUIRED = "sudo_required"
