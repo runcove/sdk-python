@@ -62,7 +62,7 @@ def main() -> int:
                 print("checkpoint taken: failing state")
 
                 # Role "user" can connect and look; "collaborator" can also stop, start, resize
-                # and checkpoint the VM.
+                # and checkpoint the VM, and clone it, including a copy of its memory.
                 grant = client.vms.share(
                     name, subject_type="user", subject_id=colleague, role="collaborator"
                 )
