@@ -200,6 +200,9 @@ from .project_member import ProjectMember
 from .proxy_invite import ProxyInvite
 from .proxy_port_info import ProxyPortInfo
 from .proxy_url_info import ProxyUrlInfo
+from .purge_user_report import PurgeUserReport
+from .purge_user_request import PurgeUserRequest
+from .purged_rows import PurgedRows
 from .put_primary_port_body import PutPrimaryPortBody
 from .quota_usage_count import QuotaUsageCount
 from .quota_usage_size import QuotaUsageSize
@@ -491,6 +494,9 @@ __all__ = (
     "ProxyInvite",
     "ProxyPortInfo",
     "ProxyUrlInfo",
+    "PurgeUserReport",
+    "PurgeUserRequest",
+    "PurgedRows",
     "PutPrimaryPortBody",
     "QuotaUsageCount",
     "QuotaUsageSize",

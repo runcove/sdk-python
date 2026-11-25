@@ -9,11 +9,11 @@ satisfies them all). An API key reaches them only if it is an admin key, minted 
 to an admin key of an ``[auth] admins`` user), except :meth:`Admin.drain_host` and
 :meth:`Admin.restore_vms`, which the Warpgate-fronted listener never serves.
 
-Eight of them refuse every API key, an admin key included, with 401 ``sudo_required``.
+Nine of them refuse every API key, an admin key included, with 401 ``sudo_required``.
 :meth:`Admin.update_vm_agents`, :meth:`Admin.bulk_stop_vms`, :meth:`Admin.bulk_delete_vms`,
-:meth:`Admin.delete_checkpoint`, :meth:`Admin.offboard_user`, :meth:`Admin.enable_user` and
-:meth:`Admin.restore_vms` need a recent interactive sign-in, so they run only with a ticket
-or a session, never a key. :meth:`Admin.drain_host` is never served on the Warpgate-fronted
+:meth:`Admin.delete_checkpoint`, :meth:`Admin.offboard_user`, :meth:`Admin.enable_user`,
+:meth:`Admin.purge_user` and :meth:`Admin.restore_vms` need a recent interactive sign-in, so
+they run only with a ticket or a session, never a key. :meth:`Admin.drain_host` is never served on the Warpgate-fronted
 listener either, so in practice it runs on the host's Unix socket.
 """
 
@@ -45,6 +45,7 @@ from ..._generated.api.admin import (
     enable_user,
     list_project_members,
     offboard_user,
+    purge_user,
     restore_vms,
     revoke_user_sessions,
     update_auto_pause_timeouts,
@@ -75,6 +76,8 @@ from ..._generated.models import (
     OffboardUserReport,
     OffboardUserRequest,
     ProjectMember,
+    PurgeUserReport,
+    PurgeUserRequest,
     RestoreVmRef,
     RestoreVmsRequest,
     RestoreVmsResponse,
@@ -461,6 +464,57 @@ class Admin:
             timeout=timeout,
         )
         return cast(EnableUserResponse, out)
+
+    @operation("purgeUser")
+    async def purge_user(
+        self,
+        username: str,
+        *,
+        dry_run: bool = False,
+        timeout: CallTimeout = CLIENT_DEFAULT,
+    ) -> PurgeUserReport:
+        """Delete an offboarded person's leftover records. Scope ``admin:sessions:write``.
+
+        In one transaction: their user record, the records of VMs they had that are already
+        deleted, their revoked API keys, CLI tickets and connected apps, disabled webhooks and
+        their queued deliveries, project memberships, their quota limit and one-shot quota
+        overrides, and the shut-out marker offboarding wrote.
+        The report lists every table with the rows deleted (``deleted``). It changes no record
+        that belongs to someone else, so what names the person there stays (including the
+        service keys that were bound to them: a key name is never re-bound, so its binding
+        record stays); ``left_in_place`` says what, and the audit log stays. Refused with 422 ``validation_failed``,
+        changing nothing, unless the person is offboarded and nothing of theirs is live (a VM,
+        an active key, a share, a team membership and the like: run :meth:`offboard_user` again
+        and deal with what it reports), while the name is in ``[auth] admins`` or
+        ``[auth] nested_virt_users`` in any ASCII case (take it out of the list and restart
+        Cove first), until an offboarding run has finished having kept nothing (offboard them
+        again), while a secret is left in the person's own scope or those secrets cannot be
+        listed, on a host with a configured Warpgate while it has a user under the name, cannot
+        be asked, or the daemon started without a client for it, while the name of a deleted VM
+        of theirs is still held after the delete, and while a rename of a deleted VM of theirs
+        has not finished (for those two, purge again later), and when the name is a
+        ``svc:`` or ``team:`` principal,
+        the caller's own, or stored in more than one spelling in any table that holds a person
+        (the answer names each spelling and where it is; a spelling found only in a service-key
+        binding that has ended or a deleted VM's charge does not count, since a purge keeps those). 404 for a name Cove has no record of. The name is
+        matched regardless of ASCII case and is not checked against the username rules.
+
+        ``dry_run=True`` returns the same report with the counts a real run would delete and
+        deletes nothing; the body always carries an explicit ``dry_run`` (the server refuses
+        any other body but an empty one). A completed purge, a dry run included, writes a
+        ``user.purged`` audit row; a refused one changes nothing and writes none. A purge lifts the shut-out: a person still in the identity
+        provider can sign in again and start from nothing, so remove them there first.
+
+        Refuses every API key, an admin key included, with 401 ``sudo_required``: it needs a
+        ticket or a session.
+        """
+        out = await self._t.call(
+            purge_user,
+            path={"username": username},
+            body=PurgeUserRequest(dry_run=dry_run),
+            timeout=timeout,
+        )
+        return cast(PurgeUserReport, out)
 
     # -- every VM and every checkpoint -------------------------------------------------------
 

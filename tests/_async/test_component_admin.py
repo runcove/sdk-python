@@ -27,11 +27,17 @@ from cove_sdk._generated.models import (
     OffboardVmOutcome,
     OffboardWarpgateRoleOutcome,
     ProjectMember,
+    PurgeUserReport,
     RevokeSessionsResponse,
     UpdateAgentsResponse,
 )
 from cove_sdk.auth import BearerAuth
-from cove_sdk.errors import CoveError, NotFoundError, PermissionDeniedError
+from cove_sdk.errors import (
+    CoveError,
+    NotFoundError,
+    PermissionDeniedError,
+    ValidationError,
+)
 
 
 def _t(api: Api) -> AsyncCoveTransport:
@@ -391,6 +397,97 @@ async def test_component_admin_users_round_trips() -> None:
     with pytest.raises(NotFoundError) as caught:
         await admin.get_user("bob")  # the contract's text/plain 404
     assert "no such user" in str(caught.value)
+
+
+PURGE_REPORT = {
+    "username": "alice",
+    "dry_run": True,
+    "deleted": [
+        {"table": "vm_assignments", "rows": 2},
+        {"table": "users", "rows": 1},
+    ],
+    "left_in_place": "The audit log; their name as the actor on other records.",
+}
+
+
+async def test_component_admin_purge_user_sends_an_explicit_dry_run_and_types_the_report() -> None:
+    api = (
+        Api()
+        .on("POST", "/api/admin/users/alice/purge", (200, PURGE_REPORT))
+        .on(
+            "POST",
+            "/api/admin/users/bob/purge",
+            (
+                422,
+                {
+                    "code": "validation_failed",
+                    "message": "user 'bob' still has 1 active API key(s)",
+                },
+            ),
+        )
+        .on("POST", "/api/admin/users/carol/purge", (404, {"code": "resource_not_found"}))
+    )
+    admin = Admin(_t(api))
+
+    dry = await admin.purge_user("alice", dry_run=True)
+    assert isinstance(dry, PurgeUserReport) and dry.dry_run
+    assert [(d.table, d.rows) for d in dry.deleted] == [("vm_assignments", 2), ("users", 1)]
+    assert "audit log" in dry.left_in_place
+    assert (api.last.method, api.last_json()) == ("POST", {"dry_run": True})
+
+    await admin.purge_user("alice")  # a real run still sends the flag explicitly
+    assert api.last_json() == {"dry_run": False}
+
+    with pytest.raises(ValidationError) as refused:
+        await admin.purge_user("bob")
+    assert refused.value.status == 422
+    assert "active API key" in str(refused.value)
+    with pytest.raises(NotFoundError):
+        await admin.purge_user("carol")
+
+
+# What a stored user name becomes on the wire for the three verbs that address one by name: one
+# percent-encoded segment (httpx and the server read it back as exactly that name), and the
+# dot segments and the empty name refused before anything is sent -- the same rule the CLI's
+# client applies (`stored_user_path`).
+ADMIN_VERB_NAMES = [
+    ("x/../alice", "x%2F..%2Falice"),
+    ("a b", "a%20b"),
+    ("a%b", "a%25b"),
+    ("<public>", "%3Cpublic%3E"),
+    ("a\x00b", "a%00b"),
+]
+
+
+async def test_component_admin_user_verbs_send_the_name_as_one_encoded_segment() -> None:
+    for name, wire in ADMIN_VERB_NAMES:
+        api = Api()
+        for verb in ("offboard", "enable", "purge"):
+            api.on("POST", f"/api/admin/users/{wire}/{verb}", (404, {"code": "resource_not_found"}))
+        admin = Admin(_t(api))
+        calls = (
+            ("offboard", lambda n=name: admin.offboard_user(n, dry_run=True)),
+            ("enable", lambda n=name: admin.enable_user(n)),
+            ("purge", lambda n=name: admin.purge_user(n, dry_run=True)),
+        )
+        for verb, call in calls:
+            with pytest.raises(NotFoundError):
+                await call()
+            assert api.last.url.raw_path.decode() == f"/api/admin/users/{wire}/{verb}", name
+
+
+async def test_component_admin_user_verbs_refuse_a_dot_or_empty_name_before_sending() -> None:
+    api = Api()
+    admin = Admin(_t(api))
+    for bad in ("..", ".", ""):
+        for call in (
+            lambda b=bad: admin.offboard_user(b, dry_run=True),
+            lambda b=bad: admin.enable_user(b),
+            lambda b=bad: admin.purge_user(b, dry_run=True),
+        ):
+            with pytest.raises(CoveError):
+                await call()
+    assert api.seen == []
 
 
 # -- every VM and checkpoint ---------------------------------------------------------------------
