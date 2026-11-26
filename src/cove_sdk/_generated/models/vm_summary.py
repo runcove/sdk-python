@@ -66,6 +66,10 @@ class VmSummary:
         degraded (bool | Unset):
         degraded_reason (None | str | Unset):
         ip_address (None | str | Unset):
+        network_policy_needs_restart (bool | Unset): The VM's stored network policy needs a restart to take effect, as
+            the same field in the VM's detail says. Sent only when
+            true; absent from a Linux daemon and from older daemons, which read
+            as false.
         share_count (int | Unset): Number of active shares (grants) on this VM — user + team subjects.
             `0` when unshared or on legacy daemons; the owned-VM
             list row renders a "shared" badge when `> 0`. `#[serde(default)]` so
@@ -81,6 +85,7 @@ class VmSummary:
     degraded: bool | Unset = UNSET
     degraded_reason: None | str | Unset = UNSET
     ip_address: None | str | Unset = UNSET
+    network_policy_needs_restart: bool | Unset = UNSET
     share_count: int | Unset = UNSET
     tags: VmSummaryTags | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -118,6 +123,8 @@ class VmSummary:
         else:
             ip_address = self.ip_address
 
+        network_policy_needs_restart = self.network_policy_needs_restart
+
         share_count = self.share_count
 
         tags: dict[str, Any] | Unset = UNSET
@@ -143,6 +150,8 @@ class VmSummary:
             field_dict["degraded_reason"] = degraded_reason
         if ip_address is not UNSET:
             field_dict["ip_address"] = ip_address
+        if network_policy_needs_restart is not UNSET:
+            field_dict["network_policy_needs_restart"] = network_policy_needs_restart
         if share_count is not UNSET:
             field_dict["share_count"] = share_count
         if tags is not UNSET:
@@ -199,6 +208,8 @@ class VmSummary:
 
         ip_address = _parse_ip_address(d.pop("ip_address", UNSET))
 
+        network_policy_needs_restart = d.pop("network_policy_needs_restart", UNSET)
+
         share_count = d.pop("share_count", UNSET)
 
         _tags = d.pop("tags", UNSET)
@@ -217,6 +228,7 @@ class VmSummary:
             degraded=degraded,
             degraded_reason=degraded_reason,
             ip_address=ip_address,
+            network_policy_needs_restart=network_policy_needs_restart,
             share_count=share_count,
             tags=tags,
         )
