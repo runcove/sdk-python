@@ -114,8 +114,9 @@ def sync_detailed(
     caller, admin key or not, gets 403 `admin_required`. So is a team key rotated by that team's admin.
     A key holding `vms:nested-virt` is rotated only from a signed-in session (an API key caller, the key
     itself included, gets 403) and only while its owner is in `[auth] nested_virt_users` (otherwise
-    403). The replacement keeps the original's expiry, so an API key caller that expires may rotate only
-    a key that expires no later than it does (a key rotating itself always may); otherwise 422
+    403). A key holding `network:write` is rotated only from a signed-in session too: any API key caller
+    gets 403. The replacement keeps the original's expiry, so an API key caller that expires may rotate
+    only a key that expires no later than it does (a key rotating itself always may); otherwise 422
     `validation_failed` with `field: "id"`. A signed-in session is not affected.
 
     Args:
@@ -152,8 +153,9 @@ def sync(
     caller, admin key or not, gets 403 `admin_required`. So is a team key rotated by that team's admin.
     A key holding `vms:nested-virt` is rotated only from a signed-in session (an API key caller, the key
     itself included, gets 403) and only while its owner is in `[auth] nested_virt_users` (otherwise
-    403). The replacement keeps the original's expiry, so an API key caller that expires may rotate only
-    a key that expires no later than it does (a key rotating itself always may); otherwise 422
+    403). A key holding `network:write` is rotated only from a signed-in session too: any API key caller
+    gets 403. The replacement keeps the original's expiry, so an API key caller that expires may rotate
+    only a key that expires no later than it does (a key rotating itself always may); otherwise 422
     `validation_failed` with `field: "id"`. A signed-in session is not affected.
 
     Args:
@@ -185,8 +187,9 @@ async def asyncio_detailed(
     caller, admin key or not, gets 403 `admin_required`. So is a team key rotated by that team's admin.
     A key holding `vms:nested-virt` is rotated only from a signed-in session (an API key caller, the key
     itself included, gets 403) and only while its owner is in `[auth] nested_virt_users` (otherwise
-    403). The replacement keeps the original's expiry, so an API key caller that expires may rotate only
-    a key that expires no later than it does (a key rotating itself always may); otherwise 422
+    403). A key holding `network:write` is rotated only from a signed-in session too: any API key caller
+    gets 403. The replacement keeps the original's expiry, so an API key caller that expires may rotate
+    only a key that expires no later than it does (a key rotating itself always may); otherwise 422
     `validation_failed` with `field: "id"`. A signed-in session is not affected.
 
     Args:
@@ -221,8 +224,9 @@ async def asyncio(
     caller, admin key or not, gets 403 `admin_required`. So is a team key rotated by that team's admin.
     A key holding `vms:nested-virt` is rotated only from a signed-in session (an API key caller, the key
     itself included, gets 403) and only while its owner is in `[auth] nested_virt_users` (otherwise
-    403). The replacement keeps the original's expiry, so an API key caller that expires may rotate only
-    a key that expires no later than it does (a key rotating itself always may); otherwise 422
+    403). A key holding `network:write` is rotated only from a signed-in session too: any API key caller
+    gets 403. The replacement keeps the original's expiry, so an API key caller that expires may rotate
+    only a key that expires no later than it does (a key rotating itself always may); otherwise 422
     `validation_failed` with `field: "id"`. A signed-in session is not affected.
 
     Args:

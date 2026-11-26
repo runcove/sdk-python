@@ -38,7 +38,7 @@ class CreateKeyRequest:
                 to and controlled by them). Refused without `service`.
             scopes (list[str] | None | Unset): Omit (or send `null`) for the default set (`vms:read`, `vms:write`,
                 `vms:exec`, `files:read`, `files:write`, `checkpoints:write`,
-                `tags:read`, `tags:write`). An empty
+                `tags:read`, `tags:write`, `network:read`). An empty
                 array is refused (422).
             service (None | str | Unset): Set to `<name>` to mint a service key `svc:<name>` (admin only; expiry
                 required; never `keys:manage`, `access:write`, `admin` or `admin:*`). Exactly one of
